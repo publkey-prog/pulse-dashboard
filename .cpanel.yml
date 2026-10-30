@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/publkey4/pulse.publkey.com/
+    - /bin/cp -R . $DEPLOYPATH
