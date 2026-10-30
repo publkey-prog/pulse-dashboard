@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: pulse-cpanel-deploy
@@ -22,7 +22,44 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
+
+      - name: Sync source package to public
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SHOULD_SYNC=false
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SHOULD_SYNC=true
+          elif git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep -q '^source/'; then
+            SHOULD_SYNC=true
+          fi
+
+          if [ "$SHOULD_SYNC" = "true" ] && [ -f source/READY ]; then
+            cat source/pulse_dashboard_v3_5.zip.b64.part* > "$RUNNER_TEMP/pulse-source.b64"
+            base64 -d "$RUNNER_TEMP/pulse-source.b64" > "$RUNNER_TEMP/pulse-source.zip"
+
+            echo "f967509c7baadd1ce46c7602c479cf36330d9dec977d710d8f45abe4702647d4  $RUNNER_TEMP/pulse-source.zip" | sha256sum -c -
+
+            rm -rf "$RUNNER_TEMP/pulse-source"
+            mkdir -p "$RUNNER_TEMP/pulse-source"
+            unzip -q -o "$RUNNER_TEMP/pulse-source.zip" -d "$RUNNER_TEMP/pulse-source"
+
+            mkdir -p public
+            rsync -a --delete "$RUNNER_TEMP/pulse-source/" public/
+
+            node --check public/app.js
+
+            git add public
+            if ! git diff --cached --quiet; then
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git commit -m "Restore Pulse Dashboard v3.5 [skip ci]"
+              git push origin HEAD:main
+            fi
+          fi
 
       - name: Configure SSH
         shell: bash
