@@ -108,3 +108,43 @@ jobs:
             "ssh://publkey4@publkey.com:21098/home/publkey4/repositories/pulse-dashboard-auto"
 
           git push cpanel HEAD:master
+
+
+      - name: Verify DEV site
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BASE_URL="https://pulse.publkey.com"
+          VERIFY_DIR="$RUNNER_TEMP/live-verify"
+          mkdir -p "$VERIFY_DIR"
+
+          for attempt in {1..30}; do
+            all_ok=true
+
+            while IFS= read -r -d '' file; do
+              rel="${file#public/}"
+              out="$VERIFY_DIR/${rel//\//_}"
+
+              if ! curl -fsSL --max-time 10 "${BASE_URL}/${rel}?verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" -o "$out"; then
+                all_ok=false
+                break
+              fi
+
+              if ! cmp -s "$file" "$out"; then
+                all_ok=false
+                break
+              fi
+            done < <(find public -type f -print0 | sort -z)
+
+            if [ "$all_ok" = "true" ]; then
+              echo "DEV deployment verified against every file in public/."
+              exit 0
+            fi
+
+            echo "DEV site not fully updated yet (attempt $attempt/30); waiting..."
+            sleep 2
+          done
+
+          echo "DEV deployment verification failed."
+          exit 1
