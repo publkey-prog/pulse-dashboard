@@ -70,4 +70,4 @@ jobs:
           git remote add cpanel \
             "ssh://publkey4@publkey.com:21098/home/publkey4/repositories/pulse-dashboard-auto"
 
-          git push cpanel HEAD:main
+          git push cpanel HEAD:master
