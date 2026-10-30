@@ -1,12 +1,49 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pulse Dashboard</title>
-</head>
-<body>
-  <h1>Pulse Dashboard</h1>
-  <p>GitHub → cPanel → pulse.publkey.com работает! AUTO DEPLOY OK</p>
-</body>
-</html>
+<!doctype html><html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e1117"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./style.css?v=350">
+<title>Pulse Dashboard v3.5</title></head><body>
+<main class="app">
+<section id="homeView">
+<header><div><span class="eyebrow">PULSE</span><h1>Мой дашборд</h1></div><div class="avatar">VK</div></header>
+<section class="hero"><div><span>Сегодня</span><strong id="today"></strong></div><div class="score"><b id="score">0</b><small>баллов</small></div></section>
+<section class="stats"><article><span>Задачи</span><b id="taskStat">0 / 0</b><i id="percent">0%</i></article><article id="focusStatCard" class="clickable"><span>Фокус</span><b id="focusToday">0м</b><i id="focusDelta">Сегодня</i></article><article id="projectStatCard" class="clickable"><span>Проекты</span><b id="projectStat">0</b><i id="activeProjectStat">0 активных</i></article></section>
+<section class="panel"><div class="panel-title"><h2>Активность</h2><span>7 дней</span></div><div id="activityChart" class="chart"></div><div id="activityDays" class="days"></div><div class="streak-row">🔥 Серия: <b id="streakDays">0</b> рабочих дней</div></section>
+<section class="panel tasks"><div class="panel-title"><h2>На сегодня</h2><button id="addBtn" class="primary">+ Добавить</button></div><div id="taskList"></div><div id="emptyState" class="empty hidden">Задач пока нет. Добавь первую.</div></section>
+</section>
+
+
+<section id="tasksView" class="hidden">
+<header><div><span class="eyebrow">PULSE</span><h1>Задачи</h1></div><button id="addFullTaskBtn" class="primary">+ Задача</button></header>
+<div class="task-summary"><div><span>Всего</span><b id="tasksTotal">0</b></div><div><span>Активных</span><b id="tasksActive">0</b></div><div><span>Готово</span><b id="tasksDone">0</b></div></div>
+<div class="task-filters">
+<button class="filter-btn active" data-filter="today">Сегодня</button>
+<button class="filter-btn" data-filter="active">Активные</button>
+<button class="filter-btn" data-filter="all">Все</button>
+<button class="filter-btn" data-filter="done">Готово</button>
+</div>
+<div id="fullTaskList"></div>
+<div id="fullTaskEmpty" class="empty hidden">Задач по этому фильтру нет.</div>
+</section>
+<section id="projectsView" class="hidden">
+<header><div><span class="eyebrow">PULSE</span><h1>Проекты</h1></div><button id="addProjectBtn" class="primary">+ Проект</button></header>
+<div class="project-summary"><div><span>Всего</span><b id="projectsTotal">0</b></div><div><span>Активных</span><b id="projectsActive">0</b></div><div><span>Завершено</span><b id="projectsDone">0</b></div></div>
+<div id="projectList"></div>
+<div id="projectEmpty" class="empty hidden">Проектов пока нет. Создай первый.</div>
+</section>
+<section id="settingsView" class="hidden">
+<header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header>
+<div class="settings-card"><span class="muted">Версия приложения</span><strong>Pulse v3.5</strong><small id="updateStatus">Готово к работе</small></div>
+<div class="settings-card"><h2>Обновления</h2><p>Проверяет новую версию Pulse. Сохранённые задачи не удаляются.</p><button id="updateBtn" class="wide primary">Проверить обновления</button></div>
+<div class="settings-card"><h2>Данные</h2><p id="savedCount">Сохранено задач: 0</p><p id="savedProjectCount">Сохранено проектов: 0</p><button id="clearTasksBtn" class="wide secondary">Очистить задачи</button></div>
+<div class="settings-card danger"><h2>Система</h2><p>Удаляет задачи, localStorage, кэш Pulse и регистрацию Service Worker.</p><button id="resetBtn" class="wide danger-btn">Полный сброс приложения</button></div>
+</section>
+</main>
+<nav class="bottom-nav">
+<button id="homeNav" class="active"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg><span>Главная</span></button>
+<button id="projectsNav"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg><span>Проекты</span></button>
+<button id="tasksNav"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Задачи</span></button>
+<button id="settingsNav"><svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm8 4 2 1-2 3-2-.5-1.5 1.5.5 2-3 2-1-2h-2l-1 2-3-2 .5-2L5 15.5 3 16l-2-3 2-1v-2L1 9l2-3 2 .5L6.5 5 6 3l3-2 1 2h2l1-2 3 2-.5 2L17 6.5l2-.5 2 3-1 1z"/></svg><span>Настройки</span></button>
+</nav>
+<div id="taskModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h3 id="taskModalTitle">Новая задача</h3><button id="closeBtn">×</button></div><input id="taskInput" maxlength="100" placeholder="Название задачи"><textarea id="taskDescription" maxlength="240" placeholder="Описание"></textarea><label class="field-label">Проект</label><select id="taskProject"><option value="">Без проекта</option></select><label class="field-label">Начало</label><input id="taskStartAt" type="datetime-local"><label class="field-label">Дедлайн</label><input id="taskDeadlineAt" type="datetime-local"><small class="form-hint">Пустые поля: начало — сейчас, дедлайн — сегодня 23:00.</small><div class="actions"><button id="cancelBtn" class="secondary">Отмена</button><button id="saveBtn" class="primary">Сохранить</button></div></div></div><div id="projectModal" class="modal hidden"><div class="modal-card project-modal-card"><div class="modal-head"><h3 id="projectModalTitle">Новый проект</h3><button id="projectCloseBtn">×</button></div><input id="projectName" maxlength="60" placeholder="Название проекта"><textarea id="projectDescription" maxlength="220" placeholder="Описание"></textarea><label class="field-label">Начало</label><input id="projectStartAt" type="datetime-local"><label class="field-label">Дедлайн</label><input id="projectDeadlineAt" type="datetime-local"><small class="form-hint">Пустые поля: начало — сейчас, дедлайн — сегодня 23:00.</small><div class="draft-head"><strong>Задачи проекта</strong><button id="addDraftTaskBtn" class="secondary">+ Задача</button></div><div id="draftTaskList"></div><div class="actions"><button id="projectCancelBtn" class="secondary">Отмена</button><button id="projectSaveBtn" class="primary">Сохранить проект</button></div></div></div><div id="focusOverlay" class="focus-overlay hidden"><div class="focus-box"><span class="eyebrow">FOCUS</span><h2 id="focusTaskName">Задача</h2><div id="focusClock" class="focus-clock">00:00:00</div><div class="focus-actions"><button id="focusPause" class="secondary">Пауза</button><button id="focusStop" class="primary">Завершить</button></div></div></div><script src="./app.js?v=350"></script></body></html>
