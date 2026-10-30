@@ -1,0 +1,73 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pulse-cpanel-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configure SSH
+        shell: bash
+        env:
+          CPANEL_SSH_KEY: ${{ secrets.CPANEL_SSH_KEY }}
+          CPANEL_SSH_PASSPHRASE: ${{ secrets.CPANEL_SSH_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+
+          install -d -m 700 "$HOME/.ssh"
+
+          printf '%s\n' "$CPANEL_SSH_KEY" > "$RUNNER_TEMP/cpanel_key"
+          chmod 600 "$RUNNER_TEMP/cpanel_key"
+
+          cat > "$RUNNER_TEMP/ssh-askpass.sh" <<'EOF'
+          #!/bin/sh
+          printf '%s\n' "$CPANEL_SSH_PASSPHRASE"
+          EOF
+
+          chmod 700 "$RUNNER_TEMP/ssh-askpass.sh"
+
+          eval "$(ssh-agent -s)"
+
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+
+          SSH_ASKPASS="$RUNNER_TEMP/ssh-askpass.sh" \
+          SSH_ASKPASS_REQUIRE=force \
+          DISPLAY=:0 \
+          ssh-add "$RUNNER_TEMP/cpanel_key" </dev/null
+
+          rm -f "$RUNNER_TEMP/cpanel_key"
+          rm -f "$RUNNER_TEMP/ssh-askpass.sh"
+
+          ssh-keyscan -H -p 21098 publkey.com >> "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+
+      - name: Push to cPanel
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git remote remove cpanel 2>/dev/null || true
+
+          git remote add cpanel \
+            "ssh://publkey4@publkey.com:21098/home/publkey4/repositories/pulse-dashboard-auto"
+
+          git push cpanel HEAD:main
