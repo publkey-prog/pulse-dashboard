@@ -1,58 +1,289 @@
 <!doctype html>
-<html lang="uk">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>Англійська мова — тест 187 слів</title>
+<title>Pulse Dashboard — Premium Graphite</title>
 <style>
-:root{--bg:#eef5fb;--panel:#fff;--ink:#12304a;--muted:#6d8192;--blue:#174f7a;--blue2:#2e77a8;--soft:#e7f2fa;--line:#cfe0ec;--good:#17824b;--bad:#c93d3d;--warn:#c48613}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#f5f9fc,#eaf3f9);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-button,input{font:inherit}button{cursor:pointer}.app{width:min(1520px,96%);margin:0 auto;min-height:100vh;padding:20px 0 50px}
-.topbar{position:sticky;top:0;z-index:20;background:rgba(245,249,252,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 0}
-.topin{display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center}.brand{font-weight:900;color:var(--blue);font-size:22px}.brand small{display:block;font-size:12px;color:var(--muted);font-weight:600}
-.progressWrap{min-width:240px}.progressText{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:6px}.bar{height:9px;background:#dceaf4;border-radius:999px;overflow:hidden}.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue2),#4aa1d1);border-radius:999px;transition:.2s}
-.timer{font-variant-numeric:tabular-nums;font-size:22px;font-weight:900;background:#102f49;color:white;border-radius:14px;padding:10px 14px;min-width:112px;text-align:center}.timer.danger{background:var(--bad)}
-.start{max-width:820px;margin:70px auto;background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:36px;box-shadow:0 20px 50px rgba(24,67,99,.08)}.start h1{font-size:clamp(38px,6vw,68px);line-height:1;margin:0 0 20px;color:var(--blue)}.start p{color:var(--muted);font-size:17px;line-height:1.6}.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}.fact{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}.fact b{display:block;font-size:24px;color:var(--blue)}.nameInput{width:100%;padding:15px 16px;border:1px solid var(--line);border-radius:14px;font-size:17px;margin-top:8px}.startBtn{width:100%;border:0;background:var(--blue);color:white;border-radius:15px;padding:16px;font-weight:900;font-size:18px;margin-top:14px}
-.quiz{display:none;padding-top:28px}.quiz.show{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:20px}.main{min-width:0}.questionCard{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 12px 30px rgba(29,75,110,.06)}.qnum{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}.word{font-size:clamp(38px,6vw,72px);font-weight:900;color:var(--blue);margin:10px 0 24px;word-break:break-word}.prompt{color:var(--muted);margin-bottom:14px;font-weight:700}.options{display:grid;gap:12px}.option{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:2px solid var(--line);background:#fbfdff;border-radius:16px;padding:16px 18px;color:var(--ink);font-size:18px;min-height:60px}.option span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--blue);font-weight:900;flex:0 0 auto}.option.selected{border-color:var(--blue2);background:#eaf5fc}.option.selected span{background:var(--blue);color:white}.navButtons{display:flex;justify-content:space-between;gap:12px;margin-top:20px}.navBtn{border:1px solid var(--line);background:white;color:var(--blue);border-radius:14px;padding:13px 18px;font-weight:800}.navBtn.primary{background:var(--blue);color:white;border-color:var(--blue)}.side{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px;align-self:start;position:sticky;top:92px}.side h3{margin:0 0 12px;font-size:16px}.numbers{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;max-height:66vh;overflow:auto;padding-right:4px}.num{border:1px solid var(--line);background:#f7fbfe;color:var(--muted);border-radius:9px;aspect-ratio:1;display:grid;place-items:center;font-size:12px}.num.answered{background:#dff1fb;color:var(--blue);border-color:#9fcbe3;font-weight:800}.num.current{outline:3px solid var(--blue);outline-offset:1px}.finish{width:100%;margin-top:14px;border:0;background:#193c59;color:white;border-radius:12px;padding:13px;font-weight:900}
-.result{display:none;max-width:1100px;margin:35px auto}.result.show{display:block}.scoreCard{background:white;border:1px solid var(--line);border-radius:24px;padding:28px;text-align:center}.score{font-size:clamp(64px,10vw,120px);font-weight:900;color:var(--blue);line-height:1}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}.sum{padding:16px;background:var(--soft);border-radius:16px}.sum b{display:block;font-size:26px}.errors{margin-top:20px;background:white;border:1px solid var(--line);border-radius:20px;padding:20px}.errors h2{margin-top:0}.errRow{display:grid;grid-template-columns:54px 1fr 1fr 1fr;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}.errRow:last-child{border-bottom:0}.bad{color:var(--bad);font-weight:800}.good{color:var(--good);font-weight:800}.restart{border:0;background:var(--blue);color:white;border-radius:13px;padding:13px 18px;font-weight:900}
-@media(max-width:900px){.topin{grid-template-columns:1fr auto}.progressWrap{grid-column:1/-1;grid-row:2}.quiz.show{grid-template-columns:1fr}.side{position:static;order:-1}.numbers{display:flex;overflow-x:auto;max-height:none}.num{min-width:42px;width:42px;height:42px;aspect-ratio:auto}}
-@media(max-width:620px){.app{width:100%;padding-top:0}.topbar{padding:9px 14px}.quiz{padding:16px 12px 40px}.questionCard{padding:20px;border-radius:18px}.word{font-size:44px}.option{font-size:17px;padding:14px}.start{margin:34px 12px;padding:24px;border-radius:20px}.facts{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr}.errRow{grid-template-columns:42px 1fr;gap:6px}.errRow span:nth-child(3),.errRow span:nth-child(4){grid-column:2}}
-@media(min-width:1800px){.app{width:min(1900px,92%)}.questionCard{padding:42px}.option{font-size:24px;min-height:76px}.side{font-size:18px}.num{font-size:16px}}
-@media(min-width:3000px){body{font-size:24px}.app{width:min(3400px,92%)}.nav{min-height:110px}.brand{font-size:40px}.timer{font-size:38px;padding:16px 22px}.questionCard{padding:64px}.word{font-size:120px}.prompt{font-size:28px}.option{font-size:34px;min-height:110px;border-radius:24px;padding:24px 30px}.option span{width:54px;height:54px}.quiz.show{grid-template-columns:minmax(0,1fr) 460px;gap:34px}.side{top:130px;padding:26px}.num{font-size:22px;border-radius:14px}.finish{font-size:24px;padding:20px}}
-</style></head><body>
-<div class="topbar"><div class="app topin"><div class="brand">АНГЛІЙСЬКА МОВА<small>СЛОВНИК-ІСПИТ · 187 слів</small></div><div class="progressWrap" id="progressWrap" style="visibility:hidden"><div class="progressText"><span id="answeredText">0 / 187</span><span id="pct">0%</span></div><div class="bar"><i id="bar"></i></div></div><div class="timer" id="timer">40:00</div></div></div>
-<main class="app">
-<section class="start" id="start">
-<h1>Тест на 187 слів</h1>
-<p>Оберіть один правильний український переклад для кожного англійського слова. Після натискання кнопки почнеться відлік <b>40 хвилин</b>. Після завершення ви побачите загальний результат, помилки та пропущені відповіді.</p>
-<div class="facts"><div class="fact"><b>187</b>питань</div><div class="fact"><b>3</b>варіанти</div><div class="fact"><b>40:00</b>хвилин</div></div>
-<label>Ім’я учня<input class="nameInput" id="student" placeholder="Введіть ім’я" autocomplete="name"></label>
-<button class="startBtn" id="startBtn">Почати тест</button>
-</section>
+:root{
+  --bg:#090a0c; --panel:#111317; --panel2:#17191e; --panel3:#1e2127;
+  --text:#f5f6f7; --muted:#8f98a3; --line:#2a2e35; --silver:#c6cbd1;
+  --silver2:#8f969f; --accent:#e7e9ec; --good:#8fd0a2; --warn:#d9b36c;
+  --shadow:0 24px 70px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{
+  margin:0;background:
+  radial-gradient(circle at 80% 10%,rgba(255,255,255,.045),transparent 28%),
+  linear-gradient(180deg,#0b0d10,#08090b 80%);
+  color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:270px minmax(0,1fr)}
+.sidebar{
+  position:sticky;top:0;height:100vh;border-right:1px solid var(--line);
+  background:linear-gradient(180deg,#0c0e11,#090a0c);padding:26px 20px;display:flex;flex-direction:column;gap:28px;
+}
+.brand{display:flex;align-items:center;gap:14px;padding:0 6px}
+.logo{
+  width:48px;height:48px;border-radius:15px;background:linear-gradient(145deg,#17191e,#0d0f12);
+  border:1px solid #30343a;display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02),0 12px 28px rgba(0,0,0,.4)
+}
+.logo svg{width:34px;height:34px}
+.brandText b{display:block;font-size:18px;letter-spacing:.18em}
+.brandText small{color:var(--muted);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.menu{display:grid;gap:8px}
+.menu button{
+  border:0;background:transparent;color:#aeb5bc;border-radius:14px;padding:13px 14px;text-align:left;
+  display:flex;align-items:center;gap:12px;font-weight:700
+}
+.menu button.active{background:linear-gradient(90deg,#1d2025,#15171b);color:white;border:1px solid #30343a}
+.menu button span{width:28px;display:inline-grid;place-items:center;color:#bcc2c8}
+.sideCard{
+  margin-top:auto;background:linear-gradient(145deg,#17191e,#111317);border:1px solid var(--line);
+  border-radius:18px;padding:16px;box-shadow:var(--shadow)
+}
+.sideCard small{color:var(--muted)}
+.sideCard strong{display:block;font-size:24px;margin:5px 0 14px}
+.sideCard .bar{height:7px;background:#262a30;border-radius:99px;overflow:hidden}
+.sideCard .bar i{display:block;width:72%;height:100%;background:linear-gradient(90deg,#7f858c,#f0f2f4)}
+.main{min-width:0}
+.topbar{
+  position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  min-height:76px;padding:14px clamp(16px,3vw,34px);background:rgba(10,11,14,.84);
+  backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.05)
+}
+.mobileMenu{display:none}
+.search{
+  width:min(460px,46vw);border:1px solid var(--line);background:#14171b;color:white;padding:12px 16px;
+  border-radius:14px;outline:none
+}
+.topActions{display:flex;align-items:center;gap:10px}
+.iconBtn,.profile{
+  border:1px solid var(--line);background:#15181c;color:white;border-radius:13px;min-height:44px;padding:0 13px
+}
+.profile{display:flex;align-items:center;gap:10px}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(145deg,#d8dadd,#747a81)}
+.content{padding:clamp(18px,3vw,34px)}
+.heroRow{display:grid;grid-template-columns:1.45fr .85fr;gap:18px;margin-bottom:18px}
+.heroCard,.focusCard,.card{
+  background:linear-gradient(145deg,rgba(28,31,36,.96),rgba(17,19,23,.96));
+  border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)
+}
+.heroCard{padding:28px;min-height:220px;position:relative;overflow:hidden}
+.heroCard:after{
+  content:"";position:absolute;width:300px;height:300px;border-radius:50%;
+  right:-90px;top:-100px;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 62%)
+}
+.eyebrow{color:#a9b0b7;text-transform:uppercase;letter-spacing:.15em;font-size:11px}
+.heroCard h1{font-size:clamp(34px,4.5vw,64px);line-height:1;margin:12px 0 14px}
+.heroCard p{color:var(--muted);max-width:680px;line-height:1.6}
+.heroStats{display:flex;gap:22px;flex-wrap:wrap;margin-top:24px}
+.heroStats div b{font-size:24px;display:block}
+.heroStats div small{color:var(--muted)}
+.focusCard{padding:24px;display:grid;align-content:center}
+.focusTop{display:flex;align-items:center;justify-content:space-between}
+.focusTop span{color:var(--muted);font-size:13px}
+.timer{font-size:clamp(48px,5vw,78px);font-weight:800;letter-spacing:-.04em;margin:20px 0 12px}
+.focusControls{display:flex;gap:10px}
+.focusControls button{border:0;border-radius:12px;padding:12px 16px;font-weight:800}
+.start{background:#eceff2;color:#111}
+.reset{background:#24282e;color:#e8ebed}
+.gridTop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.metric{padding:18px;border:1px solid var(--line);background:#12151a;border-radius:18px}
+.metric .label{color:var(--muted);font-size:12px}
+.metric strong{display:block;font-size:30px;margin:8px 0}
+.metric small{color:#aeb4ba}
+.dashboard{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.card{padding:20px;min-width:0}
+.card h2{font-size:18px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13px}
+.chartWrap{margin-top:18px;height:260px;display:flex;align-items:end;gap:10px}
+.barCol{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px}
+.barCol i{display:block;width:100%;max-width:46px;border-radius:12px 12px 5px 5px;background:linear-gradient(180deg,#d9dde1,#6f757d)}
+.barCol span{font-size:11px;color:var(--muted)}
+.tasks{display:grid;gap:10px;margin-top:16px}
+.task{
+  display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);
+  border-radius:14px;background:#12151a
+}
+.check{width:22px;height:22px;border-radius:7px;border:1px solid #4a5058;background:#0f1114}
+.task.done .check{background:linear-gradient(145deg,#c9cdd2,#858b92);position:relative}
+.task.done .check:after{content:"✓";position:absolute;color:#0d0f12;font-weight:900;left:5px;top:0px}
+.task b{font-size:14px}
+.task small{display:block;color:var(--muted);margin-top:3px}
+.badge{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:6px 8px;color:#c1c6cb}
+.activity{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.ringCard{padding:20px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:18px}
+.ring{
+  --p:74;width:116px;height:116px;border-radius:50%;
+  background:conic-gradient(#d8dce0 calc(var(--p)*1%),#24282e 0);display:grid;place-items:center;position:relative
+}
+.ring:before{content:"";width:82px;height:82px;background:#12151a;border-radius:50%;position:absolute}
+.ring b{z-index:1;font-size:23px}
+.list{display:grid;gap:10px}
+.listItem{display:flex;justify-content:space-between;gap:18px;color:#cbd0d5;font-size:13px}
+.listItem span:last-child{color:#8f98a3}
+.footerNote{color:#6f7780;font-size:11px;padding:18px 2px}
+@media(max-width:1100px){
+  .app{grid-template-columns:88px minmax(0,1fr)}
+  .sidebar{padding:20px 14px}
+  .brandText,.menu button em,.sideCard{display:none}
+  .brand{justify-content:center}.menu button{justify-content:center;padding:12px}
+  .heroRow,.dashboard{grid-template-columns:1fr}.gridTop{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:720px){
+  .app{display:block}.sidebar{display:none}
+  .mobileMenu{display:inline-flex}
+  .topbar{min-height:64px;padding:10px 12px}
+  .search{display:none}
+  .content{padding:14px}
+  .heroCard,.focusCard,.card{border-radius:18px}
+  .heroCard{padding:20px}.heroRow{gap:12px}
+  .gridTop{grid-template-columns:1fr 1fr;gap:10px}
+  .metric{padding:14px}.metric strong{font-size:25px}
+  .chartWrap{height:210px}
+  .activity{grid-template-columns:1fr}
+  .profile span{display:none}
+}
+@media(max-width:390px){.gridTop{grid-template-columns:1fr}.heroStats{gap:14px}.timer{font-size:52px}}
+@media(min-width:1900px){
+  .app{grid-template-columns:340px minmax(0,1fr)}
+  .sidebar{padding:38px 28px}.content{padding:46px}.topbar{min-height:92px;padding:18px 46px}
+  .brand{transform:scale(1.1);transform-origin:left center}
+  .heroCard{min-height:290px;padding:38px}.focusCard{padding:34px}
+  .metric{padding:26px}.metric strong{font-size:42px}
+  .dashboard{gap:26px}.card{padding:28px}.chartWrap{height:340px}
+  .task b,.sub,.listItem{font-size:16px}
+}
+@media(min-width:3000px){
+  .app{grid-template-columns:480px minmax(0,1fr)}
+  .sidebar{padding:54px 40px}.brand{transform:scale(1.5);transform-origin:left center}
+  .menu button{font-size:24px;padding:20px;border-radius:20px}
+  .topbar{min-height:132px;padding:26px 68px}.search{font-size:24px;padding:18px 24px;max-width:800px;width:800px}
+  .profile,.iconBtn{font-size:22px;min-height:64px}
+  .content{padding:68px}.heroCard{min-height:420px;padding:52px}
+  .heroCard p{font-size:24px}.eyebrow{font-size:17px}.heroStats div b{font-size:42px}.heroStats div small{font-size:18px}
+  .focusCard{padding:50px}.timer{font-size:108px}.focusControls button{font-size:22px;padding:18px 24px}
+  .gridTop{gap:24px}.metric{padding:34px;border-radius:28px}.metric .label{font-size:18px}.metric strong{font-size:58px}.metric small{font-size:18px}
+  .dashboard{gap:30px}.card{padding:40px;border-radius:30px}.card h2{font-size:30px}.sub{font-size:19px}.chartWrap{height:500px}
+  .task{padding:20px}.task b{font-size:22px}.task small{font-size:17px}.badge{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 64 64" aria-label="Pulse logo">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1f2f4"/><stop offset="1" stop-color="#6c727a"/></linearGradient></defs>
+          <path d="M42 7a25 25 0 1 1-16 45" fill="none" stroke="url(#g)" stroke-width="8" stroke-linecap="round"/>
+          <rect x="9" y="17" width="26" height="7" rx="3.5" fill="#edf0f2"/>
+          <rect x="9" y="29" width="19" height="7" rx="3.5" fill="#a9afb6"/>
+          <circle cx="13" cy="45" r="5" fill="#f3f4f5"/>
+        </svg>
+      </div>
+      <div class="brandText"><b>PULSE</b><small>premium dashboard</small></div>
+    </div>
+    <div class="menu">
+      <button class="active"><span>⌂</span><em>Главная</em></button>
+      <button><span>◫</span><em>Статистика</em></button>
+      <button><span>✓</span><em>Задачи</em></button>
+      <button><span>◷</span><em>Focus</em></button>
+      <button><span>⚙</span><em>Настройки</em></button>
+    </div>
+    <div class="sideCard">
+      <small>Недельная цель</small><strong>72%</strong>
+      <div class="bar"><i></i></div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <button class="iconBtn mobileMenu">☰</button>
+      <input class="search" placeholder="Поиск по Pulse…">
+      <div class="topActions">
+        <button class="iconBtn">◌</button>
+        <button class="profile"><span>Viktor</span><i class="avatar"></i></button>
+      </div>
+    </div>
+    <div class="content">
+      <section class="heroRow">
+        <div class="heroCard">
+          <div class="eyebrow">Pulse overview</div>
+          <h1>Добрый день.</h1>
+          <p>Сводка по продуктивности, задачам и фокус-сессиям. Интерфейс собран в графитовом premium-стиле с акцентом на спокойную визуальную иерархию.</p>
+          <div class="heroStats">
+            <div><b>8.4 ч</b><small>фокус сегодня</small></div>
+            <div><b>14</b><small>задач выполнено</small></div>
+            <div><b>91%</b><small>эффективность</small></div>
+          </div>
+        </div>
+        <div class="focusCard">
+          <div class="focusTop"><b>Focus Session</b><span id="focusStatus">готово к запуску</span></div>
+          <div class="timer" id="timer">25:00</div>
+          <div class="focusControls">
+            <button class="start" id="startBtn">Начать</button>
+            <button class="reset" id="resetBtn">Сбросить</button>
+          </div>
+        </div>
+      </section>
 
-<section class="quiz" id="quiz">
-<div class="main"><div class="questionCard"><div class="qnum" id="qnum"></div><div class="word" id="word"></div><div class="prompt">Оберіть правильний переклад:</div><div class="options" id="options"></div><div class="navButtons"><button class="navBtn" id="prev">← Попереднє</button><button class="navBtn primary" id="next">Наступне →</button></div></div></div>
-<aside class="side"><h3>Навігація по тесту</h3><div class="numbers" id="numbers"></div><button class="finish" id="finish">Завершити тест</button></aside>
-</section>
+      <section class="gridTop">
+        <div class="metric"><div class="label">Фокус-сессии</div><strong>12</strong><small>+18% за неделю</small></div>
+        <div class="metric"><div class="label">Завершённые задачи</div><strong>37</strong><small>5 сегодня</small></div>
+        <div class="metric"><div class="label">Средняя сессия</div><strong>42 мин</strong><small>лучший день: ср</small></div>
+        <div class="metric"><div class="label">Текущая серия</div><strong>9 дней</strong><small>личный рекорд</small></div>
+      </section>
 
-<section class="result" id="result"><div class="scoreCard"><div class="qnum">Результат</div><div class="score" id="score"></div><h2 id="resultTitle"></h2><div id="resultName"></div><div class="summary"><div class="sum"><b id="correctN"></b>Правильно</div><div class="sum"><b id="wrongN"></b>Помилки</div><div class="sum"><b id="blankN"></b>Без відповіді</div><div class="sum"><b id="usedTime"></b>Час</div></div><button class="restart" id="restart">Пройти ще раз</button></div><div class="errors" id="errors"></div></section>
-</main>
+      <section class="dashboard">
+        <div class="card">
+          <h2>Активность за неделю</h2>
+          <div class="sub">Время в фокусе по дням</div>
+          <div class="chartWrap" id="chart"></div>
+        </div>
+        <div class="card">
+          <h2>Задачи на сегодня</h2>
+          <div class="sub">6 из 8 завершено</div>
+          <div class="tasks">
+            <div class="task done"><i class="check"></i><div><b>Проверить Pulse Preview</b><small>09:30</small></div><span class="badge">Готово</span></div>
+            <div class="task done"><i class="check"></i><div><b>Подготовить дизайн системы</b><small>11:00</small></div><span class="badge">Готово</span></div>
+            <div class="task"><i class="check"></i><div><b>Обновить дашборд</b><small>14:20</small></div><span class="badge">В работе</span></div>
+            <div class="task"><i class="check"></i><div><b>Собрать вечерний отчёт</b><small>18:00</small></div><span class="badge">Позже</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="activity">
+        <div class="card ringCard">
+          <div class="ring" style="--p:74"><b>74%</b></div>
+          <div><h2>Недельный прогресс</h2><div class="sub">Цель: 30 часов фокусной работы</div></div>
+        </div>
+        <div class="card">
+          <h2>Последняя активность</h2>
+          <div class="list">
+            <div class="listItem"><span>Focus session · 52 мин</span><span>сегодня</span></div>
+            <div class="listItem"><span>Задача «Preview» завершена</span><span>12:41</span></div>
+            <div class="listItem"><span>Статистика обновлена</span><span>11:20</span></div>
+          </div>
+        </div>
+      </section>
+      <div class="footerNote">PULSE PREMIUM · тестовая страница в песочнице</div>
+    </div>
+  </main>
+</div>
 <script>
-const questions=[{"n": 1, "word": "get", "options": ["отримувати", "читати", "давати"], "correct": 0}, {"n": 2, "word": "send", "options": ["бачити", "питати", "надсилати"], "correct": 2}, {"n": 3, "word": "ask", "options": ["питати", "відповідати", "думати"], "correct": 0}, {"n": 4, "word": "drink", "options": ["бігати", "їсти", "пити"], "correct": 2}, {"n": 5, "word": "answer", "options": ["стрибати", "відповідати", "надсилати"], "correct": 1}, {"n": 6, "word": "think", "options": ["читати", "думати", "давати"], "correct": 1}, {"n": 7, "word": "give", "options": ["пити", "отримувати", "давати"], "correct": 2}, {"n": 8, "word": "read", "options": ["читати", "дивитися", "бігати"], "correct": 0}, {"n": 9, "word": "watch", "options": ["спати", "дивитися", "писати"], "correct": 1}, {"n": 10, "word": "jump", "options": ["бігати", "стрибати", "сидіти"], "correct": 1}, {"n": 11, "word": "run", "options": ["бігати", "лежати", "сидіти"], "correct": 0}, {"n": 12, "word": "eat", "options": ["пити", "їсти", "спати"], "correct": 1}, {"n": 13, "word": "sleep", "options": ["читати", "спати", "бігати"], "correct": 1}, {"n": 14, "word": "sit down", "options": ["лежати", "стрибати", "сідати"], "correct": 2}, {"n": 15, "word": "lie", "options": ["лежати", "читати", "сидіти"], "correct": 0}, {"n": 16, "word": "love", "options": ["давати", "любити", "думати"], "correct": 1}, {"n": 17, "word": "good", "options": ["гарний", "добрий", "поганий"], "correct": 1}, {"n": 18, "word": "bad", "options": ["бідний", "добрий", "поганий"], "correct": 2}, {"n": 19, "word": "pretty", "options": ["поганий", "бідний", "гарненький"], "correct": 2}, {"n": 20, "word": "poor", "options": ["бідний", "гарненький", "добрий"], "correct": 0}, {"n": 21, "word": "chair", "options": ["стілець", "ліжко", "стіл"], "correct": 0}, {"n": 22, "word": "table", "options": ["стілець", "тарілка", "стіл"], "correct": 2}, {"n": 23, "word": "telephone", "options": ["телефон", "книжка", "телевізор"], "correct": 0}, {"n": 24, "word": "book", "options": ["зошит", "книжка", "ручка"], "correct": 1}, {"n": 25, "word": "notebook", "options": ["зошит", "ручка", "книжка"], "correct": 0}, {"n": 26, "word": "bed", "options": ["стілець", "стіл", "ліжко"], "correct": 2}, {"n": 27, "word": "pen", "options": ["тарілка", "ручка", "чашка"], "correct": 1}, {"n": 28, "word": "cup", "options": ["чашка", "ручка", "тарілка"], "correct": 0}, {"n": 29, "word": "plate", "options": ["тарілка", "чашка", "стілець"], "correct": 0}, {"n": 30, "word": "poem", "options": ["вірш", "зошит", "книжка"], "correct": 0}, {"n": 31, "word": "people", "options": ["люди", "хлопчик", "мама"], "correct": 0}, {"n": 32, "word": "boy", "options": ["хлопчик", "люди", "мама"], "correct": 0}, {"n": 33, "word": "pizza", "options": ["напій", "чашка", "піца"], "correct": 2}, {"n": 34, "word": "cinema", "options": ["школа", "кінотеатр", "магазин"], "correct": 1}, {"n": 35, "word": "home", "options": ["школа", "вулиця", "дім"], "correct": 2}, {"n": 36, "word": "work", "options": ["урок", "робота", "дім"], "correct": 1}, {"n": 37, "word": "school", "options": ["школа", "магазин", "лікарня"], "correct": 0}, {"n": 38, "word": "classroom", "options": ["класна кімната", "спальня", "кухня"], "correct": 0}, {"n": 39, "word": "kitchen", "options": ["коридор", "кухня", "ванна кімната"], "correct": 1}, {"n": 40, "word": "bedroom", "options": ["кухня", "вітальня", "спальня"], "correct": 2}, {"n": 41, "word": "bathroom", "options": ["ванна кімната", "спальня", "коридор"], "correct": 0}, {"n": 42, "word": "street", "options": ["дорога", "вулиця", "площа"], "correct": 1}, {"n": 43, "word": "road", "options": ["вулиця", "площа", "дорога"], "correct": 2}, {"n": 44, "word": "forest", "options": ["парк", "ліс", "острів"], "correct": 1}, {"n": 45, "word": "lake", "options": ["озеро", "море", "пляж"], "correct": 0}, {"n": 46, "word": "sea", "options": ["море", "озеро", "річка"], "correct": 0}, {"n": 47, "word": "beach", "options": ["пляж", "острів", "парк"], "correct": 0}, {"n": 48, "word": "island", "options": ["острів", "ліс", "площа"], "correct": 0}, {"n": 49, "word": "hospital", "options": ["школа", "лікарня", "магазин"], "correct": 1}, {"n": 50, "word": "park", "options": ["ліс", "площа", "парк"], "correct": 2}, {"n": 51, "word": "day", "options": ["день", "місяць", "тиждень"], "correct": 0}, {"n": 52, "word": "week", "options": ["рік", "день", "тиждень"], "correct": 2}, {"n": 53, "word": "weekend", "options": ["місяць", "вихідні", "рік"], "correct": 1}, {"n": 54, "word": "month", "options": ["тиждень", "день", "місяць"], "correct": 2}, {"n": 55, "word": "year", "options": ["тиждень", "рік", "місяць"], "correct": 1}, {"n": 56, "word": "winter", "options": ["весна", "осінь", "зима"], "correct": 2}, {"n": 57, "word": "spring", "options": ["літо", "весна", "зима"], "correct": 1}, {"n": 58, "word": "summer", "options": ["осінь", "літо", "весна"], "correct": 1}, {"n": 59, "word": "autumn", "options": ["зима", "літо", "осінь"], "correct": 2}, {"n": 60, "word": "where", "options": ["де", "чому", "коли"], "correct": 0}, {"n": 61, "word": "coca-cola", "options": ["кока-кола", "хлопчик", "нас / нам"], "correct": 0}, {"n": 62, "word": "tv", "options": ["телевізор", "лікарня", "вересень"], "correct": 0}, {"n": 63, "word": "me", "options": ["мене / мені", "ми", "вона"], "correct": 0}, {"n": 64, "word": "you", "options": ["ти / тебе / тобі", "ми", "я"], "correct": 0}, {"n": 65, "word": "him", "options": ["мене / мені", "його / йому", "він"], "correct": 1}, {"n": 66, "word": "her", "options": ["ти / тебе / тобі", "її / їй", "його / йому"], "correct": 1}, {"n": 67, "word": "it", "options": ["воно / його", "коли", "його / йому"], "correct": 0}, {"n": 68, "word": "us", "options": ["нас / нам", "вона", "він"], "correct": 0}, {"n": 69, "word": "them", "options": ["їх / їм", "ти / тебе / тобі", "її / їй"], "correct": 0}, {"n": 70, "word": "i", "options": ["я", "ти / тебе / тобі", "її / їй"], "correct": 0}, {"n": 71, "word": "he", "options": ["він", "його / йому", "нас / нам"], "correct": 0}, {"n": 72, "word": "she", "options": ["вона", "мене / мені", "ти / тебе / тобі"], "correct": 0}, {"n": 73, "word": "we", "options": ["вона", "ми", "він"], "correct": 1}, {"n": 74, "word": "they", "options": ["він", "вони", "мене / мені"], "correct": 1}, {"n": 75, "word": "my", "options": ["мій", "просто", "вісімдесят"], "correct": 0}, {"n": 76, "word": "your", "options": ["серпень", "твій", "вірш"], "correct": 1}, {"n": 77, "word": "his", "options": ["парк", "дев’ять", "його"], "correct": 2}, {"n": 78, "word": "our", "options": ["дев’яносто", "одинадцять", "наш"], "correct": 2}, {"n": 79, "word": "their", "options": ["їх / їм", "їхній", "кухня"], "correct": 1}, {"n": 80, "word": "to send", "options": ["надсилати", "звідки", "сьогодні"], "correct": 0}, {"n": 81, "word": "to go", "options": ["п’ятнадцять", "йти", "вихідні"], "correct": 1}, {"n": 82, "word": "go", "options": ["телефон", "йти", "лікарня"], "correct": 1}, {"n": 83, "word": "name", "options": ["йти", "грудень", "ім’я"], "correct": 2}, {"n": 84, "word": "today", "options": ["шістнадцять", "сьогодні", "люди"], "correct": 1}, {"n": 85, "word": "next", "options": ["наступний", "знову", "тисяча"], "correct": 0}, {"n": 86, "word": "again", "options": ["звідки", "котра година", "знову"], "correct": 2}, {"n": 87, "word": "here", "options": ["тут", "їх / їм", "площа"], "correct": 0}, {"n": 88, "word": "simply", "options": ["просто", "вітальня", "зима"], "correct": 0}, {"n": 89, "word": "excellent", "options": ["бігати", "липень", "чудовий"], "correct": 2}, {"n": 90, "word": "very", "options": ["дуже", "вони", "дванадцять"], "correct": 0}, {"n": 91, "word": "too", "options": ["ванна кімната", "вісім", "також"], "correct": 2}, {"n": 92, "word": "thank", "options": ["плювати", "дякувати", "пити"], "correct": 1}, {"n": 93, "word": "to do homework", "options": ["середа", "нуль", "робити домашнє завдання"], "correct": 2}, {"n": 94, "word": "homework", "options": ["домашнє завдання", "вона", "сімдесят"], "correct": 0}, {"n": 95, "word": "ma", "options": ["їх / їм", "мама", "лікарня"], "correct": 1}, {"n": 96, "word": "but", "options": ["але", "дякувати", "дванадцять"], "correct": 0}, {"n": 97, "word": "when", "options": ["чий", "коли", "якого кольору"], "correct": 1}, {"n": 98, "word": "see", "options": ["бачити", "люди", "поруч"], "correct": 0}, {"n": 99, "word": "kiss", "options": ["з ким", "вісімнадцять", "цілувати"], "correct": 2}, {"n": 100, "word": "spit", "options": ["плювати", "кого / кому", "неділя"], "correct": 0}, {"n": 101, "word": "be ready", "options": ["субота", "сто", "бути готовим"], "correct": 2}, {"n": 102, "word": "be true", "options": ["п’ятнадцять", "море", "бути правдивим"], "correct": 2}, {"n": 103, "word": "apartment", "options": ["осінь", "квартира", "мій"], "correct": 1}, {"n": 104, "word": "living room", "options": ["вітальня", "кока-кола", "весна"], "correct": 0}, {"n": 105, "word": "toilet", "options": ["дім", "звідки", "туалет"], "correct": 2}, {"n": 106, "word": "hallway", "options": ["зошит", "коридор", "бачити"], "correct": 1}, {"n": 107, "word": "square", "options": ["якого кольору", "площа", "котрий"], "correct": 1}, {"n": 108, "word": "shop", "options": ["два", "понеділок", "магазин"], "correct": 2}, {"n": 109, "word": "bus stop", "options": ["надсилати", "чому", "автобусна зупинка"], "correct": 2}, {"n": 110, "word": "monday", "options": ["понеділок", "неділя", "середа"], "correct": 0}, {"n": 111, "word": "tuesday", "options": ["вівторок", "неділя", "середа"], "correct": 0}, {"n": 112, "word": "wednesday", "options": ["вівторок", "середа", "понеділок"], "correct": 1}, {"n": 113, "word": "thursday", "options": ["середа", "неділя", "четвер"], "correct": 2}, {"n": 114, "word": "friday", "options": ["четвер", "субота", "п’ятниця"], "correct": 2}, {"n": 115, "word": "saturday", "options": ["середа", "четвер", "субота"], "correct": 2}, {"n": 116, "word": "sunday", "options": ["четвер", "неділя", "понеділок"], "correct": 1}, {"n": 117, "word": "january", "options": ["листопад", "лютий", "січень"], "correct": 2}, {"n": 118, "word": "february", "options": ["березень", "лютий", "вересень"], "correct": 1}, {"n": 119, "word": "march", "options": ["листопад", "вересень", "березень"], "correct": 2}, {"n": 120, "word": "april", "options": ["квітень", "грудень", "травень"], "correct": 0}, {"n": 121, "word": "may", "options": ["червень", "травень", "грудень"], "correct": 1}, {"n": 122, "word": "june", "options": ["червень", "квітень", "жовтень"], "correct": 0}, {"n": 123, "word": "july", "options": ["травень", "квітень", "липень"], "correct": 2}, {"n": 124, "word": "august", "options": ["вересень", "серпень", "червень"], "correct": 1}, {"n": 125, "word": "september", "options": ["вересень", "травень", "лютий"], "correct": 0}, {"n": 126, "word": "october", "options": ["грудень", "липень", "жовтень"], "correct": 2}, {"n": 127, "word": "november", "options": ["березень", "листопад", "червень"], "correct": 1}, {"n": 128, "word": "december", "options": ["жовтень", "лютий", "грудень"], "correct": 2}, {"n": 129, "word": "how", "options": ["де", "як", "чим"], "correct": 1}, {"n": 130, "word": "what", "options": ["якого типу", "що", "скільки (предметів)"], "correct": 1}, {"n": 131, "word": "which", "options": ["котрий", "скільки років", "як далеко"], "correct": 0}, {"n": 132, "word": "who", "options": ["звідки", "хто", "коли"], "correct": 1}, {"n": 133, "word": "whom", "options": ["кого / кому", "скільки років", "котрий"], "correct": 0}, {"n": 134, "word": "whose", "options": ["чий", "що", "котра година"], "correct": 0}, {"n": 135, "word": "why", "options": ["чому", "котра година", "кого / кому"], "correct": 0}, {"n": 136, "word": "how far", "options": ["кого / кому", "як далеко", "якого виду"], "correct": 1}, {"n": 137, "word": "how long", "options": ["як довго", "скільки років", "чому"], "correct": 0}, {"n": 138, "word": "how many", "options": ["скільки (предметів)", "котра година", "якого виду"], "correct": 0}, {"n": 139, "word": "how much", "options": ["скільки (ціна)", "коли", "якого типу"], "correct": 0}, {"n": 140, "word": "how old", "options": ["де", "скільки років", "як щодо"], "correct": 1}, {"n": 141, "word": "what colour", "options": ["скільки (предметів)", "якого кольору", "кого / кому"], "correct": 1}, {"n": 142, "word": "what kind", "options": ["якого виду", "кого / кому", "з ким"], "correct": 0}, {"n": 143, "word": "what type", "options": ["що", "якого типу", "якого виду"], "correct": 1}, {"n": 144, "word": "what time", "options": ["скільки (предметів)", "котра година", "як далеко"], "correct": 1}, {"n": 145, "word": "what about", "options": ["як довго", "чим", "як щодо"], "correct": 2}, {"n": 146, "word": "what for", "options": ["для чого", "якого типу", "хто"], "correct": 0}, {"n": 147, "word": "what with", "options": ["де", "чим", "хто"], "correct": 1}, {"n": 148, "word": "where from", "options": ["де", "з ким", "звідки"], "correct": 2}, {"n": 149, "word": "who with", "options": ["котрий", "скільки (предметів)", "з ким"], "correct": 2}, {"n": 150, "word": "in", "options": ["у/в", "біля / у", "на"], "correct": 0}, {"n": 151, "word": "on", "options": ["на", "біля / у", "поруч"], "correct": 0}, {"n": 152, "word": "at", "options": ["біля / у", "у/в", "поруч"], "correct": 0}, {"n": 153, "word": "near", "options": ["поруч", "у/в", "біля / у"], "correct": 0}, {"n": 154, "word": "am", "options": ["є (однина)", "є (множина)", "є (з I)"], "correct": 2}, {"n": 155, "word": "is", "options": ["є (множина)", "є (з I)", "є (однина)"], "correct": 2}, {"n": 156, "word": "are", "options": ["є (однина)", "є (множина)", "є (з I)"], "correct": 1}, {"n": 157, "word": "zero", "options": ["сорок", "нуль", "вісімдесят"], "correct": 1}, {"n": 158, "word": "one", "options": ["п’ять", "один", "шістдесят"], "correct": 1}, {"n": 159, "word": "two", "options": ["двадцять", "чотирнадцять", "два"], "correct": 2}, {"n": 160, "word": "three", "options": ["десять", "п’ять", "три"], "correct": 2}, {"n": 161, "word": "four", "options": ["вісім", "десять", "чотири"], "correct": 2}, {"n": 162, "word": "five", "options": ["десять", "двадцять", "п’ять"], "correct": 2}, {"n": 163, "word": "six", "options": ["десять", "сім", "шість"], "correct": 2}, {"n": 164, "word": "seven", "options": ["сім", "п’ятдесят", "три"], "correct": 0}, {"n": 165, "word": "eight", "options": ["вісім", "п’ять", "тисяча"], "correct": 0}, {"n": 166, "word": "nine", "options": ["дев’ять", "дванадцять", "тисяча"], "correct": 0}, {"n": 167, "word": "ten", "options": ["десять", "двадцять", "дев’яносто"], "correct": 0}, {"n": 168, "word": "eleven", "options": ["дев’ять", "одинадцять", "шість"], "correct": 1}, {"n": 169, "word": "twelve", "options": ["дванадцять", "п’ятнадцять", "п’ять"], "correct": 0}, {"n": 170, "word": "thirteen", "options": ["дев’ятнадцять", "один", "тринадцять"], "correct": 2}, {"n": 171, "word": "fourteen", "options": ["чотирнадцять", "три", "вісімдесят"], "correct": 0}, {"n": 172, "word": "fifteen", "options": ["п’ятнадцять", "шість", "один"], "correct": 0}, {"n": 173, "word": "sixteen", "options": ["дев’ятнадцять", "шістнадцять", "нуль"], "correct": 1}, {"n": 174, "word": "seventeen", "options": ["вісім", "сімнадцять", "дев’яносто"], "correct": 1}, {"n": 175, "word": "eighteen", "options": ["чотири", "тридцять", "вісімнадцять"], "correct": 2}, {"n": 176, "word": "nineteen", "options": ["п’ятдесят", "два", "дев’ятнадцять"], "correct": 2}, {"n": 177, "word": "twenty", "options": ["п’ятнадцять", "двадцять", "вісімнадцять"], "correct": 1}, {"n": 178, "word": "thirty", "options": ["тридцять", "сім", "дев’яносто"], "correct": 0}, {"n": 179, "word": "forty", "options": ["тридцять", "шістнадцять", "сорок"], "correct": 2}, {"n": 180, "word": "fifty", "options": ["тринадцять", "тридцять", "п’ятдесят"], "correct": 2}, {"n": 181, "word": "sixty", "options": ["шістдесят", "тридцять", "дев’яносто"], "correct": 0}, {"n": 182, "word": "seventy", "options": ["сімдесят", "одинадцять", "дев’ятнадцять"], "correct": 0}, {"n": 183, "word": "eighty", "options": ["шістнадцять", "вісімдесят", "сорок"], "correct": 1}, {"n": 184, "word": "ninety", "options": ["сімдесят", "вісімнадцять", "дев’яносто"], "correct": 2}, {"n": 185, "word": "one hundred", "options": ["шістдесят", "сто", "дев’яносто"], "correct": 1}, {"n": 186, "word": "one thousand", "options": ["дев’ять", "тисяча", "сімдесят"], "correct": 1}, {"n": 187, "word": "to sleep", "options": ["лютий", "спати", "липень"], "correct": 1}];
-const answers=Array(questions.length).fill(null);
-let current=0,remaining=40*60,timerId=null,startStamp=null,finished=false;
-const $=id=>document.getElementById(id);
-function fmt(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-function updateTimer(){$('timer').textContent=fmt(remaining);$('timer').classList.toggle('danger',remaining<=300)}
-function renderNumbers(){$('numbers').innerHTML=questions.map((q,i)=>`<button class="num ${answers[i]!==null?'answered':''} ${i===current?'current':''}" data-i="${i}">${i+1}</button>`).join('')}
-function renderQuestion(){const q=questions[current];$('qnum').textContent=`Питання ${current+1} з ${questions.length}`;$('word').textContent=q.word;$('options').innerHTML=q.options.map((o,i)=>`<button class="option ${answers[current]===i?'selected':''}" data-o="${i}"><span>${'ABC'[i]}</span>${o}</button>`).join('');$('prev').disabled=current===0;$('next').textContent=current===questions.length-1?'Завершити →':'Наступне →';renderNumbers();updateProgress()}
-function updateProgress(){const n=answers.filter(x=>x!==null).length;$('answeredText').textContent=`${n} / ${questions.length}`;$('pct').textContent=Math.round(n/questions.length*100)+'%';$('bar').style.width=(n/questions.length*100)+'%'}
-function go(i){current=Math.max(0,Math.min(questions.length-1,i));renderQuestion();window.scrollTo({top:0,behavior:'smooth'})}
-function startTest(){$('start').style.display='none';$('quiz').classList.add('show');$('progressWrap').style.visibility='visible';startStamp=Date.now();remaining=40*60;updateTimer();renderQuestion();timerId=setInterval(()=>{remaining--;updateTimer();if(remaining<=0)finishTest(true)},1000)}
-function finishTest(timeout=false){if(finished)return;finished=true;clearInterval(timerId);const correct=questions.reduce((n,q,i)=>n+(answers[i]===q.correct),0);const blanks=answers.filter(x=>x===null).length;const wrong=questions.length-correct-blanks;const pct=Math.round(correct/questions.length*1000)/10;const elapsed=Math.min(40*60,Math.floor((Date.now()-startStamp)/1000));$('quiz').classList.remove('show');$('progressWrap').style.visibility='hidden';$('result').classList.add('show');$('score').textContent=pct+'%';$('resultTitle').textContent=timeout?'Час завершився — тест автоматично закінчено':'Тест завершено';const nm=$('student').value.trim();$('resultName').textContent=nm?`Учень: ${nm}`:'';$('correctN').textContent=correct;$('wrongN').textContent=wrong;$('blankN').textContent=blanks;$('usedTime').textContent=fmt(elapsed);
-let rows=[];questions.forEach((q,i)=>{if(answers[i]!==q.correct){rows.push(`<div class="errRow"><b>${i+1}</b><span><strong>${q.word}</strong></span><span class="bad">${answers[i]===null?'— без відповіді':q.options[answers[i]]}</span><span class="good">${q.options[q.correct]}</span></div>`)}});
-$('errors').innerHTML=rows.length?`<h2>Помилки та пропущені відповіді</h2><div class="errRow"><b>№</b><span><b>Слово</b></span><span><b>Ваша відповідь</b></span><span><b>Правильно</b></span></div>${rows.join('')}`:'<h2>Відмінно — усі 187 відповідей правильні.</h2>';window.scrollTo({top:0,behavior:'smooth'})}
-$('startBtn').onclick=startTest;$('options').addEventListener('click',e=>{const b=e.target.closest('.option');if(!b)return;answers[current]=+b.dataset.o;renderQuestion()});
-$('numbers').addEventListener('click',e=>{const b=e.target.closest('.num');if(b)go(+b.dataset.i)});$('prev').onclick=()=>go(current-1);$('next').onclick=()=>{if(current===questions.length-1)finishTest(false);else go(current+1)};$('finish').onclick=()=>{if(confirm('Завершити тест і показати результат?'))finishTest(false)};$('restart').onclick=()=>location.reload();updateTimer();
-</script></body></html>
+const chartData=[58,76,43,89,68,94,72],days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const chart=document.getElementById('chart');
+chart.innerHTML=chartData.map((v,i)=>`<div class="barCol"><i style="height:${v}%"></i><span>${days[i]}</span></div>`).join('');
+let sec=1500,run=false,timerId=null;
+const timer=document.getElementById('timer'),status=document.getElementById('focusStatus'),start=document.getElementById('startBtn');
+function draw(){const m=String(Math.floor(sec/60)).padStart(2,'0'),s=String(sec%60).padStart(2,'0');timer.textContent=`${m}:${s}`}
+start.addEventListener('click',()=>{run=!run;start.textContent=run?'Пауза':'Продолжить';status.textContent=run?'сессия идёт':'пауза';if(run){clearInterval(timerId);timerId=setInterval(()=>{if(sec>0){sec--;draw()}else{run=false;clearInterval(timerId);start.textContent='Начать';status.textContent='сессия завершена'}},1000)}else clearInterval(timerId)});
+document.getElementById('resetBtn').addEventListener('click',()=>{run=false;clearInterval(timerId);sec=1500;draw();start.textContent='Начать';status.textContent='готово к запуску'});
+document.querySelectorAll('.menu button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.menu button').forEach(x=>x.classList.remove('active'));b.classList.add('active')}));
+</script>
+</body></html>
