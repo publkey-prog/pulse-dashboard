@@ -1,0 +1,44 @@
+name: One-time confirmed preview backup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/backup-preview-confirmed.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build confirmed preview archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf backup
+          mkdir -p backup/public/preview
+          cp public/preview/index.html backup/public/preview/index.html
+          cat > backup/README.txt <<'EOF'
+          PULSE DASHBOARD — LAST CONFIRMED WORKING PREVIEW
+          Confirmed date: 2026-11-11
+          Repository: publkey-prog/pulse-dashboard
+          Confirmed application commit: 5d5d012b717ac53227b78c7a6b4fb7aea135bc2f
+          Preview file blob SHA: 93f2407d871884c818b9d1487e61ca886f7dab83
+          Production was not modified by this backup.
+          Restore target: public/preview/index.html
+          EOF
+          sha256sum backup/public/preview/index.html > backup/SHA256SUMS.txt
+
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pulse_Preview_Last_Confirmed_Working_2026-11-11
+          path: backup/
+          if-no-files-found: error
+          retention-days: 90
