@@ -1,0 +1,63 @@
+name: One-time FULL confirmed site backup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/backup-full-confirmed-site.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Restore exact confirmed site snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          CONFIRMED_SHA="5d5d012b717ac53227b78c7a6b4fb7aea135bc2f"
+          git checkout "$CONFIRMED_SHA" -- public
+
+      - name: Build full site archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf backup
+          mkdir -p backup/site
+          cp -a public/. backup/site/
+          cat > backup/README.txt <<'EOF'
+          PULSE DASHBOARD — FULL LAST CONFIRMED WORKING SITE BACKUP
+          Confirmed date: 2026-11-11
+          Repository: publkey-prog/pulse-dashboard
+          Confirmed application commit: 5d5d012b717ac53227b78c7a6b4fb7aea135bc2f
+
+          CONTENT:
+          - full public/ site snapshot copied into site/
+          - root production files
+          - icons/
+          - preview/
+          - manifest.json
+          - service worker
+          - CSS/JS assets
+          - all other files present in public/ at the confirmed commit
+
+          To restore the full web root, copy the contents of site/ to the hosting public directory.
+          EOF
+          (cd backup/site && find . -type f -print0 | sort -z | xargs -0 sha256sum) > backup/SHA256SUMS.txt
+          find backup/site -type f | sort > backup/FILELIST.txt
+
+      - name: Upload full archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pulse_Full_Site_Last_Confirmed_Working_2026-11-11
+          path: backup/
+          if-no-files-found: error
+          retention-days: 90
