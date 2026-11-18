@@ -397,4 +397,61 @@ try{const saved=JSON.parse(localStorage.getItem('pulse_preview_40_settings')||'{
 start();
 })();
 </script>
+<!-- Preview-only portable backup tools -->
+<style>
+#pulsePortableBackup{margin-top:14px}#pulsePortableBackup .backup-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}#pulsePortableBackup button{background:#242e40;color:#f4f6fa;border:1px solid #52627a;border-radius:11px;padding:11px;font:inherit}#pulsePortableBackup p{font-size:12px;color:#9daabc}#pulsePortableBackup select{background:#1b2330;color:#fff;border:1px solid #52627a;border-radius:8px;padding:8px}
+</style>
+<script>
+(function(){
+'use strict';
+const prefix='pulse_preview_36_',backupVersion=1;
+function showMessage(message){window.alert(message)}
+function exportBackup(){
+  const entries={};
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('pulse_preview_'))entries[k]=localStorage.getItem(k)}
+  const data={format:'pulse-preview-backup',version:backupVersion,createdAt:new Date().toISOString(),entries};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='Pulse_Preview_Backup_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+async function restoreBackup(file,mode){
+  if(!file)return;
+  if(file.size>25*1024*1024)throw Error('Файл превышает 25 МБ');
+  let obj;try{obj=JSON.parse(await file.text())}catch(e){throw Error('Некорректный JSON')}
+  if(obj.format!=='pulse-preview-backup'||obj.version!==backupVersion||!obj.entries||typeof obj.entries!=='object'||Array.isArray(obj.entries))throw Error('Несовместимый формат резервной копии');
+  const entries=Object.entries(obj.entries);
+  if(!entries.length||entries.some(([k,v])=>!k.startsWith('pulse_preview_')||typeof v!=='string'))throw Error('Недопустимые данные резервной копии');
+  if(!confirm('Восстановить '+entries.length+' наборов данных? Текущие данные будут '+(mode==='replace'?'заменены':'объединены')+'.'))return;
+  const safety={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('pulse_preview_'))safety[k]=localStorage.getItem(k)}
+  const safetyKey='pulse_backup_safety_'+Date.now();
+  try{
+    localStorage.setItem(safetyKey,JSON.stringify(safety));
+    if(mode==='replace'){Object.keys(safety).forEach(k=>localStorage.removeItem(k))}
+    for(const [k,v] of entries){
+      if(mode==='merge'&&localStorage.getItem(k)!==null){
+        let a,b;try{a=JSON.parse(localStorage.getItem(k));b=JSON.parse(v)}catch(e){throw Error('Объединение поддерживается только для массивов JSON; используйте полное восстановление')}
+        if(!Array.isArray(a)||!Array.isArray(b))throw Error('Объединение не поддерживается для '+k);
+        const seen=new Set(a.map(x=>x&&x.id!=null?String(x.id):JSON.stringify(x)));
+        for(const item of b){const id=item&&item.id!=null?String(item.id):JSON.stringify(item);if(!seen.has(id)){a.push(item);seen.add(id)}}
+        localStorage.setItem(k,JSON.stringify(a));
+      }else{localStorage.setItem(k,v)}
+    }
+    showMessage('Данные восстановлены. Приложение будет перезагружено.');location.reload();
+  }catch(e){
+    Object.keys(safety).forEach(k=>localStorage.removeItem(k));Object.entries(safety).forEach(([k,v])=>localStorage.setItem(k,v));throw e;
+  }
+}
+function init(){
+  if(document.getElementById('pulsePortableBackup'))return;
+  const section=document.createElement('section');section.id='pulsePortableBackup';section.className='panel';
+  section.innerHTML='<div class="panel-title"><h2>Резервное копирование</h2><span>Только песочница</span></div><p>Сохранение и перенос всех данных preview. Перед импортом создайте экспорт текущего устройства.</p><div class="backup-actions"><button type="button" id="pulseExport">Сохранить архив</button><button type="button" id="pulseImport">Загрузить архив</button></div><p>Режим импорта: <select id="pulseImportMode"><option value="replace">Полное восстановление</option><option value="merge">Объединить без дублей</option></select></p><input id="pulseImportFile" type="file" accept=".json,application/json" hidden>';
+  const target=document.getElementById('settingsView')||document.getElementById('homeView');if(!target)return;target.appendChild(section);
+  section.querySelector('#pulseExport').addEventListener('click',exportBackup);
+  const input=section.querySelector('#pulseImportFile');
+  section.querySelector('#pulseImport').addEventListener('click',()=>input.click());
+  input.addEventListener('change',async()=>{try{await restoreBackup(input.files[0],section.querySelector('#pulseImportMode').value)}catch(e){showMessage('Импорт не выполнен: '+e.message)}finally{input.value=''}});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body></html>
