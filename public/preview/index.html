@@ -117,7 +117,22 @@
 #pulseAddMenu{max-height:min(70vh,430px);overflow:auto;padding:16px!important;border:1px solid #354459;border-radius:18px}
 #pulseAddMenu button{background:#253348;color:#e9f1ff;border:1px solid #43536a;border-radius:12px;padding:12px;min-height:44px;margin:4px}
 @media(min-width:700px){#pulseIncome .pulse-graph{max-width:100%}#pulseIncome .pulse-graph svg{max-height:270px}}
-</style><style>#homeView header .eyebrow.pulse-brand{display:block!important;font-size:clamp(24px,5vw,38px)!important;letter-spacing:.16em!important;font-weight:900!important;line-height:1.15!important;color:#b4fbd2!important;opacity:1!important}#pulseHero .pulse-countdown{font-size:24px!important}#pulseIncome .pulse-graph{height:auto!important;min-height:148px}#pulseIncome .pulse-graph svg{height:auto!important;min-height:148px}#pulseAddMenu.hidden{display:none!important}.pulse-screen .pulse-card>*{margin-top:0}.pulse-screen .pulse-card>*+*{margin-top:10px}</style><style>#homeView header .eyebrow:not(.pulse-brand){font-size:11px!important;letter-spacing:.25em!important;color:#90a0b7!important;font-weight:500!important}#homeView header h1.pulse-brand{font-size:clamp(29px,7vw,40px)!important;letter-spacing:.16em!important}#pulseIncome .pulse-income-total{display:block!important;font-size:28px!important;font-weight:800!important;color:#f4f8ff!important;margin:14px 0!important}</style></head><body><main class="app">
+</style><style>#homeView header .eyebrow.pulse-brand{display:block!important;font-size:clamp(24px,5vw,38px)!important;letter-spacing:.16em!important;font-weight:900!important;line-height:1.15!important;color:#b4fbd2!important;opacity:1!important}#pulseHero .pulse-countdown{font-size:24px!important}#pulseIncome .pulse-graph{height:auto!important;min-height:148px}#pulseIncome .pulse-graph svg{height:auto!important;min-height:148px}#pulseAddMenu.hidden{display:none!important}.pulse-screen .pulse-card>*{margin-top:0}.pulse-screen .pulse-card>*+*{margin-top:10px}</style><style>#homeView header .eyebrow:not(.pulse-brand){font-size:11px!important;letter-spacing:.25em!important;color:#90a0b7!important;font-weight:500!important}#homeView header h1.pulse-brand{font-size:clamp(29px,7vw,40px)!important;letter-spacing:.16em!important}#pulseIncome .pulse-income-total{display:block!important;font-size:28px!important;font-weight:800!important;color:#f4f8ff!important;margin:14px 0!important}</style><style>
+/* Scoped layout corrections: preview-only, notes and thoughts cards */
+#pulseExtraView .pulse-screen{display:flex;flex-direction:column;gap:14px;min-width:0}
+#pulseExtraView .pulse-screen>.pulse-toolbar{margin:0 0 2px;min-width:0}
+#pulseExtraView .pulse-screen>.pulse-entry.pulse-card{display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:0;width:100%;padding:18px!important;margin:0!important;border-radius:18px;overflow-wrap:anywhere}
+#pulseExtraView .pulse-entry.pulse-card>.pulse-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-width:0}
+#pulseExtraView .pulse-entry.pulse-card>.pulse-row>b{min-width:0;flex:1}
+#pulseExtraView .pulse-entry.pulse-card>small{display:block;color:#94a3b8;font-size:12px;line-height:1.5}
+#pulseExtraView .pulse-entry.pulse-card>p{margin:0!important;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+#pulseExtraView .pulse-entry.pulse-card>.pulse-countdown{margin:0!important;line-height:1.25}
+#pulseExtraView .pulse-entry.pulse-card>.pulse-actions{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 0!important}
+#pulseExtraView .pulse-entry.pulse-card>.pulse-actions button{margin:0!important;min-height:42px}
+#pulseExtraView .pulse-entry.pulse-card>.pulse-detail{padding:12px;border-radius:12px;background:#101923}
+#pulseExtraView .pulse-screen>button{width:100%;min-height:46px;margin:0!important}
+#pulseIncome .pulse-income-total{font-size:28px!important;font-weight:800!important;display:block!important}
+</style></head><body><main class="app">
 <section id="homeView"><header><div><span class="eyebrow">PULSE</span><h1>Мой дашборд</h1></div><div class="profile-wrap"><button id="profileBtn" class="avatar">VK</button><div id="profileMenu" class="profile-menu hidden"><button id="profileSettings">Настройки</button><button id="profileHistory">История</button></div></div></header>
 <section class="liquid-panel" id="liquidWidget" aria-labelledby="liquidTitle">
 <div class="liquid-top"><div><span class="liquid-kicker">PULSE LAB · LIQUID MOTION</span><h2 id="liquidTitle">Живая статистика</h2></div><span class="liquid-tag">Демо</span></div>
@@ -520,7 +535,7 @@ function home(){
  }
  if(inc){
  const rows=income.filter(x=>!x.currency||x.currency==='UAH'),start=new Date();start.setHours(0,0,0,0);start.setDate(start.getDate()-period+1);
- const sum=rows.filter(x=>{const d=new Date(x.at||x.date||x.createdAt);return !isNaN(d)&&d>=start&&d<=new Date()}).reduce((a,x)=>a+(Number(x.amount)||0),0);
+ const sum=rows.filter(x=>{const d=new Date(x.at||x.date||x.createdAt);return !isNaN(d)&&d>=start&&d<new Date(new Date().setHours(24,0,0,0))}).reduce((a,x)=>a+(Number(x.amount)||0),0);
  inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period">'+button('Сегодня','period-today')+button('Неделя','period-week')+button('Месяц','period-month')+'</div></div><div class="pulse-income-total">'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</div>'+plot(rows,'amount')+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
  inc.querySelectorAll('[data-pulse^="period-"]').forEach(b=>{if(b.dataset.pulse===(period===1?'period-today':period===7?'period-week':'period-month'))b.classList.add('selected')});
  }
