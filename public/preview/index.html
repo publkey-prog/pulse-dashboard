@@ -117,7 +117,7 @@
 #pulseAddMenu{max-height:min(70vh,430px);overflow:auto;padding:16px!important;border:1px solid #354459;border-radius:18px}
 #pulseAddMenu button{background:#253348;color:#e9f1ff;border:1px solid #43536a;border-radius:12px;padding:12px;min-height:44px;margin:4px}
 @media(min-width:700px){#pulseIncome .pulse-graph{max-width:100%}#pulseIncome .pulse-graph svg{max-height:270px}}
-</style></head><body><main class="app">
+</style><style>#homeView header .eyebrow.pulse-brand{display:block!important;font-size:clamp(24px,5vw,38px)!important;letter-spacing:.16em!important;font-weight:900!important;line-height:1.15!important;color:#b4fbd2!important;opacity:1!important}#pulseHero .pulse-countdown{font-size:24px!important}#pulseIncome .pulse-graph{height:auto!important;min-height:148px}#pulseIncome .pulse-graph svg{height:auto!important;min-height:148px}#pulseAddMenu.hidden{display:none!important}.pulse-screen .pulse-card>*{margin-top:0}.pulse-screen .pulse-card>*+*{margin-top:10px}</style></head><body><main class="app">
 <section id="homeView"><header><div><span class="eyebrow">PULSE</span><h1>Мой дашборд</h1></div><div class="profile-wrap"><button id="profileBtn" class="avatar">VK</button><div id="profileMenu" class="profile-menu hidden"><button id="profileSettings">Настройки</button><button id="profileHistory">История</button></div></div></header>
 <section class="liquid-panel" id="liquidWidget" aria-labelledby="liquidTitle">
 <div class="liquid-top"><div><span class="liquid-kicker">PULSE LAB · LIQUID MOTION</span><h2 id="liquidTitle">Живая статистика</h2></div><span class="liquid-tag">Демо</span></div>
@@ -489,7 +489,7 @@ function persist(){write('income',income);write('thoughts',thoughts);write('note
 function expire(){let changed=false;for(const t of thoughts){if(t.status==='active'&&Date.now()>=new Date(t.expiresAt).getTime()){t.status='archived';t.archivedAt=now();log('Мысль архивирована',t.title);changed=true}}if(changed)persist()}
 function button(label,action,id){return '<button type="button" data-pulse="'+action+'"'+(id?' data-id="'+esc(id)+'"':'')+'>'+label+'</button>'}
 function plot(items,field){
- const n=period,values=Array(n).fill(0),today=new Date();today.setHours(0,0,0,0);
+ const n=period===365?30:period===90?30:period,values=Array(n).fill(0),today=new Date();today.setHours(0,0,0,0);
  for(const item of items){const d=new Date(item.at||item.date||item.createdAt);d.setHours(0,0,0,0);const delta=Math.round((today-d)/86400000);if(delta>=0&&delta<n)values[n-1-delta]+=Number(item[field])||0}
  const max=Math.max(1,...values),left=55,right=335,top=15,bottom=125;
  const pts=values.map((v,i)=>[n===1?(left+right)/2:left+i*(right-left)/(n-1),bottom-v/max*(bottom-top)]);
@@ -515,8 +515,8 @@ function home(){
  const active=thoughts.filter(t=>t.status==='active'),hero=$('pulseHero'),inc=$('pulseIncome');
  if(hero){
  const idx=Math.floor(Date.now()/12000)%Math.max(1,active.length);
- if(active.length){hero.innerHTML='<span class="pulse-small">Активная мысль · до '+date(active[idx].expiresAt)+'</span><div id="pulseDailyQuote">'+esc(active[idx].title)+'</div><div class="pulse-countdown" data-expire="'+esc(active[idx].expiresAt)+'"></div>'}
- else{const q=quotes[Math.floor(Date.now()/86400000)%quotes.length]||'Добавьте фразу в настройках';hero.innerHTML='<span class="pulse-small">Фраза дня</span><div id="pulseDailyQuote" data-animated="true" data-text="'+esc(q)+'"></div>';quoteAnimationText='';animateQuote()}
+ if(active.length){hero.innerHTML='<span class="pulse-small">Активная мысль · до '+date(active[idx].expiresAt)+'</span><div id="pulseDailyQuote">'+esc(active[idx].title)+'</div><div class="pulse-countdown" data-expire="'+esc(active[idx].expiresAt)+'">'+countdown(active[idx].expiresAt)+'</div>'}
+ else{const q=quotes.length?quotes[Math.floor(Date.now()/86400000)%quotes.length]:'Добавьте фразу в настройках';hero.innerHTML='<span class="pulse-small">Фраза дня</span><div id="pulseDailyQuote" data-animated="true" data-text="'+esc(q)+'"></div>';if(quoteAnimationText!==q)quoteAnimationText='';animateQuote()}
  }
  if(inc){
  const rows=income.filter(x=>x.currency==='UAH'),start=new Date();start.setHours(0,0,0,0);start.setDate(start.getDate()-period+1);
@@ -553,7 +553,7 @@ function show(type,form=false){
  if(type==='quotes'){html+='<input id="pulseQuoteText" placeholder="Новая фраза дня">'+button('Добавить','save-quote');for(let i=0;i<quotes.length;i++)html+='<div class="pulse-entry pulse-card">'+esc(quotes[i])+button('Удалить','delete-quote',String(i))+'</div>'}
  html+='</div>';v.innerHTML=html;updateCountdowns();window.scrollTo(0,0);
 }
-function countdown(end){const seconds=Math.max(0,Math.floor((new Date(end).getTime()-Date.now())/1000));return [Math.floor(seconds/3600),Math.floor(seconds%3600/60),seconds%60].map(x=>String(x).padStart(2,'0')).join(':')}
+function countdown(end){const seconds=Math.max(0,Math.ceil((new Date(end).getTime()-Date.now())/1000));return [Math.floor(seconds/3600),Math.floor(seconds%3600/60),seconds%60].map(x=>String(x).padStart(2,'0')).join(':')}
 function updateCountdowns(){document.querySelectorAll('.pulse-countdown').forEach(el=>el.textContent=countdown(el.dataset.expire))}
 function input(id){return $(id)?.value.trim()||''}
 function action(a,id){
@@ -568,7 +568,7 @@ function action(a,id){
  if(a==='save-thought'){if(!input('pulseThoughtTitle'))return alert('Введите формулировку');thoughts.push({id:uid(),title:input('pulseThoughtTitle'),context:input('pulseThoughtContext'),emotion:input('pulseThoughtEmotion'),analogy:input('pulseThoughtAnalogy'),role:input('pulseThoughtRole'),conclusion:input('pulseThoughtConclusion'),action:input('pulseThoughtAction'),createdAt:now(),expiresAt:new Date(Date.now()+86400000).toISOString(),status:'active'});persist();log('Мысль','Создана мысль');show('thoughts')}
  if(a==='toggle-thought'){const t=thoughts.find(x=>x.id===id);if(!t)return;if(t.status==='active'){t.status='archived';t.archivedAt=now()}else{t.status='active';t.expiresAt=new Date(Date.now()+86400000).toISOString()}persist();log('Мысль',t.status);show('thoughts')}
  if(a==='delete-thought'){if(confirm('Удалить мысль?')){thoughts=thoughts.filter(x=>x.id!==id);persist();show('thoughts')}}
- if(a==='thought-task'){const t=thoughts.find(x=>x.id===id);if(t){vhide();$('addFullTaskBtn')?.click();setTimeout(()=>{if($('taskInput'))$('taskInput').value=t.title;if($('taskDescription'))$('taskDescription').value=t.action||t.conclusion||''},0)}}
+ if(a==='thought-task'){const t=thoughts.find(x=>x.id===id);if(t){vhide();const open=$('addFullTaskBtn')||$('addTaskBtn');if(open)open.click();setTimeout(()=>{const field=$('taskInput');if(field){field.value=t.title;field.dispatchEvent(new Event('input',{bubbles:true}))}const desc=$('taskDescription');if(desc)desc.value=t.action||t.conclusion||''},80)}}
  if(a==='save-quote'){if(input('pulseQuoteText')){quotes.push(input('pulseQuoteText'));write('quotes',quotes);show('quotes')}}
  if(a==='delete-quote'){quotes.splice(Number(id),1);write('quotes',quotes);show('quotes')}
 }
@@ -583,9 +583,9 @@ function init(){
  $('addNav')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();menu.classList.toggle('hidden')},true);document.addEventListener('pointerdown',e=>{if(!menu.contains(e.target)&&!e.target.closest('#addNav'))menu.classList.add('hidden')},true);document.addEventListener('keydown',e=>{if(e.key==='Escape')menu.classList.add('hidden')});
  menu.addEventListener('click',e=>{const b=e.target.closest('[data-pulse]');if(!b)return;menu.classList.add('hidden');if(b.dataset.pulse==='create-task'){document.getElementById('addFullTaskBtn')?.click()}else{e.stopPropagation();action(b.dataset.pulse)}},true);
  const quoteButton=document.createElement('button');quoteButton.className='wide primary';quoteButton.textContent='Редактировать фразы дня';quoteButton.onclick=()=>show('quotes');settings.append(quoteButton);
- document.addEventListener('click',e=>{const b=e.target.closest('[data-pulse]');if(!b||b.closest('#pulseAddMenu'))return;action(b.dataset.pulse,b.dataset.id)});
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-pulse]');if(!b||b.closest('#pulseAddMenu'))return;menu.classList.add('hidden');action(b.dataset.pulse,b.dataset.id)});document.addEventListener('change',e=>{if(e.target?.id==='pulseNoteDate'){window.pulseNotesDay=e.target.value;show('notes')}});
  ['homeNav','tasksNav','projectsNav','profileSettings','profileHistory'].forEach(id=>$(id)?.addEventListener('click',()=>{$('pulseExtraView').classList.add('hidden')}));
- const hdr=homeView.querySelector('h1');if(hdr){hdr.textContent='PULSE';hdr.classList.add('pulse-brand')}const eyebrow=homeView.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='DASHBOARD';
+ const hdr=homeView.querySelector('h1');if(hdr){hdr.textContent='PULSE';hdr.classList.add('pulse-brand')}const brand=homeView.querySelector('header .eyebrow');if(brand){brand.textContent='PULSE';brand.classList.add('pulse-brand')}const eyebrow=homeView.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='DASHBOARD';
  const activity=act?.closest('.panel');if(activity){const h=activity.querySelector('.panel-title span');if(h)h.innerHTML='<select id="pulsePeriod" aria-label="Период"><option value="7">7 дней</option><option value="30">30 дней</option><option value="90">3 месяца</option><option value="365">Год</option></select>';activity.querySelector('#pulsePeriod')?.addEventListener('change',e=>{period=Number(e.target.value);home()})}
  home();setInterval(()=>{updateCountdowns();animateQuote();expire()},100);setInterval(()=>{if(!$('homeView').classList.contains('hidden'))home()},12000);
 }
