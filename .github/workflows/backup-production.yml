@@ -1,0 +1,39 @@
+name: Backup production manual-install ZIP
+
+on:
+  push:
+    paths:
+      - '.github/workflows/backup-production.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout production source
+        uses: actions/checkout@v4
+      - name: Package root-ready production files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f public/index.html
+          test -f public/manifest.json
+          test -f public/sw.js
+          cd public
+          zip -q -r ../Pulse_Production_Manual_Install.zip . -x 'preview/*' 'preview/**'
+          cd ..
+          unzip -Z -1 Pulse_Production_Manual_Install.zip | grep -Fxq 'index.html'
+          unzip -Z -1 Pulse_Production_Manual_Install.zip | grep -Fxq 'manifest.json'
+          unzip -Z -1 Pulse_Production_Manual_Install.zip | grep -Fxq 'sw.js'
+          ! unzip -Z -1 Pulse_Production_Manual_Install.zip | grep -Eq '^(public/|preview/)'
+          sha256sum Pulse_Production_Manual_Install.zip
+      - name: Upload manual-install backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pulse_Production_Manual_Install
+          path: Pulse_Production_Manual_Install.zip
+          if-no-files-found: error
+          retention-days: 90
