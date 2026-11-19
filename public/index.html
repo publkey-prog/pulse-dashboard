@@ -154,7 +154,7 @@
 <section class="panel"><div class="panel-title"><h2>Активность</h2><span>7 дней</span></div><div id="activityChart" class="chart"></div><div id="activityDays" class="days"></div><div class="streak-row">🔥 Серия: <b id="streakDays">0</b> дней</div></section></section>
 <section id="tasksView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Задачи</h1></div><button id="addFullTaskBtn" class="primary">+ Задача</button></header><div class="task-summary"><div><span>Всего</span><b id="tasksTotal">0</b></div><div><span>Срочно</span><b id="tasksUrgent">0</b></div><div><span>Готово</span><b id="tasksDone">0</b></div></div><div class="task-filters"><button class="filter-btn active" data-filter="today">Сегодня</button><button class="filter-btn" data-filter="urgent">Срочно</button><button class="filter-btn" data-filter="future">Календарь</button><button class="filter-btn" data-filter="done">Готово</button><button class="filter-btn" data-filter="overdue">Просроченные</button><button class="filter-btn" data-filter="deleted">Удалённые</button></div><div id="pulseTaskCalendar" class="pulse-calendar hidden"><label>Задачи на дату</label><input type="date" id="pulseTaskDate"></div><div id="fullTaskList"></div><div id="fullTaskEmpty" class="empty hidden">Задач по этому фильтру нет.</div></section>
 <section id="projectsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Проекты</h1></div><button id="addProjectBtn" class="primary">+ Проект</button></header><div class="project-summary project-filters"><button class="project-filter-btn" data-project-filter="overdue"><span>Просроченные</span><b id="projectsOverdue">0</b></button><button class="project-filter-btn active" data-project-filter="active"><span>Активных</span><b id="projectsActive">0</b></button><button class="project-filter-btn" data-project-filter="done"><span>Завершено</span><b id="projectsDone">0</b></button></div><div id="projectList"></div><div id="projectEmpty" class="empty hidden">Проектов пока нет.</div></section>
-<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Версия с новым планированием, Focus и восстановленной логикой проектов.</small><p id="pulseBuildVersion">Версия: preview-20261119-fix2</p><p id="pulseBuildUpdated">Дата сборки: 19.11.2026, 04:17 (Киев)</p></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div><div class="settings-card"><h2>Данные песочницы</h2><p id="savedCount"></p><p id="savedProjectCount"></p><small>Preview использует отдельное хранилище и не изменяет рабочие данные production.</small></div></section>
+<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Версия с новым планированием, Focus и восстановленной логикой проектов.</small><p id="pulseBuildVersion">Версия: production-20261119-income-markers-v1</p><p id="pulseBuildUpdated">Дата обновления: 19.11.2026, 06:00 (Киев)</p></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div><div class="settings-card"><h2>Данные песочницы</h2><p id="savedCount"></p><p id="savedProjectCount"></p><small>Preview использует отдельное хранилище и не изменяет рабочие данные production.</small></div></section>
 <section id="historyView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>История</h1></div><button id="backSettingsBtn" class="secondary">Настройки</button></header><div class="settings-card"><div class="panel-title"><h2>Журнал действий</h2><span id="historyCount"></span></div><div class="pulse-calendar"><label>События за дату</label><input type="date" id="pulseHistoryDate"><button id="pulseHistoryAll" type="button">Все события</button></div><div id="historyList" class="history-list"></div></div></section>
 </main>
 <nav class="bottom-nav"><button id="homeNav" class="active"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg><span>Главная</span></button><button id="projectsNav"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg><span>Проекты</span></button><button id="tasksNav"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Задачи</span></button><button id="addNav" class="add-nav" aria-label="Добавить"><span class="plus">+</span></button></nav>
@@ -544,18 +544,22 @@ function incomeGraph(rows){
  const line='<path d="'+path+'" fill="none" stroke="#61f5ac" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
  // Coincident timestamps retain their real x-position; stagger markers vertically
  // only when their cumulative totals would otherwise cover one another.
- const groups=new Map();
- series.forEach((point,i)=>{const key=point.event.t;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(i)});
+ // Cluster nearby points visually while keeping their actual time and cumulative value.
  const markerPositions=series.map(point=>({px:x(point.event.t),py:y(point.value),realX:x(point.event.t),realY:y(point.value)}));
- groups.forEach(indices=>{
+ const clusters=[];
+ markerPositions.forEach((pos,i)=>{
+  const cluster=clusters.find(group=>group.some(idx=>Math.abs(markerPositions[idx].realX-pos.realX)<23&&Math.abs(markerPositions[idx].realY-pos.realY)<23));
+  if(cluster)cluster.push(i);else clusters.push([i]);
+ });
+ clusters.forEach(indices=>{
   if(indices.length<2)return;
-  const center=x(series[indices[0]].event.t),step=15;
+  const step=23,center=indices.reduce((sum,idx)=>sum+markerPositions[idx].realX,0)/indices.length;
   const half=(indices.length-1)*step/2;
-  const shift=Math.max(left+7-(center-half),Math.min(0,right-7-(center+half)));
+  const offset=Math.max(left+11-(center-half),Math.min(0,right-11-(center+half)));
   indices.forEach((idx,k)=>{
    const pos=markerPositions[idx];
-   pos.px=Math.max(left+7,Math.min(right-7,center+(k-(indices.length-1)/2)*step+shift));
-   pos.py=Math.max(top+7,Math.min(bottom-7,pos.realY+(k%2===0?-1:1)*7));
+   pos.px=Math.max(left+11,Math.min(right-11,center+(k-(indices.length-1)/2)*step+offset));
+   pos.py=Math.max(top+11,Math.min(bottom-11,pos.realY+(k%2===0?-1:1)*Math.ceil(k/2)*11));
   });
  });
  const connectors=markerPositions.map(pos=>{
@@ -563,8 +567,9 @@ function incomeGraph(rows){
   return '<line x1="'+pos.realX+'" y1="'+pos.realY+'" x2="'+pos.px+'" y2="'+pos.py+'" stroke="#a5ffca" stroke-opacity=".7" stroke-width="1" stroke-dasharray="2 2" pointer-events="none"/>';
  }).join('');
  const dots=series.map((point,i)=>{
-  const label=fmt(point.event.amount)+' ₴ · '+date(point.event.item.at)+' · итог '+fmt(point.value)+' ₴';
-  return '<circle class="pulse-income-point" tabindex="0" role="button" aria-label="'+esc(label)+'" data-time="'+esc(new Date(point.event.t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}))+'" data-amount="'+esc(fmt(point.event.amount))+'" data-total="'+esc(fmt(point.value))+'" cx="'+markerPositions[i].px+'" cy="'+markerPositions[i].py+'" r="6" fill="#a5ffca" stroke="#0e1723" stroke-width="2"><title>'+esc(label)+'</title></circle>';
+  const number=i+1,pos=markerPositions[i];
+  const label='Операция №'+number+' · '+fmt(point.event.amount)+' ₴ · '+date(point.event.item.at)+' · итог '+fmt(point.value)+' ₴';
+  return '<g class="pulse-income-marker"><circle class="pulse-income-point" tabindex="0" role="button" aria-label="'+esc(label)+'" data-time="'+esc(new Date(point.event.t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}))+'" data-amount="'+esc(fmt(point.event.amount))+'" data-total="'+esc(fmt(point.value))+'" cx="'+pos.px+'" cy="'+pos.py+'" r="10" fill="#a5ffca" stroke="#0e1723" stroke-width="2"><title>'+esc(label)+'</title></circle><text x="'+pos.px+'" y="'+(pos.py+.5)+'" text-anchor="middle" dominant-baseline="middle" font-size="'+(number>99?8:number>9?9:11)+'" font-weight="700" fill="#0e1723" pointer-events="none">'+number+'</text></g>';
  }).join('');
  const fmtAxis=t=>new Date(t).toLocaleString('ru-RU',days===1?{hour:'2-digit',minute:'2-digit'}:{day:'2-digit',month:'2-digit'});
  const labels='<text x="'+left+'" y="145" fill="#9cacc0" font-size="10">'+fmtAxis(startMs)+'</text><text x="'+((left+right)/2)+'" y="145" text-anchor="middle" fill="#9cacc0" font-size="10">'+fmtAxis((startMs+safeEnd)/2)+'</text><text x="'+right+'" y="145" text-anchor="end" fill="#9cacc0" font-size="10">'+fmtAxis(safeEnd)+'</text>';
@@ -615,11 +620,11 @@ function home(){
 
  updateCountdowns();
 }
-const PULSE_PREVIEW_VERSION='preview-20261119-income-v4',PULSE_PREVIEW_BUILT_AT='2026-11-19T02:17:03.400Z';
+const PULSE_PREVIEW_VERSION='production-20261119-income-markers-v1',PULSE_PREVIEW_BUILT_AT='2026-11-19T04:00:00.000Z';
 function loadPulseBuildInfo(){
  const v=$('pulseBuildVersion'),u=$('pulseBuildUpdated');if(!v||!u)return;
  v.textContent='Версия: '+PULSE_PREVIEW_VERSION;
- u.textContent='Дата сборки: '+new Date(PULSE_PREVIEW_BUILT_AT).toLocaleString('ru-RU',{timeZone:'Europe/Kyiv',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Киев)';
+ u.textContent='Дата обновления: '+new Date(PULSE_PREVIEW_BUILT_AT).toLocaleString('ru-RU',{timeZone:'Europe/Kyiv',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Киев)';
 }
 
 function show(type,form=false){
