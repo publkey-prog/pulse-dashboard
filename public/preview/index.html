@@ -148,7 +148,7 @@
 <section class="panel"><div class="panel-title"><h2>Активность</h2><span>7 дней</span></div><div id="activityChart" class="chart"></div><div id="activityDays" class="days"></div><div class="streak-row">🔥 Серия: <b id="streakDays">0</b> дней</div></section></section>
 <section id="tasksView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Задачи</h1></div><button id="addFullTaskBtn" class="primary">+ Задача</button></header><div class="task-summary"><div><span>Всего</span><b id="tasksTotal">0</b></div><div><span>Срочно</span><b id="tasksUrgent">0</b></div><div><span>Готово</span><b id="tasksDone">0</b></div></div><div class="task-filters"><button class="filter-btn active" data-filter="today">Сегодня</button><button class="filter-btn" data-filter="urgent">Срочно</button><button class="filter-btn" data-filter="future">Календарь</button><button class="filter-btn" data-filter="done">Готово</button><button class="filter-btn" data-filter="overdue">Просроченные</button><button class="filter-btn" data-filter="deleted">Удалённые</button></div><div id="pulseTaskCalendar" class="pulse-calendar hidden"><label>Задачи на дату</label><input type="date" id="pulseTaskDate"></div><div id="fullTaskList"></div><div id="fullTaskEmpty" class="empty hidden">Задач по этому фильтру нет.</div></section>
 <section id="projectsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Проекты</h1></div><button id="addProjectBtn" class="primary">+ Проект</button></header><div class="project-summary project-filters"><button class="project-filter-btn" data-project-filter="overdue"><span>Просроченные</span><b id="projectsOverdue">0</b></button><button class="project-filter-btn active" data-project-filter="active"><span>Активных</span><b id="projectsActive">0</b></button><button class="project-filter-btn" data-project-filter="done"><span>Завершено</span><b id="projectsDone">0</b></button></div><div id="projectList"></div><div id="projectEmpty" class="empty hidden">Проектов пока нет.</div></section>
-<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Версия с новым планированием, Focus и восстановленной логикой проектов.</small><p id="pulseBuildVersion">Версия: загрузка…</p><p id="pulseBuildUpdated">Последнее обновление: загрузка…</p></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div><div class="settings-card"><h2>Данные песочницы</h2><p id="savedCount"></p><p id="savedProjectCount"></p><small>Preview использует отдельное хранилище и не изменяет рабочие данные production.</small></div></section>
+<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Версия с новым планированием, Focus и восстановленной логикой проектов.</small><p id="pulseBuildVersion">Версия: preview-20261119-fix2</p><p id="pulseBuildUpdated">Дата сборки: 19.11.2026, 04:17 (Киев)</p></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div><div class="settings-card"><h2>Данные песочницы</h2><p id="savedCount"></p><p id="savedProjectCount"></p><small>Preview использует отдельное хранилище и не изменяет рабочие данные production.</small></div></section>
 <section id="historyView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>История</h1></div><button id="backSettingsBtn" class="secondary">Настройки</button></header><div class="settings-card"><div class="panel-title"><h2>Журнал действий</h2><span id="historyCount"></span></div><div class="pulse-calendar"><label>События за дату</label><input type="date" id="pulseHistoryDate"><button id="pulseHistoryAll" type="button">Все события</button></div><div id="historyList" class="history-list"></div></div></section>
 </main>
 <nav class="bottom-nav"><button id="homeNav" class="active"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg><span>Главная</span></button><button id="projectsNav"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg><span>Проекты</span></button><button id="tasksNav"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Задачи</span></button><button id="addNav" class="add-nav" aria-label="Добавить"><span class="plus">+</span></button></nav>
@@ -503,13 +503,13 @@ const localDay=d=>new Date(d).toLocaleDateString('sv-SE');let incomeDay=localDay
 function incomeRows(){return income.filter(x=>x.at&&!isNaN(new Date(x.at))&&localDay(x.at)===incomeDay)}
 function incomeGraph(rows){
  const selected=new Date(incomeDay+'T12:00:00'),days=incomePeriod,values=Array(days).fill(0),buckets=Array.from({length:days},()=>[]);
- for(const item of income){if(!item.at||!isFinite(new Date(item.at).getTime())||item.currency&&item.currency!=='UAH')continue;const d=new Date(item.at),delta=Math.round((selected-new Date(d.getFullYear(),d.getMonth(),d.getDate(),12))/86400000);if(delta>=0&&delta<days){values[days-1-delta]+=Number(item.amount)||0;buckets[days-1-delta].push(item)}}
+ for(const item of income){if(!item.at||!isFinite(new Date(item.at).getTime())||(item.currency&&item.currency!=='UAH'))continue;const d=new Date(item.at),delta=Math.round((selected-new Date(d.getFullYear(),d.getMonth(),d.getDate(),12))/86400000);if(delta>=0&&delta<days){values[days-1-delta]+=Number(item.amount)||0;buckets[days-1-delta].push(item)}}
  const max=Math.max(1,...values),left=55,right=335,top=15,bottom=125;
- const pts=values.map((v,i)=>[days===1?195:left+i*(right-left)/(days-1),bottom-v/max*(bottom-top)]);
+ const pts=values.map((v,i)=>[left+i*(right-left)/(days-1),bottom-v/max*(bottom-top)]);
  const ticks=[0,.5,1].map(f=>{const y=bottom-f*(bottom-top);return '<line x1="'+left+'" y1="'+y+'" x2="'+right+'" y2="'+y+'" stroke="#304052" stroke-dasharray="3 5"/><text x="47" y="'+(y+4)+'" text-anchor="end" fill="#9cacc0" font-size="11">'+Math.round(max*f).toLocaleString('ru-RU')+'</text>'}).join('');
- const line='<polyline points="'+pts.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#74f7ad" stroke-width="2.5"/>';
- const dots=pts.map((p,i)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="#91ffbf" stroke="#10271d" stroke-width="1.5"><title>'+values[i].toLocaleString('ru-RU')+' ₴'+(buckets[i].length?' · '+buckets[i].map(x=>esc(date(x.at))).join(', '):'')+'</title></circle>').join('');
- return '<div class="pulse-graph"><svg viewBox="0 0 350 148" preserveAspectRatio="xMidYMid meet">'+ticks+line+dots+'<text x="'+left+'" y="143" fill="#9cacc0" font-size="10">'+(days===7?'7 дней':'30 дней')+' · до '+esc(incomeDay)+'</text></svg></div>';
+ const segments=[];let segment=[];for(let i=0;i<days;i++){if(buckets[i].length){segment.push(pts[i].join(','))}else if(segment.length){if(segment.length>1)segments.push('<polyline points="'+segment.join(' ')+'" fill="none" stroke="#74f7ad" stroke-width="2.5"/>');segment=[]}}if(segment.length>1)segments.push('<polyline points="'+segment.join(' ')+'" fill="none" stroke="#74f7ad" stroke-width="2.5"/>');
+ const dots=pts.map((p,i)=>buckets[i].map(item=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="5" fill="#91ffbf" stroke="#10271d" stroke-width="2"><title>'+esc(String(item.amount))+' ₴ · '+esc(date(item.at))+'</title></circle>').join('')).join('');
+ return '<div class="pulse-graph"><svg viewBox="0 0 350 148" preserveAspectRatio="xMidYMid meet">'+ticks+segments.join('')+dots+'<text x="'+left+'" y="143" fill="#9cacc0" font-size="10">'+(days===7?'7 дней':'30 дней')+' · до '+esc(incomeDay)+'</text></svg></div>';
 }
 function log(title,detail){let h=read('extra_history',[]);h.unshift({id:uid(),at:now(),title,detail});write('extra_history',h)}
 function persist(){write('income',income);write('thoughts',thoughts);write('notes',notes)}
@@ -553,21 +553,13 @@ function home(){
 
  updateCountdowns();
 }
-let pulseBuildLoaded=false;
-async function loadPulseBuildInfo(){
- if(pulseBuildLoaded)return;pulseBuildLoaded=true;
- try{
-  const response=await fetch('https://api.github.com/repos/publkey-prog/pulse-dashboard/commits?path=public%2Fpreview%2Findex.html&per_page=1',{cache:'no-store'});
-  if(!response.ok)throw Error('metadata unavailable');
-  const commits=await response.json(),item=commits[0];if(!item)throw Error('no commit');
-  const d=new Date(item.commit.committer.date);
-  $('pulseBuildVersion').textContent='Версия: preview-'+item.sha.slice(0,7);
-  $('pulseBuildUpdated').textContent='Последнее обновление: '+d.toLocaleString('ru-RU',{timeZone:'Europe/Kyiv',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Киев)';
- }catch(e){
-  $('pulseBuildVersion').textContent='Версия: недоступна';
-  $('pulseBuildUpdated').textContent='Последнее обновление: недоступно';
- }
+const PULSE_PREVIEW_VERSION='preview-20261119-fix2',PULSE_PREVIEW_BUILT_AT='2026-11-19T02:17:03.400Z';
+function loadPulseBuildInfo(){
+ const v=$('pulseBuildVersion'),u=$('pulseBuildUpdated');if(!v||!u)return;
+ v.textContent='Версия: '+PULSE_PREVIEW_VERSION;
+ u.textContent='Дата сборки: '+new Date(PULSE_PREVIEW_BUILT_AT).toLocaleString('ru-RU',{timeZone:'Europe/Kyiv',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Киев)';
 }
+
 function show(type,form=false){
  selected=type;expire();const v=$('pulseExtraView');if(!v)return;
  ['homeView','tasksView','projectsView','settingsView','historyView'].forEach(id=>$(id)?.classList.add('hidden'));
