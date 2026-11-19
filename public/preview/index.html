@@ -581,13 +581,13 @@ function home(){
  }
  if(inc){
  const rows=incomeRows(),sum=rows.filter(x=>!x.currency||x.currency==='UAH').reduce((a,x)=>a+(Number(x.amount)||0),0);
- inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><button type="button" data-pulse="income-day" class="'+(incomePeriod===1?'selected':'')+'">День</button><button type="button" data-pulse="income-week" class="'+(incomePeriod===7?'selected':'')+'">Неделя</button><button type="button" data-pulse="income-month" class="'+(incomePeriod===30?'selected':'')+'">Месяц</button></div></div><div class="pulse-income-date-row"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div><div class="pulse-income-total">'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</div>'+incomeGraph(rows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
+ inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><button type="button" data-pulse="income-day" class="'+(incomePeriod===1?'selected':'')+'">День</button><button type="button" data-pulse="income-week" class="'+(incomePeriod===7?'selected':'')+'">Неделя</button><button type="button" data-pulse="income-month" class="'+(incomePeriod===30?'selected':'')+'">Месяц</button></div></div><div class="pulse-income-date-row"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div><div class="pulse-income-kpis"><div class="pulse-income-kpi pulse-income-kpi-main"><small>Доход</small><strong>'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</strong></div><div class="pulse-income-kpi"><small>Операций</small><strong>'+rows.length+'</strong></div><div class="pulse-income-kpi"><small>Средний</small><strong>'+(rows.length?(sum/rows.length).toLocaleString('ru-RU',{maximumFractionDigits:2}):'0')+' ₴</strong></div></div>'+incomeGraph(rows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
  inc.querySelector('#pulseHomeIncomeDay')?.addEventListener('change',e=>{incomeDay=e.target.value||localDay(Date.now());home()});
  }
 
  updateCountdowns();
 }
-const PULSE_PREVIEW_VERSION='preview-20261119-fix2',PULSE_PREVIEW_BUILT_AT='2026-11-19T02:17:03.400Z';
+const PULSE_PREVIEW_VERSION='preview-20261119-income-v4',PULSE_PREVIEW_BUILT_AT='2026-11-19T02:17:03.400Z';
 function loadPulseBuildInfo(){
  const v=$('pulseBuildVersion'),u=$('pulseBuildUpdated');if(!v||!u)return;
  v.textContent='Версия: '+PULSE_PREVIEW_VERSION;
