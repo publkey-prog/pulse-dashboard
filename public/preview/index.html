@@ -507,6 +507,10 @@ const date=s=>new Date(s).toLocaleString('ru-RU');
 let income=read('income',[]),thoughts=read('thoughts',[]),notes=read('notes',[]),quotes=read('quotes',['Каждый день — возможность сделать шаг вперёд.']),selected='notes',period=7,activityPeriod=7;
 const localDay=d=>new Date(d).toLocaleDateString('sv-SE');let incomeDay=localDay(Date.now()),incomePeriod=1;
 function incomeRows(){return income.filter(x=>x.at&&!isNaN(new Date(x.at))&&localDay(x.at)===incomeDay)}
+function validIncome(item){return item.at&&Number.isFinite(new Date(item.at).getTime())&&new Date(item.at).getTime()<=Date.now()&&(!item.currency||item.currency==='UAH')&&Number.isFinite(Number(item.amount))}
+function incomeInRange(startMs,endMs){return income.filter(item=>validIncome(item)&&new Date(item.at).getTime()>=startMs&&new Date(item.at).getTime()<endMs)}
+function todayIncomeRows(){const d=new Date();d.setHours(0,0,0,0);const end=new Date(d);end.setDate(end.getDate()+1);return incomeInRange(d.getTime(),end.getTime())}
+function periodIncomeRows(){const d=new Date(incomeDay+'T00:00:00');if(!Number.isFinite(d.getTime()))return [];d.setDate(d.getDate()-(incomePeriod-1));const end=new Date(incomeDay+'T00:00:00');end.setDate(end.getDate()+1);return incomeInRange(d.getTime(),end.getTime())}
 function incomeGraph(rows){
  const days=incomePeriod,day=new Date(incomeDay+'T00:00:00');
  if(!Number.isFinite(day.getTime()))return '';
@@ -514,10 +518,7 @@ function incomeGraph(rows){
  const startMs=start.getTime(),dayEnd=new Date(day);dayEnd.setDate(dayEnd.getDate()+1);
  const nowMs=Date.now(),endMs=Math.min(dayEnd.getTime(),nowMs);
  const safeEnd=Math.max(startMs+1,endMs);
- const events=income.filter(item=>{
-  const t=new Date(item.at).getTime();
-  return item.at&&Number.isFinite(t)&&t>=startMs&&t<=endMs&&(!item.currency||item.currency==='UAH')&&Number.isFinite(Number(item.amount));
- }).map((item,i)=>({item,t:new Date(item.at).getTime(),amount:Number(item.amount),i})).sort((a,b)=>a.t-b.t||a.i-b.i);
+ const events=periodIncomeRows().map((item,i)=>({item,t:new Date(item.at).getTime(),amount:Number(item.amount),i})).sort((a,b)=>a.t-b.t||a.i-b.i);
  let running=0;
  const series=events.map(event=>({event,value:(running+=event.amount)}));
  const values=[0,...series.map(point=>point.value)],low=Math.min(0,...values),high=Math.max(1,...values),range=high-low;
@@ -586,7 +587,8 @@ function home(){
  else{const q=quotes.length?quotes[Math.floor(Date.now()/12000)%quotes.length]:'Добавьте фразу в настройках';hero.innerHTML='<span class="pulse-small">Фраза дня</span><div id="pulseDailyQuote" data-animated="true" data-text="'+esc(q)+'"></div>';if(quoteAnimationText!==q)quoteAnimationText='';animateQuote()}
  }
  if(inc){
- const rows=incomeRows(),todayRows=income.filter(x=>x.at&&Number.isFinite(new Date(x.at).getTime())&&localDay(x.at)===localDay(Date.now())&&(!x.currency||x.currency==='UAH')),sum=todayRows.reduce((a,x)=>a+(Number(x.amount)||0),0);const periodStart=new Date(incomeDay+'T00:00:00');periodStart.setDate(periodStart.getDate()-(incomePeriod-1));const periodEnd=new Date(incomeDay+'T00:00:00');periodEnd.setDate(periodEnd.getDate()+1);const periodRows=income.filter(x=>x.at&&Number.isFinite(new Date(x.at).getTime())&&new Date(x.at)>=periodStart&&new Date(x.at)<periodEnd&&new Date(x.at)<=new Date()&&(!x.currency||x.currency==='UAH'));const periodSum=periodRows.reduce((a,x)=>a+(Number(x.amount)||0),0);
+ const todayRows=todayIncomeRows(),sum=todayRows.reduce((a,x)=>a+Number(x.amount),0);
+ const periodRows=periodIncomeRows(),periodSum=periodRows.reduce((a,x)=>a+Number(x.amount),0);
  inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><button type="button" data-pulse="income-day" class="'+(incomePeriod===1?'selected':'')+'">День</button><button type="button" data-pulse="income-week" class="'+(incomePeriod===7?'selected':'')+'">Неделя</button><button type="button" data-pulse="income-month" class="'+(incomePeriod===30?'selected':'')+'">Месяц</button></div></div><div class="pulse-income-date-row"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div><div class="pulse-income-kpis"><div class="pulse-income-kpi pulse-income-kpi-main"><small>Доход сегодня</small><strong>'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</strong></div><div class="pulse-income-kpi"><small>Операций</small><strong>'+periodRows.length+'</strong></div><div class="pulse-income-kpi"><small>Средний</small><strong>'+(periodRows.length?(periodSum/periodRows.length).toLocaleString('ru-RU',{maximumFractionDigits:2}):'0')+' ₴</strong></div></div>'+incomeGraph(rows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
  inc.querySelector('#pulseHomeIncomeDay')?.addEventListener('change',e=>{incomeDay=e.target.value||localDay(Date.now());home()});
  }
