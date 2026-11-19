@@ -117,7 +117,7 @@
 #pulseAddMenu{max-height:min(70vh,430px);overflow:auto;padding:16px!important;border:1px solid #354459;border-radius:18px}
 #pulseAddMenu button{background:#253348;color:#e9f1ff;border:1px solid #43536a;border-radius:12px;padding:12px;min-height:44px;margin:4px}
 @media(min-width:700px){#pulseIncome .pulse-graph{max-width:100%}#pulseIncome .pulse-graph svg{max-height:270px}}
-</style><style>#homeView header .eyebrow.pulse-brand{display:block!important;font-size:clamp(24px,5vw,38px)!important;letter-spacing:.16em!important;font-weight:900!important;line-height:1.15!important;color:#b4fbd2!important;opacity:1!important}#pulseHero .pulse-countdown{font-size:24px!important}#pulseIncome .pulse-graph{height:auto!important;min-height:148px}#pulseIncome .pulse-graph svg{height:auto!important;min-height:148px}#pulseAddMenu.hidden{display:none!important}.pulse-screen .pulse-card>*{margin-top:0}.pulse-screen .pulse-card>*+*{margin-top:10px}</style><style>#homeView header .eyebrow:not(.pulse-brand){font-size:11px!important;letter-spacing:.25em!important;color:#90a0b7!important;font-weight:500!important}#homeView header h1.pulse-brand{font-size:clamp(29px,7vw,40px)!important;letter-spacing:.16em!important}#pulseIncome .pulse-income-total{display:block!important;font-size:28px!important;font-weight:800!important;color:#f4f8ff!important;margin:14px 0!important}</style><style>
+</style><style>#homeView header .eyebrow.pulse-brand{display:block!important;font-size:clamp(24px,5vw,38px)!important;letter-spacing:.16em!important;font-weight:900!important;line-height:1.15!important;color:#b4fbd2!important;opacity:1!important}#pulseHero .pulse-countdown{font-size:24px!important}#pulseIncome .pulse-graph{height:auto!important;min-height:148px}#pulseIncome .pulse-graph svg{height:auto!important;min-height:148px}#pulseAddMenu.hidden{display:none!important}.pulse-screen .pulse-card>*{margin-top:0}.pulse-screen .pulse-card>*+*{margin-top:10px}</style><style>#pulseIncome .pulse-income-date-row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:nowrap}#pulseIncome .pulse-income-date-row input{flex:1;min-width:0;max-width:100%;height:40px}#pulseIncome .pulse-income-date-row button{flex:none;white-space:nowrap;min-height:40px;padding:8px 10px;border:1px solid #40516b;border-radius:8px;background:#273449;color:#e8f0fa}#pulseIncome .pulse-income-period{flex-wrap:nowrap;gap:6px}</style><style>#homeView header .eyebrow:not(.pulse-brand){font-size:11px!important;letter-spacing:.25em!important;color:#90a0b7!important;font-weight:500!important}#homeView header h1.pulse-brand{font-size:clamp(29px,7vw,40px)!important;letter-spacing:.16em!important}#pulseIncome .pulse-income-total{display:block!important;font-size:28px!important;font-weight:800!important;color:#f4f8ff!important;margin:14px 0!important}</style><style>
 /* Scoped layout corrections: preview-only, notes and thoughts cards */
 #pulseExtraView .pulse-screen{display:flex;flex-direction:column;gap:14px;min-width:0}
 #pulseExtraView .pulse-screen>.pulse-toolbar{margin:0 0 2px;min-width:0}
@@ -148,7 +148,7 @@
 <section class="panel"><div class="panel-title"><h2>Активность</h2><span>7 дней</span></div><div id="activityChart" class="chart"></div><div id="activityDays" class="days"></div><div class="streak-row">🔥 Серия: <b id="streakDays">0</b> дней</div></section></section>
 <section id="tasksView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Задачи</h1></div><button id="addFullTaskBtn" class="primary">+ Задача</button></header><div class="task-summary"><div><span>Всего</span><b id="tasksTotal">0</b></div><div><span>Срочно</span><b id="tasksUrgent">0</b></div><div><span>Готово</span><b id="tasksDone">0</b></div></div><div class="task-filters"><button class="filter-btn active" data-filter="today">Сегодня</button><button class="filter-btn" data-filter="urgent">Срочно</button><button class="filter-btn" data-filter="future">Календарь</button><button class="filter-btn" data-filter="done">Готово</button><button class="filter-btn" data-filter="overdue">Просроченные</button><button class="filter-btn" data-filter="deleted">Удалённые</button></div><div id="pulseTaskCalendar" class="pulse-calendar hidden"><label>Задачи на дату</label><input type="date" id="pulseTaskDate"></div><div id="fullTaskList"></div><div id="fullTaskEmpty" class="empty hidden">Задач по этому фильтру нет.</div></section>
 <section id="projectsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Проекты</h1></div><button id="addProjectBtn" class="primary">+ Проект</button></header><div class="project-summary project-filters"><button class="project-filter-btn" data-project-filter="overdue"><span>Просроченные</span><b id="projectsOverdue">0</b></button><button class="project-filter-btn active" data-project-filter="active"><span>Активных</span><b id="projectsActive">0</b></button><button class="project-filter-btn" data-project-filter="done"><span>Завершено</span><b id="projectsDone">0</b></button></div><div id="projectList"></div><div id="projectEmpty" class="empty hidden">Проектов пока нет.</div></section>
-<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Версия с новым планированием, Focus и восстановленной логикой проектов.</small></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div><div class="settings-card"><h2>Данные песочницы</h2><p id="savedCount"></p><p id="savedProjectCount"></p><small>Preview использует отдельное хранилище и не изменяет рабочие данные production.</small></div></section>
+<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Версия с новым планированием, Focus и восстановленной логикой проектов.</small><p id="pulseBuildVersion">Версия: загрузка…</p><p id="pulseBuildUpdated">Последнее обновление: загрузка…</p></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div><div class="settings-card"><h2>Данные песочницы</h2><p id="savedCount"></p><p id="savedProjectCount"></p><small>Preview использует отдельное хранилище и не изменяет рабочие данные production.</small></div></section>
 <section id="historyView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>История</h1></div><button id="backSettingsBtn" class="secondary">Настройки</button></header><div class="settings-card"><div class="panel-title"><h2>Журнал действий</h2><span id="historyCount"></span></div><div class="pulse-calendar"><label>События за дату</label><input type="date" id="pulseHistoryDate"><button id="pulseHistoryAll" type="button">Все события</button></div><div id="historyList" class="history-list"></div></div></section>
 </main>
 <nav class="bottom-nav"><button id="homeNav" class="active"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg><span>Главная</span></button><button id="projectsNav"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg><span>Проекты</span></button><button id="tasksNav"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Задачи</span></button><button id="addNav" class="add-nav" aria-label="Добавить"><span class="plus">+</span></button></nav>
@@ -499,9 +499,18 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const uid=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random();
 const date=s=>new Date(s).toLocaleString('ru-RU');
 let income=read('income',[]),thoughts=read('thoughts',[]),notes=read('notes',[]),quotes=read('quotes',['Каждый день — возможность сделать шаг вперёд.']),selected='notes',period=7,activityPeriod=7;
-const localDay=d=>new Date(d).toLocaleDateString('sv-SE');let incomeDay=localDay(Date.now());
+const localDay=d=>new Date(d).toLocaleDateString('sv-SE');let incomeDay=localDay(Date.now()),incomePeriod=7;
 function incomeRows(){return income.filter(x=>x.at&&!isNaN(new Date(x.at))&&localDay(x.at)===incomeDay)}
-function incomeGraph(rows){const sorted=rows.slice().sort((a,b)=>new Date(a.at)-new Date(b.at));const left=42,right=335,top=14,bottom=125,max=Math.max(1,...sorted.map(x=>Number(x.amount)||0));const points=sorted.map((x,i)=>({x:sorted.length===1?188:left+i*(right-left)/(sorted.length-1),y:bottom-(Number(x.amount)||0)/max*(bottom-top),item:x}));return '<div class="pulse-graph"><svg viewBox="0 0 350 148" preserveAspectRatio="xMidYMid meet">'+[0,.5,1].map(f=>'<line x1="'+left+'" y1="'+(bottom-f*(bottom-top))+'" x2="'+right+'" y2="'+(bottom-f*(bottom-top))+'" stroke="#304052" stroke-dasharray="3 5"/>').join('')+(points.length>1?'<polyline points="'+points.map(p=>p.x+','+p.y).join(' ')+'" fill="none" stroke="#74f7ad" stroke-width="2"/>':'')+points.map(p=>'<circle cx="'+p.x+'" cy="'+p.y+'" r="5" fill="#91ffbf"><title>'+esc(p.item.amount)+' '+esc(p.item.currency||'UAH')+' · '+esc(date(p.item.at))+'</title></circle>').join('')+'<text x="42" y="144" fill="#9cacc0" font-size="11">'+esc(incomeDay)+'</text></svg></div>'}
+function incomeGraph(rows){
+ const selected=new Date(incomeDay+'T12:00:00'),days=incomePeriod,values=Array(days).fill(0),buckets=Array.from({length:days},()=>[]);
+ for(const item of income){if(!item.at||!isFinite(new Date(item.at).getTime())||item.currency&&item.currency!=='UAH')continue;const d=new Date(item.at),delta=Math.round((selected-new Date(d.getFullYear(),d.getMonth(),d.getDate(),12))/86400000);if(delta>=0&&delta<days){values[days-1-delta]+=Number(item.amount)||0;buckets[days-1-delta].push(item)}}
+ const max=Math.max(1,...values),left=55,right=335,top=15,bottom=125;
+ const pts=values.map((v,i)=>[days===1?195:left+i*(right-left)/(days-1),bottom-v/max*(bottom-top)]);
+ const ticks=[0,.5,1].map(f=>{const y=bottom-f*(bottom-top);return '<line x1="'+left+'" y1="'+y+'" x2="'+right+'" y2="'+y+'" stroke="#304052" stroke-dasharray="3 5"/><text x="47" y="'+(y+4)+'" text-anchor="end" fill="#9cacc0" font-size="11">'+Math.round(max*f).toLocaleString('ru-RU')+'</text>'}).join('');
+ const line='<polyline points="'+pts.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#74f7ad" stroke-width="2.5"/>';
+ const dots=pts.map((p,i)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="#91ffbf" stroke="#10271d" stroke-width="1.5"><title>'+values[i].toLocaleString('ru-RU')+' ₴'+(buckets[i].length?' · '+buckets[i].map(x=>esc(date(x.at))).join(', '):'')+'</title></circle>').join('');
+ return '<div class="pulse-graph"><svg viewBox="0 0 350 148" preserveAspectRatio="xMidYMid meet">'+ticks+line+dots+'<text x="'+left+'" y="143" fill="#9cacc0" font-size="10">'+(days===7?'7 дней':'30 дней')+' · до '+esc(incomeDay)+'</text></svg></div>';
+}
 function log(title,detail){let h=read('extra_history',[]);h.unshift({id:uid(),at:now(),title,detail});write('extra_history',h)}
 function persist(){write('income',income);write('thoughts',thoughts);write('notes',notes)}
 function expire(){let changed=false;for(const t of thoughts){if(t.status==='active'&&Date.now()>=new Date(t.expiresAt).getTime()){t.status='archived';t.archivedAt=now();log('Мысль архивирована',t.title);changed=true}}if(changed)persist()}
@@ -521,12 +530,12 @@ function animateQuote(){
  const el=$('pulseDailyQuote');if(!el||!el.dataset.animated)return;
  const text=el.dataset.text||'';if(!text)return;
  if(text!==quoteAnimationText){quoteAnimationText=text;quotePosition=0;quoteDirection=1;quoteHold=0;quoteLast=0}
- const t=Date.now();if(t-quoteLast<95)return;quoteLast=t;
+ const t=Date.now();if(t-quoteLast<95||quoteDirection===0)return;quoteLast=t;
  if(quoteHold>0){quoteHold-=95;return}
  quotePosition=Math.max(0,Math.min(text.length,quotePosition+quoteDirection));
  el.textContent=text.slice(0,quotePosition)+(quotePosition<text.length?'▍':'');
  if(quotePosition===text.length){quoteDirection=-1;quoteHold=2400}
- else if(quotePosition===0){quoteDirection=1;quoteHold=650}
+ else if(quotePosition===0){quoteDirection=0;quoteHold=0}
 }
 function home(){
  expire();
@@ -538,11 +547,26 @@ function home(){
  }
  if(inc){
  const rows=incomeRows(),sum=rows.filter(x=>!x.currency||x.currency==='UAH').reduce((a,x)=>a+(Number(x.amount)||0),0);
- inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div></div><div class="pulse-income-total">'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</div>'+incomeGraph(rows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
+ inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><button type="button" data-pulse="income-week" class="'+(incomePeriod===7?'selected':'')+'">Неделя</button><button type="button" data-pulse="income-month" class="'+(incomePeriod===30?'selected':'')+'">Месяц</button></div></div><div class="pulse-income-date-row"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div><div class="pulse-income-total">'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</div>'+incomeGraph(rows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
  inc.querySelector('#pulseHomeIncomeDay')?.addEventListener('change',e=>{incomeDay=e.target.value||localDay(Date.now());home()});
  }
 
  updateCountdowns();
+}
+let pulseBuildLoaded=false;
+async function loadPulseBuildInfo(){
+ if(pulseBuildLoaded)return;pulseBuildLoaded=true;
+ try{
+  const response=await fetch('https://api.github.com/repos/publkey-prog/pulse-dashboard/commits?path=public%2Fpreview%2Findex.html&per_page=1',{cache:'no-store'});
+  if(!response.ok)throw Error('metadata unavailable');
+  const commits=await response.json(),item=commits[0];if(!item)throw Error('no commit');
+  const d=new Date(item.commit.committer.date);
+  $('pulseBuildVersion').textContent='Версия: preview-'+item.sha.slice(0,7);
+  $('pulseBuildUpdated').textContent='Последнее обновление: '+d.toLocaleString('ru-RU',{timeZone:'Europe/Kyiv',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Киев)';
+ }catch(e){
+  $('pulseBuildVersion').textContent='Версия: недоступна';
+  $('pulseBuildUpdated').textContent='Последнее обновление: недоступно';
+ }
 }
 function show(type,form=false){
  selected=type;expire();const v=$('pulseExtraView');if(!v)return;
@@ -578,7 +602,7 @@ function updateCountdowns(){document.querySelectorAll('.pulse-countdown').forEac
 function input(id){return $(id)?.value.trim()||''}
 function action(a,id){
  if(a==='home'){vhide();return}if(a.startsWith('period-')){period=a==='period-today'?1:a==='period-week'?7:30;home();return}
- if(a==='income-today'){incomeDay=localDay(Date.now());if(selected==='income'&&!$('pulseExtraView')?.classList.contains('hidden'))show('income');else home();return}if(a==='new-income'){show('income',true);return}if(a==='income'){show('income');return}
+ if(a==='income-week'||a==='income-month'){incomePeriod=a==='income-week'?7:30;home();return}if(a==='income-today'){incomeDay=localDay(Date.now());if(selected==='income'&&!$('pulseExtraView')?.classList.contains('hidden'))show('income');else home();return}if(a==='new-income'){show('income',true);return}if(a==='income'){show('income');return}
  if(a==='notes'||a==='thoughts'||a==='quotes'){if(a==='thoughts')window.pulseThoughtFilter='';show(a);return}if(a==='new-note'){show('notes',true);return}if(a==='new-thought'){show('thoughts',true);return}if(a==='thoughts-active'||a==='thoughts-archive'){window.pulseThoughtFilter=a==='thoughts-active'?'active':'archived';show('thoughts');return}if(a==='thought-detail'){$('pulse-detail-'+id)?.classList.toggle('hidden');return}if(a==='notes-all'){window.pulseNotesDay='';show('notes');return}
  if(a==='save-income'){const amount=Number(input('pulseAmount'));if(!(amount>0)||!input('pulseSource'))return alert('Введите сумму и источник');const d=input('pulseIncomeDate');income.push({id:uid(),amount,source:input('pulseSource'),currency:input('pulseCurrency'),at:d&&d!==localDay(Date.now())?new Date(d+'T'+new Date().toTimeString().slice(0,8)).toISOString():now()});persist();log('Доход','Добавлено поступление');location.reload()}
  if(a==='delete-income'){if(confirm('Удалить поступление?')){income=income.filter(x=>x.id!==id);persist();show('income')}}
