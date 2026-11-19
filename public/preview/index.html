@@ -544,18 +544,22 @@ function incomeGraph(rows){
  const line='<path d="'+path+'" fill="none" stroke="#61f5ac" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
  // Coincident timestamps retain their real x-position; stagger markers vertically
  // only when their cumulative totals would otherwise cover one another.
- const groups=new Map();
- series.forEach((point,i)=>{const key=point.event.t;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(i)});
+ // Cluster nearby points visually while keeping their actual time and cumulative value.
  const markerPositions=series.map(point=>({px:x(point.event.t),py:y(point.value),realX:x(point.event.t),realY:y(point.value)}));
- groups.forEach(indices=>{
+ const clusters=[];
+ markerPositions.forEach((pos,i)=>{
+  const cluster=clusters.find(group=>group.some(idx=>Math.abs(markerPositions[idx].realX-pos.realX)<23&&Math.abs(markerPositions[idx].realY-pos.realY)<23));
+  if(cluster)cluster.push(i);else clusters.push([i]);
+ });
+ clusters.forEach(indices=>{
   if(indices.length<2)return;
-  const center=x(series[indices[0]].event.t),step=15;
+  const step=23,center=indices.reduce((sum,idx)=>sum+markerPositions[idx].realX,0)/indices.length;
   const half=(indices.length-1)*step/2;
-  const shift=Math.max(left+7-(center-half),Math.min(0,right-7-(center+half)));
+  const offset=Math.max(left+11-(center-half),Math.min(0,right-11-(center+half)));
   indices.forEach((idx,k)=>{
    const pos=markerPositions[idx];
-   pos.px=Math.max(left+7,Math.min(right-7,center+(k-(indices.length-1)/2)*step+shift));
-   pos.py=Math.max(top+7,Math.min(bottom-7,pos.realY+(k%2===0?-1:1)*7));
+   pos.px=Math.max(left+11,Math.min(right-11,center+(k-(indices.length-1)/2)*step+offset));
+   pos.py=Math.max(top+11,Math.min(bottom-11,pos.realY+(k%2===0?-1:1)*Math.ceil(k/2)*11));
   });
  });
  const connectors=markerPositions.map(pos=>{
@@ -563,8 +567,9 @@ function incomeGraph(rows){
   return '<line x1="'+pos.realX+'" y1="'+pos.realY+'" x2="'+pos.px+'" y2="'+pos.py+'" stroke="#a5ffca" stroke-opacity=".7" stroke-width="1" stroke-dasharray="2 2" pointer-events="none"/>';
  }).join('');
  const dots=series.map((point,i)=>{
-  const label=fmt(point.event.amount)+' ₴ · '+date(point.event.item.at)+' · итог '+fmt(point.value)+' ₴';
-  return '<circle class="pulse-income-point" tabindex="0" role="button" aria-label="'+esc(label)+'" data-time="'+esc(new Date(point.event.t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}))+'" data-amount="'+esc(fmt(point.event.amount))+'" data-total="'+esc(fmt(point.value))+'" cx="'+markerPositions[i].px+'" cy="'+markerPositions[i].py+'" r="6" fill="#a5ffca" stroke="#0e1723" stroke-width="2"><title>'+esc(label)+'</title></circle>';
+  const number=i+1,pos=markerPositions[i];
+  const label='Операция №'+number+' · '+fmt(point.event.amount)+' ₴ · '+date(point.event.item.at)+' · итог '+fmt(point.value)+' ₴';
+  return '<g class="pulse-income-marker"><circle class="pulse-income-point" tabindex="0" role="button" aria-label="'+esc(label)+'" data-time="'+esc(new Date(point.event.t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}))+'" data-amount="'+esc(fmt(point.event.amount))+'" data-total="'+esc(fmt(point.value))+'" cx="'+pos.px+'" cy="'+pos.py+'" r="10" fill="#a5ffca" stroke="#0e1723" stroke-width="2"><title>'+esc(label)+'</title></circle><text x="'+pos.px+'" y="'+(pos.py+.5)+'" text-anchor="middle" dominant-baseline="middle" font-size="'+(number>99?8:number>9?9:11)+'" font-weight="700" fill="#0e1723" pointer-events="none">'+number+'</text></g>';
  }).join('');
  const fmtAxis=t=>new Date(t).toLocaleString('ru-RU',days===1?{hour:'2-digit',minute:'2-digit'}:{day:'2-digit',month:'2-digit'});
  const labels='<text x="'+left+'" y="145" fill="#9cacc0" font-size="10">'+fmtAxis(startMs)+'</text><text x="'+((left+right)/2)+'" y="145" text-anchor="middle" fill="#9cacc0" font-size="10">'+fmtAxis((startMs+safeEnd)/2)+'</text><text x="'+right+'" y="145" text-anchor="end" fill="#9cacc0" font-size="10">'+fmtAxis(safeEnd)+'</text>';
