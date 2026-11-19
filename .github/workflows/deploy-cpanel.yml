@@ -121,6 +121,24 @@ jobs:
           git remote add cpanel \
             "ssh://publkey4@publkey.com:21098/home/publkey4/repositories/pulse-dashboard-auto"
 
+          # Capture the actual cPanel revision before deploying, not github.event.before.
+          # If it cannot be read, verification will safely check the entire public/ tree.
+          baseline=""
+          if baseline=$(git ls-remote cpanel refs/heads/master | awk '{print $1}'); then
+            if [ -n "$baseline" ] && git fetch --no-tags cpanel master; then
+              if git cat-file -e "${baseline}^{commit}" 2>/dev/null; then
+                echo "CPANEL_BASE_SHA=$baseline" >> "$GITHUB_ENV"
+                echo "Previous cPanel revision: $baseline"
+              else
+                echo "::warning::Previous cPanel commit unavailable; full verification will run."
+              fi
+            else
+              echo "::warning::Cannot fetch previous cPanel revision; full verification will run."
+            fi
+          else
+            echo "::warning::Cannot read previous cPanel revision; full verification will run."
+          fi
+
           git push cpanel HEAD:master
 
 
@@ -133,32 +151,78 @@ jobs:
           VERIFY_DIR="$RUNNER_TEMP/live-verify"
           mkdir -p "$VERIFY_DIR"
 
+          # Compare with the cPanel revision captured immediately before push.
+          # A missing/unusable baseline must never silently skip verification.
+          file_list="$RUNNER_TEMP/verify-files.list"
+          deleted_list="$RUNNER_TEMP/verify-deleted.list"
+          : > "$file_list"
+          : > "$deleted_list"
+          if [ -n "${CPANEL_BASE_SHA:-}" ] && git cat-file -e "${CPANEL_BASE_SHA}^{commit}" 2>/dev/null; then
+            git diff --name-only --diff-filter=ACMRT -z "$CPANEL_BASE_SHA" HEAD -- public/ > "$file_list"
+            git diff --name-only --diff-filter=D -z "$CPANEL_BASE_SHA" HEAD -- public/ > "$deleted_list"
+            echo "Verification mode: changed files since cPanel revision $CPANEL_BASE_SHA"
+          else
+            find public -type f -print0 | sort -z > "$file_list"
+            echo "Verification mode: FULL (previous cPanel revision unavailable)"
+          fi
+
+          # No changes means the prior deployment is already at this revision.
+          if [ ! -s "$file_list" ] && [ ! -s "$deleted_list" ]; then
+            echo "No public/ changes to verify against the previous cPanel revision."
+            exit 0
+          fi
+
           for attempt in {1..30}; do
             all_ok=true
-
             while IFS= read -r -d '' file; do
               rel="${file#public/}"
-              out="$VERIFY_DIR/${rel//\//_}"
-
-              if ! curl -fsSL --max-time 10 "${BASE_URL}/${rel}?verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" -o "$out"; then
+              out="$VERIFY_DIR/$(printf '%s' "$rel" | sha256sum | cut -d' ' -f1)"
+              echo "Checking: $rel (attempt $attempt/30)"
+              if ! http_code=$(curl -sSL --max-time 10 -w '%{http_code}' "${BASE_URL}/${rel}?verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$attempt" -o "$out"); then
+                echo "::warning file=$file::HTTP request failed for $rel"
                 all_ok=false
                 break
               fi
-
+              if [ "$http_code" != "200" ]; then
+                echo "::warning file=$file::HTTP $http_code for $rel (expected 200)"
+                all_ok=false
+                break
+              fi
               if ! cmp -s "$file" "$out"; then
+                echo "::warning file=$file::Content mismatch for $rel"
                 all_ok=false
                 break
               fi
-            done < <(find public -type f -print0 | sort -z)
+              echo "Verified: $rel"
+            done < "$file_list"
 
             if [ "$all_ok" = "true" ]; then
-              echo "DEV deployment verified against every file in public/."
-              exit 0
+              while IFS= read -r -d '' file; do
+                rel="${file#public/}"
+                echo "Checking removed file: $rel (attempt $attempt/30)"
+                if ! http_code=$(curl -sSL --max-time 10 -w '%{http_code}' "${BASE_URL}/${rel}?verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$attempt" -o /dev/null); then
+                  echo "::warning file=$file::HTTP request failed while checking removal of $rel"
+                  all_ok=false
+                  break
+                fi
+                if [ "$http_code" != "404" ] && [ "$http_code" != "410" ]; then
+                  echo "::warning file=$file::Removed file $rel still returns HTTP $http_code (expected 404 or 410)"
+                  all_ok=false
+                  break
+                fi
+                echo "Verified removed: $rel"
+              done < "$deleted_list"
             fi
 
-            echo "DEV site not fully updated yet (attempt $attempt/30); waiting..."
-            sleep 2
+            if [ "$all_ok" = "true" ]; then
+              echo "DEV deployment verified successfully."
+              exit 0
+            fi
+            if [ "$attempt" -lt 30 ]; then
+              echo "DEV site not yet matching (attempt $attempt/30); retrying..."
+              sleep 2
+            fi
           done
 
-          echo "DEV deployment verification failed."
+          echo "::error::DEV deployment verification failed after 30 attempts."
           exit 1
