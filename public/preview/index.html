@@ -502,14 +502,39 @@ let income=read('income',[]),thoughts=read('thoughts',[]),notes=read('notes',[])
 const localDay=d=>new Date(d).toLocaleDateString('sv-SE');let incomeDay=localDay(Date.now()),incomePeriod=7;
 function incomeRows(){return income.filter(x=>x.at&&!isNaN(new Date(x.at))&&localDay(x.at)===incomeDay)}
 function incomeGraph(rows){
- const selected=new Date(incomeDay+'T12:00:00'),days=incomePeriod,values=Array(days).fill(0),buckets=Array.from({length:days},()=>[]);
- for(const item of income){if(!item.at||!isFinite(new Date(item.at).getTime())||(item.currency&&item.currency!=='UAH'))continue;const d=new Date(item.at),delta=Math.round((selected-new Date(d.getFullYear(),d.getMonth(),d.getDate(),12))/86400000);if(delta>=0&&delta<days){values[days-1-delta]+=Number(item.amount)||0;buckets[days-1-delta].push(item)}}
- const max=Math.max(1,...values),left=55,right=335,top=15,bottom=125;
- const pts=values.map((v,i)=>[left+i*(right-left)/(days-1),bottom-v/max*(bottom-top)]);
- const ticks=[0,.5,1].map(f=>{const y=bottom-f*(bottom-top);return '<line x1="'+left+'" y1="'+y+'" x2="'+right+'" y2="'+y+'" stroke="#304052" stroke-dasharray="3 5"/><text x="47" y="'+(y+4)+'" text-anchor="end" fill="#9cacc0" font-size="11">'+Math.round(max*f).toLocaleString('ru-RU')+'</text>'}).join('');
- const segments=[];let segment=[];for(let i=0;i<days;i++){if(buckets[i].length){segment.push(pts[i].join(','))}else if(segment.length){if(segment.length>1)segments.push('<polyline points="'+segment.join(' ')+'" fill="none" stroke="#74f7ad" stroke-width="2.5"/>');segment=[]}}if(segment.length>1)segments.push('<polyline points="'+segment.join(' ')+'" fill="none" stroke="#74f7ad" stroke-width="2.5"/>');
- const dots=pts.map((p,i)=>buckets[i].map(item=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="5" fill="#91ffbf" stroke="#10271d" stroke-width="2"><title>'+esc(String(item.amount))+' ₴ · '+esc(date(item.at))+'</title></circle>').join('')).join('');
- return '<div class="pulse-graph"><svg viewBox="0 0 350 148" preserveAspectRatio="xMidYMid meet">'+ticks+segments.join('')+dots+'<text x="'+left+'" y="143" fill="#9cacc0" font-size="10">'+(days===7?'7 дней':'30 дней')+' · до '+esc(incomeDay)+'</text></svg></div>';
+ // A continuous cumulative income timeline: one marker per transaction, never one per day.
+ const days=incomePeriod,endDay=new Date(incomeDay+'T00:00:00');
+ if(!Number.isFinite(endDay.getTime()))return '';
+ const startDay=new Date(endDay);startDay.setDate(startDay.getDate()-(days-1));
+ const startMs=startDay.getTime(),endMs=new Date(endDay).setDate(endDay.getDate()+1);
+ const events=income.filter(item=>{
+  const t=new Date(item.at).getTime();
+  return item.at&&Number.isFinite(t)&&t>=startMs&&t<endMs&&(!item.currency||item.currency==='UAH')&&Number.isFinite(Number(item.amount));
+ }).map((item,i)=>({item,t:new Date(item.at).getTime(),amount:Number(item.amount),i})).sort((a,b)=>a.t-b.t||a.i-b.i);
+ let running=0;
+ const series=events.map(event=>({event,value:(running+=event.amount)}));
+ const allValues=[0,...series.map(point=>point.value)],minimum=Math.min(...allValues),maximum=Math.max(...allValues);
+ const low=Math.min(0,minimum),high=Math.max(1,maximum),range=high-low||1;
+ const left=55,right=335,top=16,bottom=124;
+ const x=t=>left+(t-startMs)/(endMs-startMs)*(right-left);
+ const y=value=>bottom-(value-low)/range*(bottom-top);
+ const fmt=value=>Number(value.toFixed(2)).toLocaleString('ru-RU',{maximumFractionDigits:2});
+ const ticks=[0,.5,1].map(f=>{
+  const value=low+range*f,py=bottom-f*(bottom-top);
+  return '<line x1="'+left+'" y1="'+py+'" x2="'+right+'" y2="'+py+'" stroke="#304052" stroke-dasharray="3 5"/><text x="47" y="'+(py+4)+'" text-anchor="end" fill="#9cacc0" font-size="11">'+fmt(value)+'</text>';
+ }).join('');
+ const coords=[[left,y(0)],...series.map(point=>[x(point.event.t),y(point.value)]),[right,y(running)]];
+ const line='<polyline points="'+coords.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#74f7ad" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+ const dots=series.map(point=>{
+  const event=point.event;
+  const label=fmt(event.amount)+' ₴ · '+date(event.item.at)+' · итог '+fmt(point.value)+' ₴';
+  return '<circle cx="'+x(event.t)+'" cy="'+y(point.value)+'" r="4.5" fill="#91ffbf" stroke="#10271d" stroke-width="1.5"><title>'+esc(label)+'</title></circle>';
+ }).join('');
+ const axisDate=d=>d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'});
+ const middle=new Date(startMs+(endMs-startMs)/2);
+ const labels='<text x="'+left+'" y="145" fill="#9cacc0" font-size="10">'+axisDate(startDay)+'</text><text x="'+((left+right)/2)+'" y="145" text-anchor="middle" fill="#9cacc0" font-size="10">'+axisDate(middle)+'</text><text x="'+right+'" y="145" text-anchor="end" fill="#9cacc0" font-size="10">'+axisDate(endDay)+'</text>';
+ const note='<div class="pulse-small" style="margin-top:4px">'+(days===7?'Неделя':'Месяц')+' · '+events.length+' операций · накопительный доход: '+fmt(running)+' ₴</div>';
+ return '<div class="pulse-graph" role="img" aria-label="Накопительный доход за '+days+' дней, операций: '+events.length+'"><svg viewBox="0 0 350 154" preserveAspectRatio="xMidYMid meet">'+ticks+line+dots+labels+'</svg>'+note+'</div>';
 }
 function log(title,detail){let h=read('extra_history',[]);h.unshift({id:uid(),at:now(),title,detail});write('extra_history',h)}
 function persist(){write('income',income);write('thoughts',thoughts);write('notes',notes)}
