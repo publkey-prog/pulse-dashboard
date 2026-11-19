@@ -94,7 +94,21 @@ jobs:
           rm -f "$RUNNER_TEMP/cpanel_key"
           rm -f "$RUNNER_TEMP/ssh-askpass.sh"
 
-          ssh-keyscan -H -p 21098 publkey.com >> "$HOME/.ssh/known_hosts"
+          # Retry transient DNS/network failures without disabling host-key checking.
+          host_keys="$RUNNER_TEMP/cpanel_known_hosts"
+          for attempt in {1..12}; do
+            if ssh-keyscan -T 10 -H -p 21098 publkey.com > "$host_keys" 2>/dev/null && [ -s "$host_keys" ]; then
+              cat "$host_keys" >> "$HOME/.ssh/known_hosts"
+              break
+            fi
+            if [ "$attempt" -eq 12 ]; then
+              echo "::error::Unable to obtain cPanel SSH host key after 12 attempts."
+              exit 1
+            fi
+            echo "SSH host key scan attempt $attempt/12 failed; retrying..."
+            sleep 5
+          done
+          rm -f "$host_keys"
           chmod 600 "$HOME/.ssh/known_hosts"
 
       - name: Push to cPanel
