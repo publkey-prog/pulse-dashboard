@@ -132,6 +132,12 @@
 #pulseExtraView .pulse-entry.pulse-card>.pulse-detail{padding:12px;border-radius:12px;background:#101923}
 #pulseExtraView .pulse-screen>button{width:100%;min-height:46px;margin:0!important}
 #pulseIncome .pulse-income-total{font-size:28px!important;font-weight:800!important;display:block!important}
+</style><style>
+/* Preview income history: keep the graph in normal document flow above its cards. */
+#pulseExtraView .pulse-screen>.pulse-graph{display:block!important;position:relative!important;flex:none!important;width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important;margin:0 0 12px!important}
+#pulseExtraView .pulse-screen>.pulse-graph svg{display:block!important;width:100%!important;height:auto!important;min-height:155px!important;max-height:none!important}
+#pulseExtraView .pulse-screen>.pulse-graph .pulse-small{position:static!important;display:block!important;line-height:1.5!important}
+#pulseExtraView .pulse-screen>.pulse-entry.pulse-card{position:relative!important;flex:none!important}
 </style></head><body><main class="app">
 <section id="homeView"><header><div><span class="eyebrow">PULSE</span><h1>Мой дашборд</h1></div><div class="profile-wrap"><button id="profileBtn" class="avatar">VK</button><div id="profileMenu" class="profile-menu hidden"><button id="profileSettings">Настройки</button><button id="profileHistory">История</button></div></div></header>
 <section class="liquid-panel" id="liquidWidget" aria-labelledby="liquidTitle">
@@ -499,42 +505,44 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const uid=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random();
 const date=s=>new Date(s).toLocaleString('ru-RU');
 let income=read('income',[]),thoughts=read('thoughts',[]),notes=read('notes',[]),quotes=read('quotes',['Каждый день — возможность сделать шаг вперёд.']),selected='notes',period=7,activityPeriod=7;
-const localDay=d=>new Date(d).toLocaleDateString('sv-SE');let incomeDay=localDay(Date.now()),incomePeriod=7;
+const localDay=d=>new Date(d).toLocaleDateString('sv-SE');let incomeDay=localDay(Date.now()),incomePeriod=1;
 function incomeRows(){return income.filter(x=>x.at&&!isNaN(new Date(x.at))&&localDay(x.at)===incomeDay)}
 function incomeGraph(rows){
- // A continuous cumulative income timeline: one marker per transaction, never one per day.
- const days=incomePeriod,endDay=new Date(incomeDay+'T00:00:00');
- if(!Number.isFinite(endDay.getTime()))return '';
- const startDay=new Date(endDay);startDay.setDate(startDay.getDate()-(days-1));
- const startMs=startDay.getTime(),endMs=new Date(endDay).setDate(endDay.getDate()+1);
+ const days=incomePeriod,day=new Date(incomeDay+'T00:00:00');
+ if(!Number.isFinite(day.getTime()))return '';
+ const start=new Date(day);start.setDate(start.getDate()-(days-1));
+ const startMs=start.getTime(),dayEnd=new Date(day);dayEnd.setDate(dayEnd.getDate()+1);
+ const nowMs=Date.now(),endMs=Math.min(dayEnd.getTime(),nowMs);
+ const safeEnd=Math.max(startMs+1,endMs);
  const events=income.filter(item=>{
   const t=new Date(item.at).getTime();
-  return item.at&&Number.isFinite(t)&&t>=startMs&&t<endMs&&(!item.currency||item.currency==='UAH')&&Number.isFinite(Number(item.amount));
+  return item.at&&Number.isFinite(t)&&t>=startMs&&t<=endMs&&(!item.currency||item.currency==='UAH')&&Number.isFinite(Number(item.amount));
  }).map((item,i)=>({item,t:new Date(item.at).getTime(),amount:Number(item.amount),i})).sort((a,b)=>a.t-b.t||a.i-b.i);
  let running=0;
  const series=events.map(event=>({event,value:(running+=event.amount)}));
- const allValues=[0,...series.map(point=>point.value)],minimum=Math.min(...allValues),maximum=Math.max(...allValues);
- const low=Math.min(0,minimum),high=Math.max(1,maximum),range=high-low||1;
+ const values=[0,...series.map(point=>point.value)],low=Math.min(0,...values),high=Math.max(1,...values),range=high-low;
  const left=55,right=335,top=16,bottom=124;
- const x=t=>left+(t-startMs)/(endMs-startMs)*(right-left);
+ const x=t=>left+Math.max(0,Math.min(1,(t-startMs)/(safeEnd-startMs)))*(right-left);
  const y=value=>bottom-(value-low)/range*(bottom-top);
  const fmt=value=>Number(value.toFixed(2)).toLocaleString('ru-RU',{maximumFractionDigits:2});
  const ticks=[0,.5,1].map(f=>{
   const value=low+range*f,py=bottom-f*(bottom-top);
   return '<line x1="'+left+'" y1="'+py+'" x2="'+right+'" y2="'+py+'" stroke="#304052" stroke-dasharray="3 5"/><text x="47" y="'+(py+4)+'" text-anchor="end" fill="#9cacc0" font-size="11">'+fmt(value)+'</text>';
  }).join('');
- const coords=[[left,y(0)],...series.map(point=>[x(point.event.t),y(point.value)]),[right,y(running)]];
- const line='<polyline points="'+coords.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#74f7ad" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+ // Step line: income changes only at the instant of each transaction.
+ // Never extend the line to the end of the selected date or into the future.
+ let path='M '+left+' '+y(0),previous=0;
+ for(const point of series){const px=x(point.event.t);path+=' L '+px+' '+y(previous)+' L '+px+' '+y(point.value);previous=point.value}
+ const line='<path d="'+path+'" fill="none" stroke="#74f7ad" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
  const dots=series.map(point=>{
-  const event=point.event;
-  const label=fmt(event.amount)+' ₴ · '+date(event.item.at)+' · итог '+fmt(point.value)+' ₴';
-  return '<circle cx="'+x(event.t)+'" cy="'+y(point.value)+'" r="4.5" fill="#91ffbf" stroke="#10271d" stroke-width="1.5"><title>'+esc(label)+'</title></circle>';
+  const label=fmt(point.event.amount)+' ₴ · '+date(point.event.item.at)+' · итог '+fmt(point.value)+' ₴';
+  return '<circle cx="'+x(point.event.t)+'" cy="'+y(point.value)+'" r="4.5" fill="#91ffbf" stroke="#10271d" stroke-width="1.5"><title>'+esc(label)+'</title></circle>';
  }).join('');
- const axisDate=d=>d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'});
- const middle=new Date(startMs+(endMs-startMs)/2);
- const labels='<text x="'+left+'" y="145" fill="#9cacc0" font-size="10">'+axisDate(startDay)+'</text><text x="'+((left+right)/2)+'" y="145" text-anchor="middle" fill="#9cacc0" font-size="10">'+axisDate(middle)+'</text><text x="'+right+'" y="145" text-anchor="end" fill="#9cacc0" font-size="10">'+axisDate(endDay)+'</text>';
- const note='<div class="pulse-small" style="margin-top:4px">'+(days===7?'Неделя':'Месяц')+' · '+events.length+' операций · накопительный доход: '+fmt(running)+' ₴</div>';
- return '<div class="pulse-graph" role="img" aria-label="Накопительный доход за '+days+' дней, операций: '+events.length+'"><svg viewBox="0 0 350 154" preserveAspectRatio="xMidYMid meet">'+ticks+line+dots+labels+'</svg>'+note+'</div>';
+ const fmtAxis=t=>new Date(t).toLocaleString('ru-RU',days===1?{hour:'2-digit',minute:'2-digit'}:{day:'2-digit',month:'2-digit'});
+ const labels='<text x="'+left+'" y="145" fill="#9cacc0" font-size="10">'+fmtAxis(startMs)+'</text><text x="'+((left+right)/2)+'" y="145" text-anchor="middle" fill="#9cacc0" font-size="10">'+fmtAxis((startMs+safeEnd)/2)+'</text><text x="'+right+'" y="145" text-anchor="end" fill="#9cacc0" font-size="10">'+fmtAxis(safeEnd)+'</text>';
+ const title=days===1?'День':days===7?'Неделя':'Месяц';
+ const note='<div class="pulse-small" style="margin-top:6px">'+title+' · '+events.length+' операций · накопительный доход: '+fmt(running)+' ₴</div>';
+ return '<div class="pulse-graph" role="img" aria-label="Доход за '+days+' дней, операций: '+events.length+'"><svg viewBox="0 0 350 154" preserveAspectRatio="xMidYMid meet">'+ticks+line+dots+labels+'</svg>'+note+'</div>';
 }
 function log(title,detail){let h=read('extra_history',[]);h.unshift({id:uid(),at:now(),title,detail});write('extra_history',h)}
 function persist(){write('income',income);write('thoughts',thoughts);write('notes',notes)}
@@ -572,7 +580,7 @@ function home(){
  }
  if(inc){
  const rows=incomeRows(),sum=rows.filter(x=>!x.currency||x.currency==='UAH').reduce((a,x)=>a+(Number(x.amount)||0),0);
- inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><button type="button" data-pulse="income-week" class="'+(incomePeriod===7?'selected':'')+'">Неделя</button><button type="button" data-pulse="income-month" class="'+(incomePeriod===30?'selected':'')+'">Месяц</button></div></div><div class="pulse-income-date-row"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div><div class="pulse-income-total">'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</div>'+incomeGraph(rows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
+ inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><button type="button" data-pulse="income-day" class="'+(incomePeriod===1?'selected':'')+'">День</button><button type="button" data-pulse="income-week" class="'+(incomePeriod===7?'selected':'')+'">Неделя</button><button type="button" data-pulse="income-month" class="'+(incomePeriod===30?'selected':'')+'">Месяц</button></div></div><div class="pulse-income-date-row"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div><div class="pulse-income-total">'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</div>'+incomeGraph(rows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
  inc.querySelector('#pulseHomeIncomeDay')?.addEventListener('change',e=>{incomeDay=e.target.value||localDay(Date.now());home()});
  }
 
@@ -619,7 +627,7 @@ function updateCountdowns(){document.querySelectorAll('.pulse-countdown').forEac
 function input(id){return $(id)?.value.trim()||''}
 function action(a,id){
  if(a==='home'){vhide();return}if(a.startsWith('period-')){period=a==='period-today'?1:a==='period-week'?7:30;home();return}
- if(a==='income-week'||a==='income-month'){incomePeriod=a==='income-week'?7:30;home();return}if(a==='income-today'){incomeDay=localDay(Date.now());if(selected==='income'&&!$('pulseExtraView')?.classList.contains('hidden'))show('income');else home();return}if(a==='new-income'){show('income',true);return}if(a==='income'){show('income');return}
+ if(a==='income-day'||a==='income-week'||a==='income-month'){incomePeriod=a==='income-day'?1:a==='income-week'?7:30;home();return}if(a==='income-today'){incomeDay=localDay(Date.now());incomePeriod=1;if(selected==='income'&&!$('pulseExtraView')?.classList.contains('hidden'))show('income');else home();return}if(a==='new-income'){show('income',true);return}if(a==='income'){show('income');return}
  if(a==='notes'||a==='thoughts'||a==='quotes'){if(a==='thoughts')window.pulseThoughtFilter='';show(a);return}if(a==='new-note'){show('notes',true);return}if(a==='new-thought'){show('thoughts',true);return}if(a==='thoughts-active'||a==='thoughts-archive'){window.pulseThoughtFilter=a==='thoughts-active'?'active':'archived';show('thoughts');return}if(a==='thought-detail'){$('pulse-detail-'+id)?.classList.toggle('hidden');return}if(a==='notes-all'){window.pulseNotesDay='';show('notes');return}
  if(a==='save-income'){const amount=Number(input('pulseAmount'));if(!(amount>0)||!input('pulseSource'))return alert('Введите сумму и источник');const d=input('pulseIncomeDate');income.push({id:uid(),amount,source:input('pulseSource'),currency:input('pulseCurrency'),at:d&&d!==localDay(Date.now())?new Date(d+'T'+new Date().toTimeString().slice(0,8)).toISOString():now()});persist();log('Доход','Добавлено поступление');location.reload()}
  if(a==='delete-income'){if(confirm('Удалить поступление?')){income=income.filter(x=>x.id!==id);persist();show('income')}}
