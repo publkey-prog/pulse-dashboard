@@ -529,11 +529,17 @@ function incomeGraph(rows){
   const value=low+range*f,py=bottom-f*(bottom-top);
   return '<line x1="'+left+'" y1="'+py+'" x2="'+right+'" y2="'+py+'" stroke="#304052" stroke-dasharray="3 5"/><text x="47" y="'+(py+4)+'" text-anchor="end" fill="#9cacc0" font-size="11">'+fmt(value)+'</text>';
  }).join('');
- // Step line: income changes only at the instant of each transaction.
- // Never extend the line to the end of the selected date or into the future.
- let path='M '+left+' '+y(0),previous=0;
- for(const point of series){const px=x(point.event.t);path+=' L '+px+' '+y(previous)+' L '+px+' '+y(point.value);previous=point.value}
- const area=path+' L '+(series.length?x(series[series.length-1].event.t):left)+' '+bottom+' L '+left+' '+bottom+' Z';
+ // Smooth monotone cubic segments through real income events; no line beyond the last event.
+ const points=[{t:startMs,value:0},...series.map(point=>({t:point.event.t,value:point.value}))];
+ let path='M '+x(points[0].t)+' '+y(points[0].value);
+ for(let i=1;i<points.length;i++){
+  const p=points[i-1],q=points[i],x0=x(p.t),x1=x(q.t),y0=y(p.value),y1=y(q.value);
+  if(Math.abs(x1-x0)<.001){path+=' L '+x1+' '+y1;continue}
+  const mid=(x0+x1)/2;
+  path+=' C '+mid+' '+y0+' '+mid+' '+y1+' '+x1+' '+y1;
+ }
+ const last=points[points.length-1],lastX=x(last.t);
+ const area=path+' L '+lastX+' '+bottom+' L '+left+' '+bottom+' Z';
  const line='<path d="'+path+'" fill="none" stroke="#61f5ac" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
  const dots=series.map(point=>{
   const label=fmt(point.event.amount)+' ₴ · '+date(point.event.item.at)+' · итог '+fmt(point.value)+' ₴';
@@ -542,7 +548,7 @@ function incomeGraph(rows){
  const fmtAxis=t=>new Date(t).toLocaleString('ru-RU',days===1?{hour:'2-digit',minute:'2-digit'}:{day:'2-digit',month:'2-digit'});
  const labels='<text x="'+left+'" y="145" fill="#9cacc0" font-size="10">'+fmtAxis(startMs)+'</text><text x="'+((left+right)/2)+'" y="145" text-anchor="middle" fill="#9cacc0" font-size="10">'+fmtAxis((startMs+safeEnd)/2)+'</text><text x="'+right+'" y="145" text-anchor="end" fill="#9cacc0" font-size="10">'+fmtAxis(safeEnd)+'</text>';
  const title=days===1?'День':days===7?'Неделя':'Месяц';
- const note='<div class="pulse-small" style="margin-top:6px">'+title+' · '+events.length+' операций · накопительный доход: '+fmt(running)+' ₴</div>';
+ const note='<div class="pulse-small" style="margin-top:6px">'+title+' · '+events.length+' операций · за период: '+fmt(running)+' ₴</div>';
  return '<div class="pulse-graph" role="img" aria-label="Доход за '+days+' дней, операций: '+events.length+'"><svg viewBox="0 0 350 154" preserveAspectRatio="xMidYMid meet">'+'<defs><linearGradient id="pulseIncomeFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#30f5a4" stop-opacity=".52"/><stop offset="100%" stop-color="#6453ed" stop-opacity=".04"/></linearGradient></defs>'+ticks+'<path d="'+area+'" fill="url(#pulseIncomeFill)"/>'+line+dots+labels+'</svg>'+note+'</div>';
 }
 function log(title,detail){let h=read('extra_history',[]);h.unshift({id:uid(),at:now(),title,detail});write('extra_history',h)}
@@ -580,8 +586,8 @@ function home(){
  else{const q=quotes.length?quotes[Math.floor(Date.now()/12000)%quotes.length]:'Добавьте фразу в настройках';hero.innerHTML='<span class="pulse-small">Фраза дня</span><div id="pulseDailyQuote" data-animated="true" data-text="'+esc(q)+'"></div>';if(quoteAnimationText!==q)quoteAnimationText='';animateQuote()}
  }
  if(inc){
- const rows=incomeRows(),sum=rows.filter(x=>!x.currency||x.currency==='UAH').reduce((a,x)=>a+(Number(x.amount)||0),0);
- inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><button type="button" data-pulse="income-day" class="'+(incomePeriod===1?'selected':'')+'">День</button><button type="button" data-pulse="income-week" class="'+(incomePeriod===7?'selected':'')+'">Неделя</button><button type="button" data-pulse="income-month" class="'+(incomePeriod===30?'selected':'')+'">Месяц</button></div></div><div class="pulse-income-date-row"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div><div class="pulse-income-kpis"><div class="pulse-income-kpi pulse-income-kpi-main"><small>Доход</small><strong>'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</strong></div><div class="pulse-income-kpi"><small>Операций</small><strong>'+rows.length+'</strong></div><div class="pulse-income-kpi"><small>Средний</small><strong>'+(rows.length?(sum/rows.length).toLocaleString('ru-RU',{maximumFractionDigits:2}):'0')+' ₴</strong></div></div>'+incomeGraph(rows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
+ const rows=incomeRows(),todayRows=income.filter(x=>x.at&&Number.isFinite(new Date(x.at).getTime())&&localDay(x.at)===localDay(Date.now())&&(!x.currency||x.currency==='UAH')),sum=todayRows.reduce((a,x)=>a+(Number(x.amount)||0),0);const periodStart=new Date(incomeDay+'T00:00:00');periodStart.setDate(periodStart.getDate()-(incomePeriod-1));const periodEnd=new Date(incomeDay+'T00:00:00');periodEnd.setDate(periodEnd.getDate()+1);const periodRows=income.filter(x=>x.at&&Number.isFinite(new Date(x.at).getTime())&&new Date(x.at)>=periodStart&&new Date(x.at)<periodEnd&&new Date(x.at)<=new Date()&&(!x.currency||x.currency==='UAH'));const periodSum=periodRows.reduce((a,x)=>a+(Number(x.amount)||0),0);
+ inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><button type="button" data-pulse="income-day" class="'+(incomePeriod===1?'selected':'')+'">День</button><button type="button" data-pulse="income-week" class="'+(incomePeriod===7?'selected':'')+'">Неделя</button><button type="button" data-pulse="income-month" class="'+(incomePeriod===30?'selected':'')+'">Месяц</button></div></div><div class="pulse-income-date-row"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div><div class="pulse-income-kpis"><div class="pulse-income-kpi pulse-income-kpi-main"><small>Доход сегодня</small><strong>'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</strong></div><div class="pulse-income-kpi"><small>Операций</small><strong>'+periodRows.length+'</strong></div><div class="pulse-income-kpi"><small>Средний</small><strong>'+(periodRows.length?(periodSum/periodRows.length).toLocaleString('ru-RU',{maximumFractionDigits:2}):'0')+' ₴</strong></div></div>'+incomeGraph(rows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
  inc.querySelector('#pulseHomeIncomeDay')?.addEventListener('change',e=>{incomeDay=e.target.value||localDay(Date.now());home()});
  }
 
