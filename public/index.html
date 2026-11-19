@@ -117,7 +117,7 @@
 #pulseAddMenu{max-height:min(70vh,430px);overflow:auto;padding:16px!important;border:1px solid #354459;border-radius:18px}
 #pulseAddMenu button{background:#253348;color:#e9f1ff;border:1px solid #43536a;border-radius:12px;padding:12px;min-height:44px;margin:4px}
 @media(min-width:700px){#pulseIncome .pulse-graph{max-width:100%}#pulseIncome .pulse-graph svg{max-height:270px}}
-</style><style>#homeView header .eyebrow.pulse-brand{display:block!important;font-size:clamp(24px,5vw,38px)!important;letter-spacing:.16em!important;font-weight:900!important;line-height:1.15!important;color:#b4fbd2!important;opacity:1!important}#pulseHero .pulse-countdown{font-size:24px!important}#pulseIncome .pulse-graph{height:auto!important;min-height:148px}#pulseIncome .pulse-graph svg{height:auto!important;min-height:148px}#pulseAddMenu.hidden{display:none!important}.pulse-screen .pulse-card>*{margin-top:0}.pulse-screen .pulse-card>*+*{margin-top:10px}</style><style>#homeView header .eyebrow:not(.pulse-brand){font-size:11px!important;letter-spacing:.25em!important;color:#90a0b7!important;font-weight:500!important}#homeView header h1.pulse-brand{font-size:clamp(29px,7vw,40px)!important;letter-spacing:.16em!important}#pulseIncome .pulse-income-total{display:block!important;font-size:28px!important;font-weight:800!important;color:#f4f8ff!important;margin:14px 0!important}</style><style>
+</style><style>#homeView header .eyebrow.pulse-brand{display:block!important;font-size:clamp(24px,5vw,38px)!important;letter-spacing:.16em!important;font-weight:900!important;line-height:1.15!important;color:#b4fbd2!important;opacity:1!important}#pulseHero .pulse-countdown{font-size:24px!important}#pulseIncome .pulse-graph{height:auto!important;min-height:148px}#pulseIncome .pulse-graph svg{height:auto!important;min-height:148px}#pulseAddMenu.hidden{display:none!important}.pulse-screen .pulse-card>*{margin-top:0}.pulse-screen .pulse-card>*+*{margin-top:10px}</style><style>#pulseIncome .pulse-income-date-row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:nowrap}#pulseIncome .pulse-income-date-row input{flex:1;min-width:0;max-width:100%;height:40px}#pulseIncome .pulse-income-date-row button{flex:none;white-space:nowrap;min-height:40px;padding:8px 10px;border:1px solid #40516b;border-radius:8px;background:#273449;color:#e8f0fa}#pulseIncome .pulse-income-period{flex-wrap:nowrap;gap:6px}</style><style>#homeView header .eyebrow:not(.pulse-brand){font-size:11px!important;letter-spacing:.25em!important;color:#90a0b7!important;font-weight:500!important}#homeView header h1.pulse-brand{font-size:clamp(29px,7vw,40px)!important;letter-spacing:.16em!important}#pulseIncome .pulse-income-total{display:block!important;font-size:28px!important;font-weight:800!important;color:#f4f8ff!important;margin:14px 0!important}</style><style>
 /* Scoped layout corrections: preview-only, notes and thoughts cards */
 #pulseExtraView .pulse-screen{display:flex;flex-direction:column;gap:14px;min-width:0}
 #pulseExtraView .pulse-screen>.pulse-toolbar{margin:0 0 2px;min-width:0}
@@ -132,7 +132,13 @@
 #pulseExtraView .pulse-entry.pulse-card>.pulse-detail{padding:12px;border-radius:12px;background:#101923}
 #pulseExtraView .pulse-screen>button{width:100%;min-height:46px;margin:0!important}
 #pulseIncome .pulse-income-total{font-size:28px!important;font-weight:800!important;display:block!important}
-</style></head><body><main class="app">
+</style><style>
+/* Preview income history: keep the graph in normal document flow above its cards. */
+#pulseExtraView .pulse-screen>.pulse-graph{display:block!important;position:relative!important;flex:none!important;width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important;margin:0 0 12px!important}
+#pulseExtraView .pulse-screen>.pulse-graph svg{display:block!important;width:100%!important;height:auto!important;min-height:155px!important;max-height:none!important}
+#pulseExtraView .pulse-screen>.pulse-graph .pulse-small{position:static!important;display:block!important;line-height:1.5!important}
+#pulseExtraView .pulse-screen>.pulse-entry.pulse-card{position:relative!important;flex:none!important}
+</style><style>#pulseIncome .pulse-income-kpis{display:grid;grid-template-columns:1.2fr .9fr .9fr;gap:8px;margin:14px 0 12px}#pulseIncome .pulse-income-kpi{min-width:0;padding:12px 9px;border:1px solid #34455d;border-radius:14px;background:linear-gradient(140deg,#182334,#101622)}#pulseIncome .pulse-income-kpi-main{border-color:#2fbd80;background:linear-gradient(140deg,#11583e,#122b2b)}#pulseIncome .pulse-income-kpi small{display:block;color:#a5b5c7;font-size:11px;margin-bottom:5px}#pulseIncome .pulse-income-kpi strong{display:block;color:#f4fff9;font-size:clamp(15px,4vw,24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#pulseIncome .pulse-graph,#pulseExtraView .pulse-graph{position:relative;overflow:visible;border:1px solid #33465c;border-radius:16px;padding:10px;background:linear-gradient(160deg,#141b2c,#0c1720 65%,#17152a)}.pulse-income-point{cursor:pointer;outline:none}.pulse-income-point:focus{stroke:#fff;stroke-width:3}.pulse-income-tooltip{position:absolute;z-index:4;top:12px;right:12px;pointer-events:none;padding:9px 12px;border:1px solid #5d768e;border-radius:11px;background:#101c2cf5;color:#eaf8ff;box-shadow:0 8px 24px #0008;font-size:12px}.pulse-income-tooltip b{display:block;color:#6affad;font-size:17px;margin:3px 0}#pulseIncome .pulse-actions button:first-child{background:#23e68b;color:#071c15;border-color:#23e68b;font-weight:700}@media(max-width:380px){#pulseIncome .pulse-income-kpi{padding:9px 6px}#pulseIncome .pulse-income-kpi strong{font-size:15px}}</style></head><body><main class="app">
 <section id="homeView"><header><div><span class="eyebrow">PULSE</span><h1>Мой дашборд</h1></div><div class="profile-wrap"><button id="profileBtn" class="avatar">VK</button><div id="profileMenu" class="profile-menu hidden"><button id="profileSettings">Настройки</button><button id="profileHistory">История</button></div></div></header>
 <section class="liquid-panel" id="liquidWidget" aria-labelledby="liquidTitle">
 <div class="liquid-top"><div><span class="liquid-kicker">PULSE LAB · LIQUID MOTION</span><h2 id="liquidTitle">Живая статистика</h2></div><span class="liquid-tag">Демо</span></div>
@@ -148,7 +154,7 @@
 <section class="panel"><div class="panel-title"><h2>Активность</h2><span>7 дней</span></div><div id="activityChart" class="chart"></div><div id="activityDays" class="days"></div><div class="streak-row">🔥 Серия: <b id="streakDays">0</b> дней</div></section></section>
 <section id="tasksView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Задачи</h1></div><button id="addFullTaskBtn" class="primary">+ Задача</button></header><div class="task-summary"><div><span>Всего</span><b id="tasksTotal">0</b></div><div><span>Срочно</span><b id="tasksUrgent">0</b></div><div><span>Готово</span><b id="tasksDone">0</b></div></div><div class="task-filters"><button class="filter-btn active" data-filter="today">Сегодня</button><button class="filter-btn" data-filter="urgent">Срочно</button><button class="filter-btn" data-filter="future">Календарь</button><button class="filter-btn" data-filter="done">Готово</button><button class="filter-btn" data-filter="overdue">Просроченные</button><button class="filter-btn" data-filter="deleted">Удалённые</button></div><div id="pulseTaskCalendar" class="pulse-calendar hidden"><label>Задачи на дату</label><input type="date" id="pulseTaskDate"></div><div id="fullTaskList"></div><div id="fullTaskEmpty" class="empty hidden">Задач по этому фильтру нет.</div></section>
 <section id="projectsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Проекты</h1></div><button id="addProjectBtn" class="primary">+ Проект</button></header><div class="project-summary project-filters"><button class="project-filter-btn" data-project-filter="overdue"><span>Просроченные</span><b id="projectsOverdue">0</b></button><button class="project-filter-btn active" data-project-filter="active"><span>Активных</span><b id="projectsActive">0</b></button><button class="project-filter-btn" data-project-filter="done"><span>Завершено</span><b id="projectsDone">0</b></button></div><div id="projectList"></div><div id="projectEmpty" class="empty hidden">Проектов пока нет.</div></section>
-<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Версия с новым планированием, Focus и восстановленной логикой проектов.</small></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div><div class="settings-card"><h2>Данные песочницы</h2><p id="savedCount"></p><p id="savedProjectCount"></p><small>Preview использует отдельное хранилище и не изменяет рабочие данные production.</small></div></section>
+<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Версия с новым планированием, Focus и восстановленной логикой проектов.</small><p id="pulseBuildVersion">Версия: preview-20261119-fix2</p><p id="pulseBuildUpdated">Дата сборки: 19.11.2026, 04:17 (Киев)</p></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div><div class="settings-card"><h2>Данные песочницы</h2><p id="savedCount"></p><p id="savedProjectCount"></p><small>Preview использует отдельное хранилище и не изменяет рабочие данные production.</small></div></section>
 <section id="historyView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>История</h1></div><button id="backSettingsBtn" class="secondary">Настройки</button></header><div class="settings-card"><div class="panel-title"><h2>Журнал действий</h2><span id="historyCount"></span></div><div class="pulse-calendar"><label>События за дату</label><input type="date" id="pulseHistoryDate"><button id="pulseHistoryAll" type="button">Все события</button></div><div id="historyList" class="history-list"></div></div></section>
 </main>
 <nav class="bottom-nav"><button id="homeNav" class="active"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z"/></svg><span>Главная</span></button><button id="projectsNav"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg><span>Проекты</span></button><button id="tasksNav"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Задачи</span></button><button id="addNav" class="add-nav" aria-label="Добавить"><span class="plus">+</span></button></nav>
@@ -499,6 +505,73 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const uid=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random();
 const date=s=>new Date(s).toLocaleString('ru-RU');
 let income=read('income',[]),thoughts=read('thoughts',[]),notes=read('notes',[]),quotes=read('quotes',['Каждый день — возможность сделать шаг вперёд.']),selected='notes',period=7,activityPeriod=7;
+const localDay=d=>new Date(d).toLocaleDateString('sv-SE');let incomeDay=localDay(Date.now()),incomePeriod=1;
+function incomeRows(){return income.filter(x=>x.at&&!isNaN(new Date(x.at))&&localDay(x.at)===incomeDay)}
+function validIncome(item){return item.at&&Number.isFinite(new Date(item.at).getTime())&&new Date(item.at).getTime()<=Date.now()&&(!item.currency||item.currency==='UAH')&&Number.isFinite(Number(item.amount))}
+function incomeInRange(startMs,endMs){return income.filter(item=>validIncome(item)&&new Date(item.at).getTime()>=startMs&&new Date(item.at).getTime()<endMs)}
+function todayIncomeRows(){const d=new Date();d.setHours(0,0,0,0);const end=new Date(d);end.setDate(end.getDate()+1);return incomeInRange(d.getTime(),end.getTime())}
+function periodIncomeRows(){const d=new Date(incomeDay+'T00:00:00');if(!Number.isFinite(d.getTime()))return [];d.setDate(d.getDate()-(incomePeriod-1));const end=new Date(incomeDay+'T00:00:00');end.setDate(end.getDate()+1);return incomeInRange(d.getTime(),end.getTime())}
+function incomeGraph(rows){
+ const days=incomePeriod,day=new Date(incomeDay+'T00:00:00');
+ if(!Number.isFinite(day.getTime()))return '';
+ const start=new Date(day);start.setDate(start.getDate()-(days-1));
+ const startMs=start.getTime(),dayEnd=new Date(day);dayEnd.setDate(dayEnd.getDate()+1);
+ const nowMs=Date.now(),endMs=Math.min(dayEnd.getTime(),nowMs);
+ const safeEnd=Math.max(startMs+1,endMs);
+ const events=periodIncomeRows().map((item,i)=>({item,t:new Date(item.at).getTime(),amount:Number(item.amount),i})).sort((a,b)=>a.t-b.t||a.i-b.i);
+ let running=0;
+ const series=events.map(event=>({event,value:(running+=event.amount)}));
+ const values=[0,...series.map(point=>point.value)],low=Math.min(0,...values),high=Math.max(1,...values),range=high-low;
+ const left=55,right=335,top=16,bottom=124;
+ const x=t=>left+Math.max(0,Math.min(1,(t-startMs)/(safeEnd-startMs)))*(right-left);
+ const y=value=>bottom-(value-low)/range*(bottom-top);
+ const fmt=value=>Number(value.toFixed(2)).toLocaleString('ru-RU',{maximumFractionDigits:2});
+ const ticks=[0,.5,1].map(f=>{
+  const value=low+range*f,py=bottom-f*(bottom-top);
+  return '<line x1="'+left+'" y1="'+py+'" x2="'+right+'" y2="'+py+'" stroke="#304052" stroke-dasharray="3 5"/><text x="47" y="'+(py+4)+'" text-anchor="end" fill="#9cacc0" font-size="11">'+fmt(value)+'</text>';
+ }).join('');
+ // Smooth monotone cubic segments through real income events; no line beyond the last event.
+ const points=[{t:startMs,value:0},...series.map(point=>({t:point.event.t,value:point.value}))];
+ let path='M '+x(points[0].t)+' '+y(points[0].value);
+ for(let i=1;i<points.length;i++){
+  const p=points[i-1],q=points[i],x0=x(p.t),x1=x(q.t),y0=y(p.value),y1=y(q.value);
+  if(Math.abs(x1-x0)<.001){path+=' L '+x1+' '+y1;continue}
+  const mid=(x0+x1)/2;
+  path+=' C '+mid+' '+y0+' '+mid+' '+y1+' '+x1+' '+y1;
+ }
+ const last=points[points.length-1],lastX=x(last.t);
+ const area=path+' L '+lastX+' '+bottom+' L '+left+' '+bottom+' Z';
+ const line='<path d="'+path+'" fill="none" stroke="#61f5ac" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+ // Coincident timestamps retain their real x-position; stagger markers vertically
+ // only when their cumulative totals would otherwise cover one another.
+ const groups=new Map();
+ series.forEach((point,i)=>{const key=point.event.t;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(i)});
+ const markerPositions=series.map(point=>({px:x(point.event.t),py:y(point.value),realX:x(point.event.t),realY:y(point.value)}));
+ groups.forEach(indices=>{
+  if(indices.length<2)return;
+  const center=x(series[indices[0]].event.t),step=15;
+  const half=(indices.length-1)*step/2;
+  const shift=Math.max(left+7-(center-half),Math.min(0,right-7-(center+half)));
+  indices.forEach((idx,k)=>{
+   const pos=markerPositions[idx];
+   pos.px=Math.max(left+7,Math.min(right-7,center+(k-(indices.length-1)/2)*step+shift));
+   pos.py=Math.max(top+7,Math.min(bottom-7,pos.realY+(k%2===0?-1:1)*7));
+  });
+ });
+ const connectors=markerPositions.map(pos=>{
+  if(Math.abs(pos.px-pos.realX)<.5&&Math.abs(pos.py-pos.realY)<.5)return '';
+  return '<line x1="'+pos.realX+'" y1="'+pos.realY+'" x2="'+pos.px+'" y2="'+pos.py+'" stroke="#a5ffca" stroke-opacity=".7" stroke-width="1" stroke-dasharray="2 2" pointer-events="none"/>';
+ }).join('');
+ const dots=series.map((point,i)=>{
+  const label=fmt(point.event.amount)+' ₴ · '+date(point.event.item.at)+' · итог '+fmt(point.value)+' ₴';
+  return '<circle class="pulse-income-point" tabindex="0" role="button" aria-label="'+esc(label)+'" data-time="'+esc(new Date(point.event.t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}))+'" data-amount="'+esc(fmt(point.event.amount))+'" data-total="'+esc(fmt(point.value))+'" cx="'+markerPositions[i].px+'" cy="'+markerPositions[i].py+'" r="6" fill="#a5ffca" stroke="#0e1723" stroke-width="2"><title>'+esc(label)+'</title></circle>';
+ }).join('');
+ const fmtAxis=t=>new Date(t).toLocaleString('ru-RU',days===1?{hour:'2-digit',minute:'2-digit'}:{day:'2-digit',month:'2-digit'});
+ const labels='<text x="'+left+'" y="145" fill="#9cacc0" font-size="10">'+fmtAxis(startMs)+'</text><text x="'+((left+right)/2)+'" y="145" text-anchor="middle" fill="#9cacc0" font-size="10">'+fmtAxis((startMs+safeEnd)/2)+'</text><text x="'+right+'" y="145" text-anchor="end" fill="#9cacc0" font-size="10">'+fmtAxis(safeEnd)+'</text>';
+ const title=days===1?'День':days===7?'Неделя':'Месяц';
+ const note='<div class="pulse-small" style="margin-top:6px">'+title+' · '+events.length+' операций · за период: '+fmt(running)+' ₴</div>';
+ return '<div class="pulse-graph" role="img" aria-label="Доход за '+days+' дней, операций: '+events.length+'"><svg viewBox="0 0 350 154" preserveAspectRatio="xMidYMid meet">'+'<defs><linearGradient id="pulseIncomeFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#30f5a4" stop-opacity=".52"/><stop offset="100%" stop-color="#6453ed" stop-opacity=".04"/></linearGradient></defs>'+ticks+'<path d="'+area+'" fill="url(#pulseIncomeFill)"/>'+line+connectors+dots+labels+'</svg>'+note+'</div>';
+}
 function log(title,detail){let h=read('extra_history',[]);h.unshift({id:uid(),at:now(),title,detail});write('extra_history',h)}
 function persist(){write('income',income);write('thoughts',thoughts);write('notes',notes)}
 function expire(){let changed=false;for(const t of thoughts){if(t.status==='active'&&Date.now()>=new Date(t.expiresAt).getTime()){t.status='archived';t.archivedAt=now();log('Мысль архивирована',t.title);changed=true}}if(changed)persist()}
@@ -518,12 +591,12 @@ function animateQuote(){
  const el=$('pulseDailyQuote');if(!el||!el.dataset.animated)return;
  const text=el.dataset.text||'';if(!text)return;
  if(text!==quoteAnimationText){quoteAnimationText=text;quotePosition=0;quoteDirection=1;quoteHold=0;quoteLast=0}
- const t=Date.now();if(t-quoteLast<95)return;quoteLast=t;
+ const t=Date.now();if(t-quoteLast<95||quoteDirection===0)return;quoteLast=t;
  if(quoteHold>0){quoteHold-=95;return}
  quotePosition=Math.max(0,Math.min(text.length,quotePosition+quoteDirection));
  el.textContent=text.slice(0,quotePosition)+(quotePosition<text.length?'▍':'');
  if(quotePosition===text.length){quoteDirection=-1;quoteHold=2400}
- else if(quotePosition===0){quoteDirection=1;quoteHold=650}
+ else if(quotePosition===0){quoteDirection=0;quoteHold=0}
 }
 function home(){
  expire();
@@ -531,59 +604,70 @@ function home(){
  if(hero){
  const idx=Math.floor(Date.now()/12000)%Math.max(1,active.length);
  if(active.length){hero.innerHTML='<span class="pulse-small">Активная мысль · до '+date(active[idx].expiresAt)+'</span><div id="pulseDailyQuote">'+esc(active[idx].title)+'</div><div class="pulse-countdown" data-expire="'+esc(active[idx].expiresAt)+'">'+countdown(active[idx].expiresAt)+'</div>'}
- else{const q=quotes.length?quotes[Math.floor(Date.now()/86400000)%quotes.length]:'Добавьте фразу в настройках';hero.innerHTML='<span class="pulse-small">Фраза дня</span><div id="pulseDailyQuote" data-animated="true" data-text="'+esc(q)+'"></div>';if(quoteAnimationText!==q)quoteAnimationText='';animateQuote()}
+ else{const q=quotes.length?quotes[Math.floor(Date.now()/12000)%quotes.length]:'Добавьте фразу в настройках';hero.innerHTML='<span class="pulse-small">Фраза дня</span><div id="pulseDailyQuote" data-animated="true" data-text="'+esc(q)+'"></div>';if(quoteAnimationText!==q)quoteAnimationText='';animateQuote()}
  }
  if(inc){
- const rows=income.filter(x=>!x.currency||x.currency==='UAH'),start=new Date();start.setHours(0,0,0,0);start.setDate(start.getDate()-period+1);
- const sum=rows.filter(x=>{const d=new Date(x.at||x.date||x.createdAt);return !isNaN(d)&&d>=start&&d<new Date(new Date().setHours(24,0,0,0))}).reduce((a,x)=>a+(Number(x.amount)||0),0);
- inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period">'+button('Сегодня','period-today')+button('Неделя','period-week')+button('Месяц','period-month')+'</div></div><div class="pulse-income-total">'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</div>'+plot(rows,'amount')+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
- inc.querySelectorAll('[data-pulse^="period-"]').forEach(b=>{if(b.dataset.pulse===(period===1?'period-today':period===7?'period-week':'period-month'))b.classList.add('selected')});
+ const todayRows=todayIncomeRows(),sum=todayRows.reduce((a,x)=>a+Number(x.amount),0);
+ const periodRows=periodIncomeRows(),periodSum=periodRows.reduce((a,x)=>a+Number(x.amount),0);
+ inc.innerHTML='<div class="pulse-row"><h2>Доход</h2><div class="pulse-income-period"><button type="button" data-pulse="income-day" class="'+(incomePeriod===1?'selected':'')+'">День</button><button type="button" data-pulse="income-week" class="'+(incomePeriod===7?'selected':'')+'">Неделя</button><button type="button" data-pulse="income-month" class="'+(incomePeriod===30?'selected':'')+'">Месяц</button></div></div><div class="pulse-income-date-row"><input type="date" id="pulseHomeIncomeDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div><div class="pulse-income-kpis"><div class="pulse-income-kpi pulse-income-kpi-main"><small>Доход сегодня</small><strong>'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</strong></div><div class="pulse-income-kpi"><small>Операций</small><strong>'+periodRows.length+'</strong></div><div class="pulse-income-kpi"><small>Средний</small><strong>'+(periodRows.length?(periodSum/periodRows.length).toLocaleString('ru-RU',{maximumFractionDigits:2}):'0')+' ₴</strong></div></div>'+incomeGraph(periodRows)+'<div class="pulse-actions">'+button('Добавить доход','new-income')+button('История доходов','income')+'</div>';
+ inc.querySelector('#pulseHomeIncomeDay')?.addEventListener('change',e=>{incomeDay=e.target.value||localDay(Date.now());home()});
  }
+
  updateCountdowns();
 }
+const PULSE_PREVIEW_VERSION='preview-20261119-income-v4',PULSE_PREVIEW_BUILT_AT='2026-11-19T02:17:03.400Z';
+function loadPulseBuildInfo(){
+ const v=$('pulseBuildVersion'),u=$('pulseBuildUpdated');if(!v||!u)return;
+ v.textContent='Версия: '+PULSE_PREVIEW_VERSION;
+ u.textContent='Дата сборки: '+new Date(PULSE_PREVIEW_BUILT_AT).toLocaleString('ru-RU',{timeZone:'Europe/Kyiv',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Киев)';
+}
+
 function show(type,form=false){
  selected=type;expire();const v=$('pulseExtraView');if(!v)return;
  ['homeView','tasksView','projectsView','settingsView','historyView'].forEach(id=>$(id)?.classList.add('hidden'));
  v.classList.remove('hidden');const title={notes:'Заметки',thoughts:'Мысли',income:'Доход',quotes:'Фразы дня'}[type]||type;
  let html='<header class="pulse-screen-header"><h1>'+title+'</h1>'+button('На главную','home')+'</header><div class="pulse-new-panel pulse-screen">';
  if(type==='income'){
- html+='<h2>История поступлений</h2>'+button('＋ Добавить доход','new-income');
- if(form){html+='<div class="pulse-form"><h2>Новое поступление</h2><input id="pulseAmount" type="number" step="0.01" min="0.01" placeholder="Сумма"><input id="pulseSource" maxlength="120" placeholder="Источник дохода"><select id="pulseCurrency"><option>UAH</option><option>USD</option><option>EUR</option></select><input id="pulseIncomeDate" type="date" value="'+new Date().toLocaleDateString('sv-SE')+'">'+button('Сохранить','save-income')+button('Отмена','income')+'</div>'}
- for(const x of income.slice().reverse())html+='<article class="pulse-entry pulse-card"><b>'+esc(x.amount)+' '+esc(x.currency)+'</b><p>'+esc(x.source)+'</p><small>'+date(x.at)+'</small><div class="pulse-actions">'+button('Удалить','delete-income',x.id)+'</div></article>';
+ if(form){html+='<div class="pulse-form"><h2>Новое поступление</h2><input id="pulseAmount" type="number" step="0.01" min="0.01" placeholder="Сумма"><input id="pulseSource" maxlength="120" placeholder="Источник дохода"><select id="pulseCurrency"><option>UAH</option><option>USD</option><option>EUR</option></select><input id="pulseIncomeDate" type="date" value="'+localDay(Date.now())+'">'+button('Сохранить','save-income')+button('Отмена','income')+'</div>'}
+ else{html+='<div class="pulse-toolbar"><input type="date" id="pulseIncomeArchiveDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div>'+button('＋ Добавить доход','new-income');
+ const rows=incomeRows();const sum=rows.filter(x=>!x.currency||x.currency==='UAH').reduce((a,x)=>a+(Number(x.amount)||0),0);html+='<div class="pulse-income-kpis"><div class="pulse-income-kpi pulse-income-kpi-main"><small>Доход</small><strong>'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</strong></div><div class="pulse-income-kpi"><small>Операций</small><strong>'+rows.length+'</strong></div><div class="pulse-income-kpi"><small>Средний</small><strong>'+(rows.length?(sum/rows.length).toLocaleString('ru-RU',{maximumFractionDigits:2}):'0')+' ₴</strong></div></div>'+incomeGraph(rows);
+ for(const x of rows.slice().reverse())html+='<article class="pulse-entry pulse-card"><b>'+esc(x.amount)+' '+esc(x.currency)+'</b><p>'+esc(x.source)+'</p><small>'+esc(date(x.at))+'</small><div class="pulse-actions">'+button('Удалить','delete-income',x.id)+'</div></article>';
+ if(!rows.length)html+='<p class="pulse-small">На выбранную дату поступлений нет.</p>'}
  }
  if(type==='notes'){
- html+='<div class="pulse-toolbar"><input aria-label="Дата заметок" type="date" id="pulseNoteDate" value="'+(window.pulseNotesDay||new Date().toLocaleDateString('sv-SE'))+'">'+button('Все даты','notes-all')+'</div>'+button('＋ Добавить заметку','new-note');
+ if(!form)html+='<div class="pulse-toolbar"><input aria-label="Дата заметок" type="date" id="pulseNoteDate" value="'+(window.pulseNotesDay||new Date().toLocaleDateString('sv-SE'))+'">'+button('Все даты','notes-all')+'</div>'+button('＋ Добавить заметку','new-note');
  if(form)html+='<div class="pulse-form"><h2>Новая заметка</h2><input id="pulseNoteTitle" maxlength="150" placeholder="Заголовок"><textarea id="pulseNoteBody" rows="4" placeholder="Текст заметки"></textarea>'+button('Сохранить','save-note')+button('Отмена','notes')+'</div>';
- const filtered=notes.slice().reverse().filter(x=>!window.pulseNotesDay||new Date(x.createdAt).toLocaleDateString('sv-SE')===window.pulseNotesDay);
+ if(!form){const filtered=notes.slice().reverse().filter(x=>!window.pulseNotesDay||new Date(x.createdAt).toLocaleDateString('sv-SE')===window.pulseNotesDay);
  for(const n of filtered)html+='<article class="pulse-entry pulse-card"><b>'+esc(n.title)+'</b><small>'+date(n.createdAt)+(n.updatedAt?' · изменено '+date(n.updatedAt):'')+(n.archivedAt?' · Архив':'')+'</small><p>'+esc(n.body)+'</p><div class="pulse-actions">'+button('Редактировать','edit-note',n.id)+(n.archivedAt?button('Восстановить','restore-note',n.id):button('В архив','delete-note',n.id))+'</div></article>';
- if(!filtered.length)html+='<p class="pulse-small">На выбранную дату заметок нет.</p>';
+ if(!filtered.length)html+='<p class="pulse-small">На выбранную дату заметок нет.</p>'}
  }
  if(type==='thoughts'){
- html+='<div class="pulse-toolbar">'+button('Все','thoughts')+button('Активные','thoughts-active')+button('Архив','thoughts-archive')+'</div>'+button('＋ Добавить мысль','new-thought');
+ if(!form)html+='<div class="pulse-toolbar">'+button('Все','thoughts')+button('Активные','thoughts-active')+button('Архив','thoughts-archive')+'</div>'+button('＋ Добавить мысль','new-thought');
  if(form)html+='<div class="pulse-form"><h2>Новая мысль</h2><input id="pulseThoughtTitle" maxlength="150" placeholder="Формулировка"><textarea id="pulseThoughtContext" placeholder="Контекст"></textarea><input id="pulseThoughtEmotion" placeholder="Эмоция"><input id="pulseThoughtAnalogy" placeholder="Аналогия"><input id="pulseThoughtRole" placeholder="Роль"><textarea id="pulseThoughtConclusion" placeholder="Вывод"></textarea><textarea id="pulseThoughtAction" placeholder="Действие"></textarea>'+button('Создать мысль','save-thought')+button('Отмена','thoughts')+'</div>';
- const filtered=thoughts.slice().reverse().filter(t=>!window.pulseThoughtFilter||(window.pulseThoughtFilter==='active'?t.status==='active':t.status==='archived'));
+ if(!form){const filtered=thoughts.slice().reverse().filter(t=>!window.pulseThoughtFilter||(window.pulseThoughtFilter==='active'?t.status==='active':t.status==='archived'));
  for(const t of filtered)html+='<article class="pulse-entry pulse-card"><div class="pulse-row"><b>'+esc(t.title)+'</b><span class="pulse-small">'+(t.status==='active'?'Активна':'Архив')+'</span></div><small>'+date(t.createdAt)+'</small>'+(t.status==='active'?'<div class="pulse-countdown" data-expire="'+esc(t.expiresAt)+'"></div>':'')+'<p>'+esc(t.context||t.conclusion||'')+'</p>'+button('Подробнее','thought-detail',t.id)+'<div class="pulse-detail hidden" id="pulse-detail-'+esc(t.id)+'"><p><b>Контекст:</b> '+esc(t.context)+'</p><p><b>Эмоция:</b> '+esc(t.emotion)+'</p><p><b>Аналогия:</b> '+esc(t.analogy)+'</p><p><b>Роль:</b> '+esc(t.role)+'</p><p><b>Вывод:</b> '+esc(t.conclusion)+'</p><p><b>Действие:</b> '+esc(t.action)+'</p></div><div class="pulse-actions">'+button(t.status==='active'?'В архив':'Активировать на 24 часа','toggle-thought',t.id)+button('Создать задачу','thought-task',t.id)+button('Удалить','delete-thought',t.id)+'</div></article>';
- if(!filtered.length)html+='<p class="pulse-small">Пока нет мыслей в этом разделе.</p>';
+ if(!filtered.length)html+='<p class="pulse-small">Пока нет мыслей в этом разделе.</p>'}
  }
- if(type==='quotes'){html+='<input id="pulseQuoteText" placeholder="Новая фраза дня">'+button('Добавить','save-quote');for(let i=0;i<quotes.length;i++)html+='<div class="pulse-entry pulse-card">'+esc(quotes[i])+button('Удалить','delete-quote',String(i))+'</div>'}
- html+='</div>';v.innerHTML=html;updateCountdowns();window.scrollTo(0,0);
+ if(type==='quotes'){html+='<div class="pulse-actions">'+button('Загрузить TXT','import-quotes')+button('Выгрузить TXT','export-quotes')+'</div><input type="file" id="pulseQuoteFile" accept=".txt,text/plain" class="hidden"><input id="pulseQuoteText" placeholder="Новая фраза дня">'+button('Добавить','save-quote');for(let i=0;i<quotes.length;i++)html+='<div class="pulse-entry pulse-card">'+esc(quotes[i])+button('Удалить','delete-quote',String(i))+'</div>'}
+ html+='</div>';v.innerHTML=html;if(type==='income'&&!form)v.querySelector('#pulseIncomeArchiveDay')?.addEventListener('change',e=>{incomeDay=e.target.value||localDay(Date.now());show('income')});if(type==='quotes')v.querySelector('#pulseQuoteFile')?.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{const incoming=(await file.text()).replace(/^\uFEFF/,'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(!incoming.length)return alert('В файле нет фраз');const replace=confirm('Заменить существующие фразы?\nОК — заменить, Отмена — дополнить');quotes=replace?incoming:quotes.concat(incoming);write('quotes',quotes);show('quotes');home()}catch(err){alert('Не удалось прочитать файл')}});updateCountdowns();window.scrollTo(0,0);
 }
 function countdown(end){const seconds=Math.max(0,Math.ceil((new Date(end).getTime()-Date.now())/1000));return [Math.floor(seconds/3600),Math.floor(seconds%3600/60),seconds%60].map(x=>String(x).padStart(2,'0')).join(':')}
 function updateCountdowns(){document.querySelectorAll('.pulse-countdown').forEach(el=>el.textContent=countdown(el.dataset.expire))}
 function input(id){return $(id)?.value.trim()||''}
 function action(a,id){
  if(a==='home'){vhide();return}if(a.startsWith('period-')){period=a==='period-today'?1:a==='period-week'?7:30;home();return}
- if(a==='new-income'){show('income',true);return}if(a==='income'){show('income');return}
+ if(a==='income-day'||a==='income-week'||a==='income-month'){incomePeriod=a==='income-day'?1:a==='income-week'?7:30;home();return}if(a==='income-today'){incomeDay=localDay(Date.now());incomePeriod=1;if(selected==='income'&&!$('pulseExtraView')?.classList.contains('hidden'))show('income');else home();return}if(a==='new-income'){show('income',true);return}if(a==='income'){show('income');return}
  if(a==='notes'||a==='thoughts'||a==='quotes'){if(a==='thoughts')window.pulseThoughtFilter='';show(a);return}if(a==='new-note'){show('notes',true);return}if(a==='new-thought'){show('thoughts',true);return}if(a==='thoughts-active'||a==='thoughts-archive'){window.pulseThoughtFilter=a==='thoughts-active'?'active':'archived';show('thoughts');return}if(a==='thought-detail'){$('pulse-detail-'+id)?.classList.toggle('hidden');return}if(a==='notes-all'){window.pulseNotesDay='';show('notes');return}
- if(a==='save-income'){const amount=Number(input('pulseAmount'));if(!(amount>0)||!input('pulseSource'))return alert('Введите сумму и источник');const d=input('pulseIncomeDate');income.push({id:uid(),amount,source:input('pulseSource'),currency:input('pulseCurrency'),at:d?new Date(d+'T12:00:00').toISOString():now()});persist();log('Доход','Добавлено поступление');show('income')}
+ if(a==='save-income'){const amount=Number(input('pulseAmount'));if(!(amount>0)||!input('pulseSource'))return alert('Введите сумму и источник');const d=input('pulseIncomeDate');income.push({id:uid(),amount,source:input('pulseSource'),currency:input('pulseCurrency'),at:d&&d!==localDay(Date.now())?new Date(d+'T'+new Date().toTimeString().slice(0,8)).toISOString():now()});persist();log('Доход','Добавлено поступление');location.reload()}
  if(a==='delete-income'){if(confirm('Удалить поступление?')){income=income.filter(x=>x.id!==id);persist();show('income')}}
- if(a==='save-note'){if(!input('pulseNoteTitle'))return alert('Введите заголовок');notes.push({id:uid(),title:input('pulseNoteTitle'),body:input('pulseNoteBody'),createdAt:now()});persist();log('Заметка','Создана заметка');show('notes')}
+ if(a==='save-note'){if(!input('pulseNoteTitle'))return alert('Введите заголовок');notes.push({id:uid(),title:input('pulseNoteTitle'),body:input('pulseNoteBody'),createdAt:now()});persist();log('Заметка','Создана заметка');location.reload()}
  if(a==='edit-note'){const n=notes.find(x=>x.id===id);if(!n)return;const title=prompt('Заголовок',n.title);if(title===null)return;const body=prompt('Текст заметки',n.body);if(body===null)return;n.title=title;n.body=body;n.updatedAt=now();persist();show('notes')}
  if(a==='delete-note'){if(confirm('Переместить заметку в архив?')){const n=notes.find(x=>x.id===id);if(n){n.archivedAt=now();persist();log('Заметка','Перенесена в архив');show('notes')}}}if(a==='restore-note'){const n=notes.find(x=>x.id===id);if(n){delete n.archivedAt;persist();show('notes')}}
- if(a==='save-thought'){if(!input('pulseThoughtTitle'))return alert('Введите формулировку');thoughts.push({id:uid(),title:input('pulseThoughtTitle'),context:input('pulseThoughtContext'),emotion:input('pulseThoughtEmotion'),analogy:input('pulseThoughtAnalogy'),role:input('pulseThoughtRole'),conclusion:input('pulseThoughtConclusion'),action:input('pulseThoughtAction'),createdAt:now(),expiresAt:new Date(Date.now()+86400000).toISOString(),status:'active'});persist();log('Мысль','Создана мысль');show('thoughts')}
+ if(a==='save-thought'){if(!input('pulseThoughtTitle'))return alert('Введите формулировку');thoughts.push({id:uid(),title:input('pulseThoughtTitle'),context:input('pulseThoughtContext'),emotion:input('pulseThoughtEmotion'),analogy:input('pulseThoughtAnalogy'),role:input('pulseThoughtRole'),conclusion:input('pulseThoughtConclusion'),action:input('pulseThoughtAction'),createdAt:now(),expiresAt:new Date(Date.now()+86400000).toISOString(),status:'active'});persist();log('Мысль','Создана мысль');location.reload()}
  if(a==='toggle-thought'){const t=thoughts.find(x=>x.id===id);if(!t)return;if(t.status==='active'){t.status='archived';t.archivedAt=now()}else{t.status='active';t.expiresAt=new Date(Date.now()+86400000).toISOString()}persist();log('Мысль',t.status);show('thoughts')}
  if(a==='delete-thought'){if(confirm('Удалить мысль?')){thoughts=thoughts.filter(x=>x.id!==id);persist();show('thoughts')}}
  if(a==='thought-task'){const t=thoughts.find(x=>x.id===id);if(t){vhide();const open=$('addFullTaskBtn')||$('addTaskBtn');if(open)open.click();setTimeout(()=>{const field=$('taskInput');if(field){field.value=t.title;field.dispatchEvent(new Event('input',{bubbles:true}))}const desc=$('taskDescription');if(desc)desc.value=t.action||t.conclusion||''},80)}}
+ if(a==='import-quotes'){$('pulseQuoteFile')?.click();return}if(a==='export-quotes'){const blob=new Blob([quotes.join('\n')+'\n'],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='phrases.txt';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);return}
  if(a==='save-quote'){if(input('pulseQuoteText')){quotes.push(input('pulseQuoteText'));write('quotes',quotes);show('quotes')}}
  if(a==='delete-quote'){quotes.splice(Number(id),1);write('quotes',quotes);show('quotes')}
 }
@@ -600,6 +684,7 @@ function init(){
  const quoteButton=document.createElement('button');quoteButton.className='wide primary';quoteButton.textContent='Редактировать фразы дня';quoteButton.onclick=()=>show('quotes');settings.append(quoteButton);
  document.addEventListener('click',e=>{const b=e.target.closest('[data-pulse]');if(!b||b.closest('#pulseAddMenu'))return;menu.classList.add('hidden');action(b.dataset.pulse,b.dataset.id)});document.addEventListener('change',e=>{if(e.target?.id==='pulseNoteDate'){window.pulseNotesDay=e.target.value;show('notes')}});
  ['homeNav','tasksNav','projectsNav','profileSettings','profileHistory'].forEach(id=>$(id)?.addEventListener('click',()=>{$('pulseExtraView').classList.add('hidden')}));
+ $('profileSettings')?.addEventListener('click',loadPulseBuildInfo);
  const hdr=homeView.querySelector('h1');if(hdr){hdr.textContent='PULSE';hdr.classList.add('pulse-brand')}const eyebrow=homeView.querySelector('header .eyebrow');if(eyebrow){eyebrow.textContent='DASHBOARD';eyebrow.classList.remove('pulse-brand')}
  const activity=act?.closest('.panel');if(activity){const h=activity.querySelector('.panel-title span');if(h)h.innerHTML='<select id="pulsePeriod" aria-label="Период"><option value="7">7 дней</option><option value="30">30 дней</option><option value="90">3 месяца</option><option value="365">Год</option></select>';activity.querySelector('#pulsePeriod')?.addEventListener('change',e=>{activityPeriod=Number(e.target.value)})}
  home();setInterval(()=>{updateCountdowns();animateQuote();expire()},100);setInterval(()=>{if(!$('homeView').classList.contains('hidden'))home()},12000);
@@ -638,4 +723,4 @@ document.addEventListener('change',function(e){
 });
 })();
 </script>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(e=>console.warn('Pulse PWA registration:',e)))};</script></body></html>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(e=>console.warn('Pulse PWA registration:',e)))};</script><script>document.addEventListener('click',function(e){const point=e.target.closest?.('.pulse-income-point');if(!point)return;const graph=point.closest('.pulse-graph');if(!graph)return;graph.querySelector('.pulse-income-tooltip')?.remove();const tip=document.createElement('div');tip.className='pulse-income-tooltip';const t=document.createElement('span');t.textContent=point.dataset.time;const a=document.createElement('b');a.textContent='+'+point.dataset.amount+' ₴';const total=document.createElement('span');total.textContent='Итого: '+point.dataset.total+' ₴';tip.append(t,a,total);graph.append(tip)});document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.matches?.('.pulse-income-point')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});</script></body></html>
