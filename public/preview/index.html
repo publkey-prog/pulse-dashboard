@@ -138,7 +138,7 @@
 #pulseExtraView .pulse-screen>.pulse-graph svg{display:block!important;width:100%!important;height:auto!important;min-height:155px!important;max-height:none!important}
 #pulseExtraView .pulse-screen>.pulse-graph .pulse-small{position:static!important;display:block!important;line-height:1.5!important}
 #pulseExtraView .pulse-screen>.pulse-entry.pulse-card{position:relative!important;flex:none!important}
-</style></head><body><main class="app">
+</style><style>#pulseIncome .pulse-income-kpis{display:grid;grid-template-columns:1.2fr .9fr .9fr;gap:8px;margin:14px 0 12px}#pulseIncome .pulse-income-kpi{min-width:0;padding:12px 9px;border:1px solid #34455d;border-radius:14px;background:linear-gradient(140deg,#182334,#101622)}#pulseIncome .pulse-income-kpi-main{border-color:#2fbd80;background:linear-gradient(140deg,#11583e,#122b2b)}#pulseIncome .pulse-income-kpi small{display:block;color:#a5b5c7;font-size:11px;margin-bottom:5px}#pulseIncome .pulse-income-kpi strong{display:block;color:#f4fff9;font-size:clamp(15px,4vw,24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#pulseIncome .pulse-graph,#pulseExtraView .pulse-graph{position:relative;overflow:visible;border:1px solid #33465c;border-radius:16px;padding:10px;background:linear-gradient(160deg,#141b2c,#0c1720 65%,#17152a)}.pulse-income-point{cursor:pointer;outline:none}.pulse-income-point:focus{stroke:#fff;stroke-width:3}.pulse-income-tooltip{position:absolute;z-index:4;top:12px;right:12px;pointer-events:none;padding:9px 12px;border:1px solid #5d768e;border-radius:11px;background:#101c2cf5;color:#eaf8ff;box-shadow:0 8px 24px #0008;font-size:12px}.pulse-income-tooltip b{display:block;color:#6affad;font-size:17px;margin:3px 0}#pulseIncome .pulse-actions button:first-child{background:#23e68b;color:#071c15;border-color:#23e68b;font-weight:700}@media(max-width:380px){#pulseIncome .pulse-income-kpi{padding:9px 6px}#pulseIncome .pulse-income-kpi strong{font-size:15px}}</style></head><body><main class="app">
 <section id="homeView"><header><div><span class="eyebrow">PULSE</span><h1>Мой дашборд</h1></div><div class="profile-wrap"><button id="profileBtn" class="avatar">VK</button><div id="profileMenu" class="profile-menu hidden"><button id="profileSettings">Настройки</button><button id="profileHistory">История</button></div></div></header>
 <section class="liquid-panel" id="liquidWidget" aria-labelledby="liquidTitle">
 <div class="liquid-top"><div><span class="liquid-kicker">PULSE LAB · LIQUID MOTION</span><h2 id="liquidTitle">Живая статистика</h2></div><span class="liquid-tag">Демо</span></div>
@@ -533,16 +533,17 @@ function incomeGraph(rows){
  // Never extend the line to the end of the selected date or into the future.
  let path='M '+left+' '+y(0),previous=0;
  for(const point of series){const px=x(point.event.t);path+=' L '+px+' '+y(previous)+' L '+px+' '+y(point.value);previous=point.value}
- const line='<path d="'+path+'" fill="none" stroke="#74f7ad" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+ const area=path+' L '+(series.length?x(series[series.length-1].event.t):left)+' '+bottom+' L '+left+' '+bottom+' Z';
+ const line='<path d="'+path+'" fill="none" stroke="#61f5ac" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
  const dots=series.map(point=>{
   const label=fmt(point.event.amount)+' ₴ · '+date(point.event.item.at)+' · итог '+fmt(point.value)+' ₴';
-  return '<circle cx="'+x(point.event.t)+'" cy="'+y(point.value)+'" r="4.5" fill="#91ffbf" stroke="#10271d" stroke-width="1.5"><title>'+esc(label)+'</title></circle>';
+  return '<circle class="pulse-income-point" tabindex="0" role="button" aria-label="'+esc(label)+'" data-time="'+esc(new Date(point.event.t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}))+'" data-amount="'+esc(fmt(point.event.amount))+'" data-total="'+esc(fmt(point.value))+'" cx="'+x(point.event.t)+'" cy="'+y(point.value)+'" r="5" fill="#a5ffca" stroke="#0e1723" stroke-width="2"><title>'+esc(label)+'</title></circle>';
  }).join('');
  const fmtAxis=t=>new Date(t).toLocaleString('ru-RU',days===1?{hour:'2-digit',minute:'2-digit'}:{day:'2-digit',month:'2-digit'});
  const labels='<text x="'+left+'" y="145" fill="#9cacc0" font-size="10">'+fmtAxis(startMs)+'</text><text x="'+((left+right)/2)+'" y="145" text-anchor="middle" fill="#9cacc0" font-size="10">'+fmtAxis((startMs+safeEnd)/2)+'</text><text x="'+right+'" y="145" text-anchor="end" fill="#9cacc0" font-size="10">'+fmtAxis(safeEnd)+'</text>';
  const title=days===1?'День':days===7?'Неделя':'Месяц';
  const note='<div class="pulse-small" style="margin-top:6px">'+title+' · '+events.length+' операций · накопительный доход: '+fmt(running)+' ₴</div>';
- return '<div class="pulse-graph" role="img" aria-label="Доход за '+days+' дней, операций: '+events.length+'"><svg viewBox="0 0 350 154" preserveAspectRatio="xMidYMid meet">'+ticks+line+dots+labels+'</svg>'+note+'</div>';
+ return '<div class="pulse-graph" role="img" aria-label="Доход за '+days+' дней, операций: '+events.length+'"><svg viewBox="0 0 350 154" preserveAspectRatio="xMidYMid meet">'+'<defs><linearGradient id="pulseIncomeFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#30f5a4" stop-opacity=".52"/><stop offset="100%" stop-color="#6453ed" stop-opacity=".04"/></linearGradient></defs>'+'+ticks+'<path d="'+area+'" fill="url(#pulseIncomeFill)"/>'+line+dots+labels+'</svg>'+note+'</div>';
 }
 function log(title,detail){let h=read('extra_history',[]);h.unshift({id:uid(),at:now(),title,detail});write('extra_history',h)}
 function persist(){write('income',income);write('thoughts',thoughts);write('notes',notes)}
@@ -601,7 +602,7 @@ function show(type,form=false){
  if(type==='income'){
  if(form){html+='<div class="pulse-form"><h2>Новое поступление</h2><input id="pulseAmount" type="number" step="0.01" min="0.01" placeholder="Сумма"><input id="pulseSource" maxlength="120" placeholder="Источник дохода"><select id="pulseCurrency"><option>UAH</option><option>USD</option><option>EUR</option></select><input id="pulseIncomeDate" type="date" value="'+localDay(Date.now())+'">'+button('Сохранить','save-income')+button('Отмена','income')+'</div>'}
  else{html+='<div class="pulse-toolbar"><input type="date" id="pulseIncomeArchiveDay" aria-label="Дата дохода" value="'+esc(incomeDay)+'">'+button('Сегодня','income-today')+'</div>'+button('＋ Добавить доход','new-income');
- const rows=incomeRows();const sum=rows.filter(x=>!x.currency||x.currency==='UAH').reduce((a,x)=>a+(Number(x.amount)||0),0);html+='<div class="pulse-income-total">'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</div>'+incomeGraph(rows);
+ const rows=incomeRows();const sum=rows.filter(x=>!x.currency||x.currency==='UAH').reduce((a,x)=>a+(Number(x.amount)||0),0);html+='<div class="pulse-income-kpis"><div class="pulse-income-kpi pulse-income-kpi-main"><small>Доход</small><strong>'+sum.toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₴</strong></div><div class="pulse-income-kpi"><small>Операций</small><strong>'+rows.length+'</strong></div><div class="pulse-income-kpi"><small>Средний</small><strong>'+(rows.length?(sum/rows.length).toLocaleString('ru-RU',{maximumFractionDigits:2}):'0')+' ₴</strong></div></div>'+incomeGraph(rows);
  for(const x of rows.slice().reverse())html+='<article class="pulse-entry pulse-card"><b>'+esc(x.amount)+' '+esc(x.currency)+'</b><p>'+esc(x.source)+'</p><small>'+esc(date(x.at))+'</small><div class="pulse-actions">'+button('Удалить','delete-income',x.id)+'</div></article>';
  if(!rows.length)html+='<p class="pulse-small">На выбранную дату поступлений нет.</p>'}
  }
@@ -694,4 +695,4 @@ document.addEventListener('change',function(e){
 });
 })();
 </script>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(e=>console.warn('Pulse PWA registration:',e)))};</script></body></html>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(e=>console.warn('Pulse PWA registration:',e)))};</script><script>document.addEventListener('click',function(e){const point=e.target.closest?.('.pulse-income-point');if(!point)return;const graph=point.closest('.pulse-graph');if(!graph)return;graph.querySelector('.pulse-income-tooltip')?.remove();const tip=document.createElement('div');tip.className='pulse-income-tooltip';const t=document.createElement('span');t.textContent=point.dataset.time;const a=document.createElement('b');a.textContent='+'+point.dataset.amount+' ₴';const total=document.createElement('span');total.textContent='Итого: '+point.dataset.total+' ₴';tip.append(t,a,total);graph.append(tip)});document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.matches?.('.pulse-income-point')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});</script></body></html>
