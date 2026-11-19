@@ -23,7 +23,7 @@ jobs:
           test -f public/manifest.json
           test -f public/sw.js
           cd public
-          zip -q -r ../Pulse_Production_Manual_Install.zip . -x 'preview/*' 'preview/**'
+          zip -q -r ../Pulse_Production_Manual_Install.zip . -x 'preview/' 'preview/*' 'preview/**'
           cd ..
           unzip -Z -1 Pulse_Production_Manual_Install.zip | grep -Fxq 'index.html'
           unzip -Z -1 Pulse_Production_Manual_Install.zip | grep -Fxq 'manifest.json'
