@@ -59,19 +59,29 @@ curl_setopt_array($curl, [
 ]);
 $response = curl_exec($curl);
 $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+$transportError = curl_errno($curl);
 curl_close($curl);
 
-if ($response === false || $status < 200 || $status >= 300) {
-    if ($status === 401 || $status === 403) {
-        reply(503, ['error' => 'openai_access_denied']);
-    }
-    if ($status === 429) {
-        reply(429, ['error' => 'openai_limit']);
-    }
-    reply(502, ['error' => 'openai_unavailable']);
+if ($response === false) {
+    reply(502, ['error' => 'openai_transport', 'detail' => 'cURL ' . $transportError]);
 }
 
 $result = json_decode($response, true);
+if ($status < 200 || $status >= 300) {
+    $upstreamCode = $result['error']['code'] ?? null;
+    $detail = 'HTTP ' . $status;
+    if (is_string($upstreamCode) && preg_match('/^[a-z0-9_]{1,64}$/D', $upstreamCode)) {
+        $detail .= ' / ' . $upstreamCode;
+    }
+    if ($status === 401 || $status === 403) {
+        reply(503, ['error' => 'openai_access_denied', 'detail' => $detail]);
+    }
+    if ($status === 429) {
+        reply(429, ['error' => 'openai_limit', 'detail' => $detail]);
+    }
+    reply(502, ['error' => 'openai_unavailable', 'detail' => $detail]);
+}
+
 foreach ($result['output'] ?? [] as $item) {
     foreach ($item['content'] ?? [] as $content) {
         if (($content['type'] ?? '') === 'output_text') {

@@ -153,16 +153,21 @@ document.addEventListener('DOMContentLoaded', () => {
         headers:{'Content-Type':'application/json','X-Pulse-Schedule-Code':code},
         body:JSON.stringify({hours:api.hours(),now:new Date().toISOString(),...api.context(),tasks:items.map(t=>({id:t.id,name:t.text,description:t.description,project:api.project(t.projectId),deadline:t.deadlineAt,priority:t.starred}))})
       });
-      const data=await result.json();
+      const data=await result.json().catch(()=>null);
+      if(!data)throw Error('сервер Pulse вернул HTTP '+result.status+' без ответа JSON');
       if(!result.ok){
         const errors={
           schedule_access_required:'неверный код или доступ ещё не настроен',
           schedule_unconfigured:'серверный ключ недоступен',
           schedule_invalid_input:'данные расписания не приняты',
           openai_access_denied:'ключ OpenAI отклонён',
-          openai_limit:'достигнут лимит OpenAI'
+          openai_limit:'достигнут лимит OpenAI',
+          openai_transport:'сервер Pulse не смог связаться с OpenAI',
+          openai_unavailable:'OpenAI вернул ошибку',
+          openai_invalid_response:'ответ OpenAI не содержит расписания'
         };
-        throw Error(errors[data.error]||'ошибка сервера');
+        const message=errors[data.error]||'ошибка сервера';
+        throw Error(data.detail ? message+' · '+data.detail : message);
       }
       const answer=data.tasks, lookup=new Map(items.map(t=>[String(t.id),t])),order=[],tips=Object.create(null);
       for(const row of answer){const id=String(row.id),task=lookup.get(id);if(!task||typeof row.advice!=='string'||!row.advice.trim())throw Error('формат ответа');order.push(task);tips[id]=row.advice;lookup.delete(id)}
