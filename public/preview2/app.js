@@ -4,6 +4,8 @@
   const stage = document.getElementById('stage');
   const controls = document.getElementById('controls');
   const hint = document.getElementById('hint');
+  const fullscreenButton = document.getElementById('fullscreenButton');
+  const fullscreenStatus = document.getElementById('fullscreenStatus');
   const sizeSlider = document.getElementById('size');
   const distanceSlider = document.getElementById('distance');
   const sizeValue = document.getElementById('sizeValue');
@@ -36,11 +38,41 @@
       localStorage.setItem(key, JSON.stringify({size: Number(sizeSlider.value), distance: Number(distanceSlider.value), updated: new Date().toISOString().slice(0, 10)}));
     } catch (_) { /* Private browsing can disable local storage. */ }
   }
-  stage.addEventListener('click', event => {
+  const activeFullscreen = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const updateFullscreenState = () => {
+    if (activeFullscreen()) {
+      controls.hidden = true;
+      hint.classList.add('hidden');
+    }
+    render();
+  };
+  fullscreenButton.addEventListener('click', async event => {
+    event.stopPropagation();
+    fullscreenStatus.hidden = true;
+    try {
+      if (stage.requestFullscreen) await stage.requestFullscreen();
+      else if (stage.webkitRequestFullscreen) stage.webkitRequestFullscreen();
+      else throw new Error('Fullscreen API unavailable');
+      updateFullscreenState();
+    } catch (_) {
+      fullscreenStatus.textContent = 'Полноэкранный режим недоступен в этом браузере.';
+      fullscreenStatus.hidden = false;
+    }
+  });
+  stage.addEventListener('click', async event => {
+    if (activeFullscreen()) {
+      try {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } catch (_) { /* The browser can also leave fullscreen via its own controls. */ }
+      return;
+    }
     if (event.target.closest('[data-control]')) return;
     controls.hidden = !controls.hidden;
     hint.classList.add('hidden');
   });
+  document.addEventListener('fullscreenchange', updateFullscreenState);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenState);
   sizeSlider.addEventListener('input', update);
   distanceSlider.addEventListener('input', update);
   window.addEventListener('resize', render);
