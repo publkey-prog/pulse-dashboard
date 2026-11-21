@@ -9,6 +9,7 @@ This file is the persistent operational context for ChatGPT/Codex. Read it befor
 ## Live sites
 - Production / main Pulse Dashboard: `https://pulse.publkey.com/`
 - Preview sandbox: `https://pulse.publkey.com/preview/`
+- Independent preview sandbox 2: `https://pulse.publkey.com/preview2/`
 
 ## Deployment chain
 Changes pushed to `main` trigger GitHub Actions workflow:
@@ -25,6 +26,12 @@ The preview sandbox is the default place for temporary test projects.
 - Do NOT replace or modify the main Pulse Dashboard unless the user explicitly asks.
 - Do NOT remove `public/preview/` during production restores.
 - The workflow is intentionally configured to preserve `preview/` when restoring the main dashboard package.
+- The workflow also preserves `preview2/` when restoring the main dashboard package.
+
+## Independent preview 2
+- Publish unrelated parallel-project results under `public/preview2/`.
+- `preview2/` and `preview/` have separate files and URLs; neither may overwrite the other.
+- Use the same `main` push and cPanel deployment workflow, then verify the exact run and `https://pulse.publkey.com/preview2/`.
 
 ## How to publish a temporary project
 1. Inspect this file and the current workflow before editing.
@@ -46,6 +53,7 @@ When the user mentions any of:
 - "Pulse Dashboard"
 - `pulse.publkey.com`
 - `/preview/`
+- `/preview2/`
 
 first inspect:
 1. this `PROJECT_CONTEXT.md`;
