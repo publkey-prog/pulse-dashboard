@@ -12,6 +12,7 @@
   const distanceValue = document.getElementById('distanceValue');
   const left = document.getElementById('coinLeft');
   const right = document.getElementById('coinRight');
+  let cursorTimer;
   try {
     const previous = JSON.parse(localStorage.getItem(key) || '{}');
     if (Number.isFinite(+previous.size)) sizeSlider.value = Math.min(17, Math.max(5, +previous.size));
@@ -39,11 +40,22 @@
     } catch (_) { /* Private browsing can disable local storage. */ }
   }
   const activeFullscreen = () => document.fullscreenElement || document.webkitFullscreenElement;
+  function showCursorTemporarily() {
+    clearTimeout(cursorTimer);
+    document.documentElement.classList.remove('cursor-hidden');
+    if (activeFullscreen()) {
+      cursorTimer = setTimeout(() => {
+        if (activeFullscreen()) document.documentElement.classList.add('cursor-hidden');
+      }, 2000);
+    }
+  }
   const updateFullscreenState = () => {
     if (activeFullscreen()) {
       controls.hidden = true;
       hint.classList.add('hidden');
+      fullscreenButton.blur();
     }
+    showCursorTemporarily();
     render();
   };
   fullscreenButton.addEventListener('click', async event => {
@@ -61,6 +73,7 @@
   });
   stage.addEventListener('click', async event => {
     if (activeFullscreen()) {
+      clearTimeout(cursorTimer);
       try {
         if (document.exitFullscreen) await document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
@@ -73,6 +86,8 @@
   });
   document.addEventListener('fullscreenchange', updateFullscreenState);
   document.addEventListener('webkitfullscreenchange', updateFullscreenState);
+  stage.addEventListener('pointermove', showCursorTemporarily);
+  stage.addEventListener('mousemove', showCursorTemporarily);
   sizeSlider.addEventListener('input', update);
   distanceSlider.addEventListener('input', update);
   window.addEventListener('resize', render);
