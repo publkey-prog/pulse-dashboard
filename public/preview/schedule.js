@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const first = () => localStorage.getItem(firstKey) === 'schedule' ? 3 : 0;
   const schedule = document.createElement('section');
   schedule.className = 'panel';
-  schedule.innerHTML = '<div class="panel-title"><h2>Расписание</h2><span class="plan-clock"></span></div><div class="plan-modes"><button class="secondary">Авто</button><button class="secondary">ИИ</button></div><div class="plan-wheel" aria-label="Расписание дня"></div><p class="plan-info"></p><small role="status"></small>';
+  schedule.innerHTML = '<div class="panel-title"><h2>Расписание</h2><span class="plan-clock"></span></div><div class="plan-modes"><button class="secondary">Авто</button><button class="secondary">ИИ</button></div><div class="plan-wheel" aria-label="Расписание дня"></div><div class="plan-task-details" hidden><div class="plan-description"><strong>Описание задачи:</strong><div class="plan-body"></div><small class="plan-project"></small></div><div class="plan-deadline"><span></span> <b></b></div></div><p class="plan-info"></p><small role="status"></small>';
   const cards = [byId('taskList').closest('.panel'),byId('activityChart').closest('.panel'),byId('pulseIncome'),schedule];
   const deck = document.createElement('div');
   deck.className = 'pulse-deck';
@@ -110,12 +110,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!slot && slots.length)details=now<slots[0].from?'Начало в '+time(slots[0].from):'Расписание на сегодня завершено.';
     if(slot && slot.id==null)details='Перерыв до '+time(slot.to);
     if(slot && slot.id!=null && !task)details='Задача удалена. Обновите расписание кнопкой «Авто».';
-    if(task){
-      const seconds=Math.floor((Date.parse(task.deadlineAt)-now)/1000),n=Math.abs(seconds);
-      const timer=[Math.floor(n/3600),Math.floor(n/60)%60,n%60].map(x=>String(x).padStart(2,'0')).join(':');
-      details=plan.mode==='ai'?slot.advice:[task.description||task.text,api.project(task.projectId),Number.isFinite(n)?(seconds<0?'Просрочка ':'До дедлайна ')+timer:''].filter(Boolean).join('\n');
+    const taskDetails=schedule.querySelector('.plan-task-details');
+    taskDetails.hidden=!task || plan.mode==='ai';
+    if(task && plan.mode==='ai') details=slot.advice;
+    if(!taskDetails.hidden){
+      details='';
+      taskDetails.querySelector('.plan-body').textContent=task.description || task.text;
+      const project=api.project(task.projectId);
+      taskDetails.querySelector('.plan-project').textContent=project ? 'Проект · '+project : '';
+      const deadline=taskDetails.querySelector('.plan-deadline');
+      const seconds=Math.floor((Date.parse(task.deadlineAt)-now)/1000);
+      deadline.hidden=!Number.isFinite(seconds);
+      if(!deadline.hidden){
+        const n=Math.abs(seconds);
+        deadline.classList.toggle('overdue', seconds<0);
+        deadline.querySelector('span').textContent=seconds<0 ? 'Срочно разберись' : 'Скоро, очень скоро:';
+        deadline.querySelector('b').textContent=[Math.floor(n/3600),Math.floor(n/60)%60,n%60].map(x=>String(x).padStart(2,'0')).join(':');
+      }
     }
-    info.textContent=details+(plan.omitted?'\nЗа пределами рабочего дня: '+plan.omitted:'');
+    info.textContent=[details,plan.omitted?'За пределами рабочего дня: '+plan.omitted:''].filter(Boolean).join('\n');
+    info.hidden=!info.textContent;
   }
   auto.onclick=()=>{pending++;ai.disabled=false;status.textContent='';save(build())};
   const dialog=document.createElement('dialog');dialog.className='plan-dialog';

@@ -13,3 +13,14 @@
 .plan-info{font-size:13px;color:#cbd4e1;white-space:pre-line;line-height:1.5;margin:12px 0 0}
 .plan-dialog{background:#141a24;color:#eff4fc;border:1px solid #394355;border-radius:16px;max-width:min(380px,90vw)}.plan-dialog input{width:100%;margin:8px 0}.plan-dialog::backdrop{background:#0009}
 @media(prefers-reduced-motion:reduce){.pulse-deck>.deck-card{transition:none}}
+
+.plan-task-details{margin-top:12px;font-size:13px;line-height:1.5;color:#cbd4e1}
+.plan-description,.plan-deadline{border:1px solid #343d4c;border-radius:12px;padding:9px 12px;background:#10151d}
+.plan-description strong{font-size:12px;color:#aab6c6}
+.plan-body{white-space:pre-wrap;overflow-wrap:anywhere}
+.plan-project{color:#aab6c6;overflow-wrap:anywhere}
+.plan-project:empty{display:none}
+.plan-deadline{margin-top:7px}
+.plan-deadline:not([hidden]){display:flex;align-items:baseline;justify-content:space-between;gap:4px 8px;flex-wrap:wrap}
+.plan-deadline b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.plan-deadline.overdue{color:#ff899b;border-color:#784452}
