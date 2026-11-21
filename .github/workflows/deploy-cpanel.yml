@@ -61,6 +61,9 @@ jobs:
             fi
           fi
 
+      - name: Check preview schedule API
+        run: php -l public/preview/schedule-api.php
+
       - name: Configure SSH
         shell: bash
         env:
@@ -182,6 +185,16 @@ jobs:
                 echo "::warning file=$file::HTTP request failed for $rel"
                 all_ok=false
                 break
+              fi
+              # PHP executes on the server. Check its method guard instead of comparing source bytes.
+              if [ "$rel" = "preview/schedule-api.php" ]; then
+                if [ "$http_code" != "405" ] || ! jq -e '.error == "schedule_post_required"' "$out" > /dev/null; then
+                  echo "::warning file=$file::Preview schedule API verification failed (HTTP $http_code)"
+                  all_ok=false
+                  break
+                fi
+                echo "Verified PHP execution: $rel"
+                continue
               fi
               if [ "$http_code" != "200" ]; then
                 echo "::warning file=$file::HTTP $http_code for $rel (expected 200)"
