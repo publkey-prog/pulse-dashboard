@@ -1,0 +1,15 @@
+.pulse-deck{position:relative;overflow:hidden;margin:0 -12px;touch-action:pan-y}
+.pulse-deck>.deck-card{position:absolute;top:0;width:89%;left:5.5%;margin:0;min-width:0;transition:transform .24s ease,opacity .24s ease;max-height:min(65vh,570px);overflow:auto;overscroll-behavior-y:auto}
+.pulse-deck>.deck-current{position:relative;z-index:2;min-height:210px}
+.pulse-deck>.deck-left,.pulse-deck>.deck-right{pointer-events:none;opacity:.6}
+.pulse-deck>.deck-left{transform:translateX(calc(-100% - 7px)) scaleY(.94)}
+.pulse-deck>.deck-right{transform:translateX(calc(100% + 7px)) scaleY(.94)}
+.pulse-deck>.deck-away{visibility:hidden}
+.deck-dots{display:flex;justify-content:center}.deck-dots button{background:transparent;border:0;width:30px;height:34px}.deck-dots button::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#515b6b}.deck-dots button[aria-current=true]::after{background:#9bf1cd}
+.plan-modes{display:flex;gap:6px;margin:10px 0}.plan-modes button{flex:1}.plan-modes button[aria-pressed=true]{background:#b4f5d6;color:#12241c}
+.plan-wheel{max-height:185px;overflow:auto;scroll-snap-type:y mandatory;background:linear-gradient(#0e1219,#1b2430,#0e1219);border-radius:14px;padding-block:74px;scrollbar-width:none}
+.plan-wheel button{display:block;width:100%;height:37px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;color:#8994a6;scroll-snap-align:center;font:inherit;font-size:14px;padding:0 9px;transform:scale(.95)}
+.plan-wheel button.current{background:#1e3831;border-color:#48745f;color:#baf7d6;font-weight:700;transform:none}
+.plan-info{font-size:13px;color:#cbd4e1;white-space:pre-line;line-height:1.5;margin:12px 0 0}
+.plan-dialog{background:#141a24;color:#eff4fc;border:1px solid #394355;border-radius:16px;max-width:min(380px,90vw)}.plan-dialog input{width:100%;margin:8px 0}.plan-dialog::backdrop{background:#0009}
+@media(prefers-reduced-motion:reduce){.pulse-deck>.deck-card{transition:none}}
