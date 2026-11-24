@@ -187,7 +187,7 @@ jobs:
                 break
               fi
               # PHP executes on the server. Check its method guard instead of comparing source bytes.
-              if [ "$rel" = "preview/schedule-api.php" ]; then
+              if [ "$rel" = "preview/schedule-api.php" ] || [ "$rel" = "schedule-api.php" ]; then
                 if [ "$http_code" != "405" ] || ! jq -e '.error == "schedule_post_required"' "$out" > /dev/null; then
                   echo "::warning file=$file::Preview schedule API verification failed (HTTP $http_code)"
                   all_ok=false
