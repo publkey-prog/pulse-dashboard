@@ -186,6 +186,16 @@ jobs:
                 all_ok=false
                 break
               fi
+              case "$rel" in
+                preview/ai-common.php|preview/project-api.php|preview/rates.php|preview/scenes.php)
+                  expected=$(sha256sum "$file" | cut -d' ' -f1)
+                  if [ "$http_code" != "200" ] || ! jq -e --arg sha "$expected" '.build == $sha' "$out" >/dev/null; then
+                    all_ok=false
+                    break
+                  fi
+                  echo "Verified PHP build: $rel"
+                  continue ;;
+              esac
               # PHP executes on the server. Check its method guard instead of comparing source bytes.
               if [ "$rel" = "preview/schedule-api.php" ] || [ "$rel" = "schedule-api.php" ]; then
                 if [ "$http_code" != "405" ] || ! jq -e '.error == "schedule_post_required"' "$out" > /dev/null; then
