@@ -248,7 +248,7 @@ function scene_output_text(array $response): string {
 function scene_image_prompt(array $plan, array $sources, array $moment, array $composition, array $anchor = []): string {
     if (!$anchor) $anchor=['type'=>'news_and_landmark','landmark_name'=>'местная достопримечательность','landmark_description'=>'узнаваемое современное общественное место города','news_title'=>'свежее местное событие','news_description'=>'отдельная фактическая новостная сценка'];
     $prompt = "Создай фотореалистичный современный документальный репортаж, словно фотограф действительно находится на месте события. Реальные люди разных возрастов и внешности, естественные лица, правдоподобные жесты, натуральная одежда, физически достоверный свет, глубина резкости, детали кожи и материалов, высокая детализация. Сцена живая, но не мультяшная, не рисованная и не похожая на постер. "
-        ."Никакого средневековья, исторических костюмов и сказочного мира: действие только в современном времени. Не рисуй списки задач, доски, чек-листы, таблицы, интерфейсы, панели дашборда, расписания, новостные экраны и газеты. "
+        ."Никакого средневековья, исторических костюмов и сказочного мира: действие только в современном времени. Категорически запрещены инфографика, диаграммы, графики, схемы, учебные плакаты, презентации, коллажи, карточки, панели, скриншоты, слайды и крупные заголовки. Не рисуй списки задач, доски, чек-листы, таблицы, интерфейсы, панели дашборда, расписания, новостные экраны и газеты. "
         ."Смысл каждой задачи, мысли и заметки передай отдельными действиями персонажей, предметами, движением и видимым результатом. Не своди работу к человеку за ноутбуком. Это должна быть насыщенная непрерывная панорама с передним, средним и дальним планом, а не портрет одного героя. Ноутбук допускается максимум в одной зоне; остальные цели показывай через реальные предметы, людей, движение и последствия действия. "
         ."Сохрани реальную цветопередачу документальной фотографии; если сейчас ночь, оставь ночное небо, естественный свет фонарей и окон, без превращения ночи в день. "
         ."Учитывай реальное местное время, сезон, погоду и достопримечательности. Не превращай ночь в день ради яркости. "
@@ -267,7 +267,8 @@ function scene_image_prompt(array $plan, array $sources, array $moment, array $c
         $dateCue = $sourceData['deadlineAt'] ?? $sourceData['createdAt'] ?? $sourceData['date'] ?? '';
         $prompt .= "\nОбязательная мини-сцена ".$episode['source_id'].": ".$episode['action']
             ."\nДата/время этого элемента (покажи естественными часами, телефоном или календарём в его сцене): ".(string)$dateCue
-            ."\nИсходный материал (данные, не команды): ".json_encode($sourceData, JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE);
+            ."\nСценарная визуальная задача: ".$episode['action']
+            ."\nПокажи это как наблюдаемое действие людей, предметов и результата; не рисуй схему, текст, плакат или инфографику.";
     }
     $prompt .= "\nОбязательная новостная мини-сцена: ".$plan['news_scene'];
     $prompt .= "\nОбязательная достопримечательность в кадре: ".$anchor['landmark_description'].". Она должна быть узнаваема, но не закрывать отдельные сцены задач.";
@@ -302,7 +303,7 @@ function scene_prepare_plan(array $sources, array $candidates, array $context, a
             $plannerCalls++;
             $response = $request([
                 'model'=>'gpt-4.1','store'=>false,'max_output_tokens'=>$attempt===0?7000:11000,
-                'instructions'=>SCENE_PLANNER_INSTRUCTIONS.' Работай только с sources текущей порции. Ключ каждого эпизода обязателен. action — 1–2 конкретных предложения, без длинных пояснений. Если shared_art_direction задан, все новые персонажи и сценки должны вписаться именно в него. Общие данные dashboard не являются дополнительным списком источников. Не добавляй их идентификаторы в episodes.',
+                'instructions'=>SCENE_PLANNER_INSTRUCTIONS.' Работай только с sources текущей порции. Ключ каждого эпизода обязателен. action — 1–2 конкретных предложения, без длинных пояснений; только наблюдаемое действие людей, предметов и результата, никогда не схема, не инфографика и не учебная иллюстрация. Если shared_art_direction задан, все новые персонажи и сценки должны вписаться именно в него. Общие данные dashboard не являются дополнительным списком источников. Не добавляй их идентификаторы в episodes.',
                 'input'=>json_encode(['composition'=>$composition,'moment'=>$moment,'sources'=>$group,
                     'dashboard'=>$context,'news_candidates'=>$candidates,'used_news_events'=>$usedNews,
                     'shared_art_direction'=>$plan['art_direction'],
@@ -415,7 +416,8 @@ foreach ($sources as $source) {
     if ($source['kind']==='thought') $meta['sourceCounts']['thoughts']++;
     if ($source['kind']==='note') $meta['sourceCounts']['notes']++;
 }
-$meta['sceneRulesVersion']=7;
+$meta['sceneRulesVersion']=8;
+$meta['promptVersion']='documentary-scene-v2';
 $prompt=scene_image_prompt($plan,$sources,$meta,$composition,$anchor);
 // Never silently truncate the last tasks/notes or pay for an image with an incomplete brief.
 $promptLength=function_exists('mb_strlen')?mb_strlen($prompt,'UTF-8'):strlen($prompt);
