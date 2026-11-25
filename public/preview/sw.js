@@ -1,4 +1,4 @@
-const cacheName = 'pulse-preview-ai-projects-3';
+const cacheName = 'pulse-preview-ai-projects-4';
 const assets = ['./','./index.html','./manifest.json','./schedule.js','./schedule.css','./ai-auth.js','./project-ai.js','./rates.js','./scenes.js'];
 const allowed = new Set(assets.map(path => new URL(path, self.registration.scope).href));
 self.addEventListener('install', event => event.waitUntil((async () => {

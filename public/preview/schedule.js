@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(generating)return;
     opened=true;day.setAttribute('aria-pressed','true');rates.setAttribute('aria-pressed','false');
     refresh.hidden=false;refresh.disabled=generate;generating=generate;day.disabled=generate;rates.disabled=generate;
-    try{await window.mountPulseScenes(content,generate)}finally{refresh.disabled=false;generating=false;day.disabled=false;rates.disabled=false}
+    try{await window.mountPulseScenes(content,generate,refresh)}finally{refresh.disabled=false;generating=false;day.disabled=false;rates.disabled=false}
   }
   day.onclick=()=>show(false);refresh.onclick=()=>show(true);
   rates.onclick=()=>{refresh.hidden=true;opened=true;day.setAttribute('aria-pressed','false');rates.setAttribute('aria-pressed','true');window.mountPulseRates(content)};
