@@ -64,6 +64,13 @@ jobs:
       - name: Check preview schedule API
         run: php -l public/preview/schedule-api.php
 
+      - name: Check scene coverage and archive rules
+        run: |
+          php -l public/preview/scenes.php
+          php tests/scene-rules.php
+          node --check public/preview/scenes.js
+          node --check public/preview/sw.js
+
       - name: Configure SSH
         shell: bash
         env:

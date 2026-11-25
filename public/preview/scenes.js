@@ -91,7 +91,7 @@
         headline.hidden=!news?.url;
         headline.style.display=news?.url?'block':'none';
         if (news?.url && news.url.startsWith('https://news.google.com/')) headline.href=news.url;else headline.removeAttribute('href');
-        status.textContent='';retry.hidden=true;updateControls();
+        status.textContent=scene.newsStatus||'';retry.hidden=true;updateControls();
       };
       v.fail=(msg,action)=>{
         status.textContent=msg;
