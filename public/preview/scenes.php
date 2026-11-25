@@ -88,6 +88,17 @@ function scene_openai(string $route, array $body, string $key): array {
     return $result;
 }
 
+
+function scene_image_request(array $body, string $key): array {
+    $ch = curl_init('https://api.openai.com/v1/images/generations');
+    curl_setopt_array($ch, [CURLOPT_POST=>true, CURLOPT_RETURNTRANSFER=>true, CURLOPT_CONNECTTIMEOUT=>8,
+        CURLOPT_TIMEOUT=>240, CURLOPT_HTTPHEADER=>['Authorization: Bearer '.$key,'Content-Type: application/json'],
+        CURLOPT_POSTFIELDS=>json_encode($body, JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
+    $response=curl_exec($ch); $status=curl_getinfo($ch,CURLINFO_HTTP_CODE); curl_close($ch);
+    $result=json_decode((string)$response,true);
+    return ['status'=>$status,'result'=>is_array($result)?$result:[]];
+}
+
 function scene_get(string $dir): void {
     $id = $_GET['image'] ?? '';
     if ($id !== '') {
@@ -361,7 +372,16 @@ $prompt=scene_image_prompt($plan,$sources,$meta,$composition);
 // Never silently truncate the last tasks/notes or pay for an image with an incomplete brief.
 $promptLength=function_exists('mb_strlen')?mb_strlen($prompt,'UTF-8'):strlen($prompt);
 if ($promptLength>30000) scene_result(422,['error'=>'Материалы дня слишком объёмны для одной сцены. Сократите описания или архивируйте неактуальные заметки. Предыдущее изображение сохранено.']);
-$image=scene_openai('images/generations',['model'=>'gpt-image-1','prompt'=>$prompt,'size'=>'1536x1024','quality'=>'high','n'=>1,'output_format'=>'webp','output_compression'=>80],$key);
+$imageRequest=scene_image_request(['model'=>'gpt-image-1','prompt'=>$prompt,'size'=>'1536x1024','quality'=>'high','n'=>1,'output_format'=>'webp','output_compression'=>80],$key);
+if ($imageRequest['status'] < 200 || $imageRequest['status'] >= 300 || !is_array($imageRequest['result'])) {
+    // Account plans that do not expose the full model still get a valid image.
+    $imageRequest=scene_image_request(['model'=>'gpt-image-1-mini','prompt'=>$prompt,'size'=>'1536x1024','quality'=>'medium','n'=>1,'output_format'=>'webp','output_compression'=>80],$key);
+}
+if ($imageRequest['status'] < 200 || $imageRequest['status'] >= 300) {
+    $status=(int)$imageRequest['status'];
+    scene_result($status===429?429:502,['error'=>'Сервис генерации недоступен','detail'=>'HTTP '.$status]);
+}
+$image=$imageRequest['result'];
 $bytes=base64_decode($image['data'][0]['b64_json']??'',true);
 if (!$bytes || substr($bytes,0,4)!=='RIFF' || substr($bytes,8,4)!=='WEBP') scene_result(502,['error'=>'Некорректное изображение']);
 umask(0077);
