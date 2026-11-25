@@ -47,7 +47,7 @@ foreach($sources as $source) check(strpos($prompt,'мини-сцена '.$source
 check(strpos($prompt,'Продажи')!==false,'Image receives project context');
 check(strpos($prompt,'Не рисуй списки задач')!==false && strpos($prompt,'Никакого средневековья')!==false,'No boards and contemporary setting enforced in image brief');
 check(strpos($prompt,'Не превращай ночь в день')!==false,'Night stays night despite vivid palette');
-check(strpos($prompt,'Новость не изображай и не придумывай')!==false,'No fabricated news when feed has no new event');
+check(strpos($prompt,'Новую проверенную новость')===false,'Image prompt has no obsolete no-news fallback');
 $many=['today'=>array_fill(0,80,['title'=>'Разная задача'])];
 check(count(scene_sources($many))===80,'Large today list is not silently sliced');
 $dir=sys_get_temp_dir().'/pulse-scenes-test-'.bin2hex(random_bytes(8));
