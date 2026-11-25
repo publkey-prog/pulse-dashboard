@@ -379,8 +379,7 @@ $allCandidates=scene_news($city,$country,$history);
 $usedNews=[];
 foreach ($history as $old) if (is_array($old['news']??null)) $usedNews[]=$old['news'];
 $candidates=array_values(array_filter($allCandidates, static function(array $item) use ($history): bool { return !scene_news_used($item,$history); }));
-$newsFallback=false;
-if (!$candidates && $allCandidates) { $candidates=$allCandidates; $newsFallback=true; }
+$newsFallback=false; // Do not reuse archived headlines; use a landmark when no fresh event remains.
 $news=null;
 $meta=['id'=>gmdate('YmdHis',$now).'-'.bin2hex(random_bytes(8)),'created'=>$local->format('c'),
        'zone'=>$tz->getName(),'city'=>$city,'temperature'=>is_numeric($current['temperature_2m']??null)?(float)$current['temperature_2m']:null,
