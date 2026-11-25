@@ -3,6 +3,7 @@
   const endpoint = 'scenes.php';
   const localKey = 'pulse-preview-day-scene-v1';
   const idPattern = /^\d{14}-[a-f0-9]{16}$/;
+  const requiredSceneRulesVersion = 8;
   const kyiv = {city:'Киев',country:'UA',lat:50.45,lon:30.52,zone:'Europe/Kyiv'};
   const viewers = new WeakMap();
   let generating = null;
@@ -42,6 +43,7 @@
       };
     });
   }
+  const sceneSupported = row => Number(row?.sceneRulesVersion || 0) >= requiredSceneRulesVersion;
   function weather(s) {
     if (s.weatherCode==null && s.temperature==null) return 'погода недоступна';
     const c=s.weatherCode;
@@ -116,15 +118,16 @@
         if (!v.url) {
           try {
             const cached=await localScene('get');
-            if (cached?.scene && cached.blob && !v.url) { v.rows=[cached.scene];v.draw(cached.scene,cached.blob); }
+            if (cached?.scene && cached.blob && !v.url && sceneSupported(cached.scene)) { v.rows=[cached.scene];v.draw(cached.scene,cached.blob); }
           } catch {}
         }
         try {
           const data=await (await apiRead('')).json();
           if (!Array.isArray(data.scenes)) throw new Error();
           v.rows=data.scenes;
-          if (v.rows.length) await v.load(0,true);
-          else v.fail(v.url?'На устройстве сохранена последняя сцена.':'Нажми «Обновить», чтобы создать первую сцену.');
+          const latestSupported=v.rows.findIndex(sceneSupported);
+          if (latestSupported>=0) await v.load(latestSupported,true);
+          else v.fail('Сохранена сцена старой версии. Нажми «Обновить», чтобы создать новую сцену.');
         } catch (err) {
           if (!v.url && (err.status===401 || err.status===403)) v.fail('Нажми «Обновить», чтобы создать первую сцену.');
           else v.fail('Архив сейчас недоступен.',v.sync);
