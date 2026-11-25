@@ -159,7 +159,7 @@
 <section class="panel"><div class="panel-title"><h2>Активность</h2><span>7 дней</span></div><div id="activityChart" class="chart"></div><div id="activityDays" class="days"></div><div class="streak-row">🔥 Серия: <b id="streakDays">0</b> дней</div></section></section>
 <section id="tasksView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Задачи</h1></div><button id="addFullTaskBtn" class="primary">+ Задача</button></header><div class="task-summary"><div><span>Всего</span><b id="tasksTotal">0</b></div><div><span>Срочно</span><b id="tasksUrgent">0</b></div><div><span>Сегодня</span><b id="tasksDone">0</b></div><div><span>Прогресс</span><b id="planCount"></b><progress id="planBar"></progress></div></div><div class="task-filters"><button class="filter-btn active" data-filter="today">Сегодня</button><button class="filter-btn" data-filter="all">Все</button><button class="filter-btn" data-filter="urgent">Срочно</button><button class="filter-btn" data-filter="future">Календарь</button><button class="filter-btn" data-filter="done">Готово</button><button class="filter-btn" data-filter="overdue">Просроченные</button><button class="filter-btn" data-filter="deleted">Удалённые</button></div><div id="pulseTaskCalendar" class="pulse-calendar hidden"><label>Задачи на дату</label><input type="date" id="pulseTaskDate"></div><div id="fullTaskList"></div><div id="fullTaskEmpty" class="empty hidden">Задач по этому фильтру нет.</div></section>
 <section id="projectsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Проекты</h1></div><button id="addProjectBtn" class="primary">+ Проект</button></header><div class="project-summary project-filters"><button class="project-filter-btn" data-project-filter="overdue"><span>Просроченные</span><b id="projectsOverdue">0</b></button><button class="project-filter-btn active" data-project-filter="active"><span>Активных</span><b id="projectsActive">0</b></button><button class="project-filter-btn" data-project-filter="done"><span>Завершено</span><b id="projectsDone">0</b></button></div><div id="projectList"></div><div id="projectEmpty" class="empty hidden">Проектов пока нет.</div></section>
-<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Доклады проектов, советы по задачам, сцены дня и курсы валют.</small><p id="pulseBuildVersion">Версия: ai-projects-preview</p><p id="pulseBuildUpdated">Дата обновления: 21.11.2026, 02:38 (Киев)</p></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div>
+<section id="settingsView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>Настройки</h1></div></header><div class="settings-card"><span class="muted">Версия</span><strong>Pulse Dashboard</strong><small>Доклады проектов, советы по задачам, сцены дня и курсы валют.</small><p id="pulseBuildVersion">Версия: ai-projects-preview.2</p><p id="pulseBuildUpdated">Дата обновления: 21.11.2026, 02:38 (Киев)</p></div><div class="settings-card"><h2>История</h2><p>Полный журнал действий Pulse.</p><button id="openHistoryBtn" class="wide primary">Открыть историю</button></div>
 </section>
 <section id="historyView" class="hidden"><header><div><span class="eyebrow">PULSE</span><h1>История</h1></div><button id="backSettingsBtn" class="secondary">Настройки</button></header><div class="settings-card"><div class="panel-title"><h2>Журнал действий</h2><span id="historyCount"></span></div><div class="pulse-calendar"><label>События за дату</label><input type="date" id="pulseHistoryDate"><button id="pulseHistoryAll" type="button">Все события</button> <button id="lateFilter" type="button" aria-pressed="false">Просрочки</button></div><div id="historyList" class="history-list"></div></div></section>
 </main>
@@ -398,7 +398,7 @@ function restoreTask(t){t.deletedAt="";t.updatedAt=iso();log("green","Задач
 function openTask(id,pid){editTask=id||null;fillProjects();var t=tasks.find(function(x){return x.id===id}),s=t?t.startAt:iso(),d=t?t.deadlineAt:plus24(s);$("taskModalTitle").textContent=t?"Редактировать задачу":"Новая задача";$("taskInput").value=t?t.text:"";$("taskDescription").value=t?t.description:"";$("taskProject").value=t?t.projectId:(pid||"");$("taskStartAt").value=inp(s);$("taskDeadlineAt").value=inp(d);if(!t){var earliest=todayKey()+"T00:00";$("taskStartAt").min=earliest;$("taskDeadlineAt").min=earliest}else{$("taskStartAt").removeAttribute("min");$("taskDeadlineAt").removeAttribute("min")}$("taskModal").classList.remove("hidden")}function closeTask(){$("taskModal").classList.add("hidden");editTask=null}
 $("taskSave").onclick=function(){var text=$("taskInput").value.trim();if(!text)return alert("Введите название задачи");const times=reviseDates("task",tasks.find(t=>t.id===editTask));if(!times)return;const {s,d}=times;var data={text:text,description:$("taskDescription").value.trim(),projectId:$("taskProject").value,startAt:s,deadlineAt:d,updatedAt:iso()};if(editTask){var t=tasks.find(function(x){return x.id===editTask}),old=t.text+" · "+fmt(t.deadlineAt),oldPid=t.projectId;Object.assign(t,data);log("yellow","Задача изменена",old+" → "+text+" · "+fmt(d),t);syncProject(oldPid,false);syncProject(t.projectId,false)}else{var nt=Object.assign({id:Date.now(),done:false,completedAt:"",completionComment:"",deletionComment:"",deletedAt:"",notes:[],createdAt:iso()},data);tasks.unshift(nt);log("blue","Создана задача",text+" · дедлайн "+fmt(d),nt);syncProject(nt.projectId,false)}save();closeTask();render()};$("taskClose").onclick=$("taskCancel").onclick=closeTask;$("addFullTaskBtn").onclick=function(){openTask()};$("addNav").onclick=function(){openTask()};
 function draftRender(){var b=$("draftTaskList");b.innerHTML="";drafts.sort(function(a,b){return new Date(a.deadlineAt||"9999-12-31")-new Date(b.deadlineAt||"9999-12-31")});drafts.forEach(function(d,i){var r=document.createElement("div");r.className="draft-row";var ch=document.createElement("input");ch.type="checkbox";ch.className="draft-check";ch.checked=!!d.done;ch.onchange=function(){d.done=ch.checked};var ti=document.createElement("input");ti.placeholder="Название задачи";ti.value=d.text||"";ti.oninput=function(e){d.text=e.target.value};var x=document.createElement("button");x.textContent="×";x.onclick=function(){if(d.id){var t=tasks.find(function(q){return String(q.id)===String(d.id)});if(t)return softDelete(t,function(){drafts=drafts.filter(function(q){return String(q.id)!==String(d.id)});var p=projects.find(function(q){return String(q.id)===String(editProject)});if(p&&projectState(p,progress(p))==="done")closeProject();else draftRender()})}drafts.splice(i,1);draftRender()};r.append(ch,ti,x);b.append(r)})}
-function openProject(id){extendingProject=false;editProject=id||null;var p=projects.find(function(x){return x.id===id}),s=p?p.startAt:iso(),d=p?p.deadlineAt:plus24(s);$("projectAiHelp").checked=!!p?.aiHelp;drafts=p?projectTasks(p.id).map(function(t){return{id:t.id,text:t.text,done:!!t.done,deadlineAt:t.deadlineAt}}):[];$("projectModalTitle").textContent=p?"Редактировать проект":"Новый проект";$("projectName").value=p?p.name:"";$("projectDescription").value=p?p.description:"";$("projectStartAt").value=inp(s);$("projectDeadlineAt").value=inp(d);for(const key of ["StartAt","DeadlineAt"]){const field=$("project"+key);field.min=p && field.value<todayKey()?field.value:todayKey()+"T00:00"}dateLimits("project",p);draftRender();$("projectModal").classList.remove("hidden")}function closeProject(){$("projectModal").classList.add("hidden");editProject=null;drafts=[]}
+function openProject(id){$("projectModal").querySelector(".ai-create-status")?.remove();extendingProject=false;editProject=id||null;var p=projects.find(function(x){return x.id===id}),s=p?p.startAt:iso(),d=p?p.deadlineAt:plus24(s);$("projectAiHelp").checked=!!p?.aiHelp;drafts=p?projectTasks(p.id).map(function(t){return{id:t.id,text:t.text,done:!!t.done,deadlineAt:t.deadlineAt}}):[];$("projectModalTitle").textContent=p?"Редактировать проект":"Новый проект";$("projectName").value=p?p.name:"";$("projectDescription").value=p?p.description:"";$("projectStartAt").value=inp(s);$("projectDeadlineAt").value=inp(d);for(const key of ["StartAt","DeadlineAt"]){const field=$("project"+key);field.min=p && field.value<todayKey()?field.value:todayKey()+"T00:00"}dateLimits("project",p);draftRender();$("projectModal").classList.remove("hidden")}function closeProject(){$("projectModal").classList.add("hidden");editProject=null;drafts=[]}
 $("addDraftTaskBtn").onclick=function(){drafts.push({text:"",done:false,deadlineAt:from($("projectDeadlineAt").value)||plus24(iso())});draftRender()};
 $("projectSave").onclick=function(){if(drafts.some(t=>t.id && !t.text.trim()))return alert("Укажите название задачи или удалите её с указанием причины");var name=$("projectName").value.trim();if(!name)return alert("Введите название проекта");checkOverdueScores();const times=reviseDates("project",projects.find(p=>p.id===editProject));if(!times)return;const {s,d}=times;if(new Date(d)<new Date(s))return alert("Дедлайн не может быть раньше начала");var id=editProject,p;if(id){p=projects.find(function(x){return x.id===id});var old=p.name;Object.assign(p,{name:name,description:$("projectDescription").value.trim(),startAt:s,deadlineAt:d,updatedAt:iso()});log("yellow","Проект изменён",old+" → "+name)}else{id=Date.now();p={id:id,name:name,description:$("projectDescription").value.trim(),startAt:s,deadlineAt:d,completedAt:"",createdAt:iso(),updatedAt:iso()};projects.unshift(p);log("blue","Создан проект",name+" · дедлайн "+fmt(d))}
 p.aiHelp=$("projectAiHelp").checked;var clean=drafts.filter(function(x){return (x.text||"").trim()});if(!p.aiHelp&&!editProject&&!clean.length)clean=[{text:name,done:false,deadlineAt:d}];
@@ -602,7 +602,33 @@ var coreOpenDetail=openDetail;openDetail=function(id){coreOpenDetail(id);var t=t
 var coreRenderNotes=renderNotes;renderNotes=function(t){coreRenderNotes(t);$("notesList").querySelectorAll(".note p").forEach(function(p){var text=p.textContent,parts=text.split(/(https?:\/\/[^\s]+)/g);p.textContent="";parts.forEach(function(x){if(/^https?:\/\//.test(x)){var a=document.createElement("a");a.href=x;a.target="_blank";a.rel="noopener";a.textContent=x;a.style.color="#9dccff";p.append(a)}else p.append(document.createTextNode(x))})})};
 var coreCompleteSave=$("completeSave").onclick;$("completeSave").onclick=function(){var id=completeTaskId,t=tasks.find(function(x){return x.id===id});if(t&&t.checklist&&t.checklist.some(function(x){return !x.done})&&!confirm("В чек-листе есть невыполненные пункты. Всё равно завершить задачу?"))return;var was=t&&t.done;coreCompleteSave();if(t&&!was&&t.done)addScore(10,"Выполнена задача",t.text,"done-task-"+t.id);runScoreChecks();render()};
 var coreDeleteSave=$("deleteSave").onclick;$("deleteSave").onclick=function(){var id=deleteTaskId,t=tasks.find(function(x){return x.id===id}),was=t&&t.deletedAt;coreDeleteSave();if(t&&!was&&t.deletedAt)addScore(-30,"Удалена задача",t.text,"delete-task-"+t.id+"-"+t.deletedAt);render()};
-var coreProjectSave=$("projectSave").onclick;$("projectSave").onclick=function(){var editing=editProject,beforeCount=projects.length,old=editing?projects.find(function(p){return p.id===editing}):null,beforeUpdated=old?old.updatedAt:"",oldDeadline=old?old.deadlineAt:"";coreProjectSave();var created=!editing&&projects.length>beforeCount,edited=!!editing&&old&&old.updatedAt!==beforeUpdated;if(!created&&!edited)return;var p=editing?projects.find(function(x){return x.id===editing}):projects[0];if(!p)return;if(created)addScore(10,"Создан проект",p.name,"create-project-"+p.id);runScoreChecks();render();if(created&&p.aiHelp)window.PulseProjects.open(p,true)};
+var coreProjectSave=$("projectSave").onclick;
+$("projectSave").onclick=async function(){
+ const editing=editProject,before=projects.length;
+ if(editing||!$("projectAiHelp").checked){
+   coreProjectSave();if(!editing&&projects.length>before)addScore(10,"Создан проект",projects[0].name,"create-project-"+projects[0].id);
+   runScoreChecks();render();return;
+ }
+ const name=$("projectName").value.trim(),times=reviseDates("project",null);
+ if(!times||!name){if(!name)alert("Введите название проекта");return}
+ const modal=$("projectModal");if(modal.inert)return;
+ const card=modal.querySelector('.modal-card');let status=card.querySelector('.ai-create-status');
+ if(!status){status=document.createElement('p');status.className='ai-create-status';status.setAttribute('role','status');card.append(status)}
+ status.textContent='Готовим доклад и задачи…';modal.inert=true;
+ try{
+  const stamp=iso(),p={id:Date.now(),name,description:$("projectDescription").value.trim(),aiHelp:true,startAt:times.s,deadlineAt:times.d,completedAt:"",createdAt:stamp,updatedAt:stamp};
+  const manual=drafts.filter(t=>t.text.trim()).map((t,i)=>({id:p.id+i+1,text:t.text.trim(),description:'',projectId:String(p.id),done:!!t.done,createdAt:stamp,updatedAt:stamp,startAt:times.s,deadlineAt:t.deadlineAt||times.d,completedAt:t.done?stamp:'',notes:[]}));
+  const context={project:p,tasks:manual,freeSlots:7,now:stamp};
+  const r=await window.pulseAIRequest('./project-api.php',{action:'report',context});
+  const plan=pulseProjectData.prepare(p,r,Array.isArray(r.data?.tasks)?r.data.tasks:[],manual);
+  if(!plan.pending.length)throw Error('ИИ не создал ни одной новой задачи. Попробуйте ещё раз.');
+  let id=Date.now();for(const t of [...manual,...plan.pending]){while(tasks.some(x=>x.id===id))id++;t.id=id++}
+  projects.unshift(p);tasks.push(...manual);pulseProjectData.commit(p,plan);
+  log('blue','Создан проект',name);addScore(10,'Создан проект',name,'create-project-'+p.id);
+  for(const t of manual){addScore(5,'Создана задача',t.text,'create-task-'+t.id);if(t.done)addScore(10,'Выполнена задача',t.text,'done-task-'+t.id);log('blue','Создана задача проекта',t.text,t)}
+  closeProject();status.remove();runScoreChecks();render();PulseProjects.open(p);
+ }catch(e){status.textContent=e.message}finally{modal.inert=false}
+};
 function addCalendarControls(){var tv=$("tasksView"),filters=tv.querySelector(".task-filters");if(!$("calendarControls")){var d=document.createElement("div");d.id="calendarControls";d.className="ext-tabs hidden";d.innerHTML='<button data-cal="list" class="active">Список</button><button data-cal="day">День</button><button data-cal="week">Неделя</button><button data-cal="month">Месяц</button>';filters.parentNode.insertBefore(d,filters.nextSibling);var box=document.createElement("div");box.id="calendarBox";box.className="calendar-box hidden";$('pulseTaskCalendar').after(box);
     const dateField=$('pulseTaskDate');
     const refreshCalendar=()=>{if(filter==='future' && dateField.value)renderCalendarIfNeeded()};
@@ -653,7 +679,10 @@ function reminderCheck(){if(!("Notification" in window))return;var now=Date.now(
 function addReminderPermission(){var s=$("extReminder");if(s)s.addEventListener("change",function(){if(this.value!=="none"&&"Notification" in window&&Notification.permission==="default")Notification.requestPermission()})}
 var coreStats=stats;stats=function(){coreStats();updateScoreUI()};
 var coreActivity=activity;activity=function(){coreActivity();addActivityRanges();var a=$("activityRanges")&&$("activityRanges").querySelector("button.active");renderActivityRange(a?+a.dataset.days:7)};
-window.pulseDayContext=()=>({tasks,projects,focus:focusSessions,history,activity:scoreEvents,...window.pulseDayExtras()});
+window.pulseDayContext=()=>({today:homeTasks().map(t=>{
+ const p=projects.find(p=>String(p.id)===String(t.projectId));
+ return {id:t.id,title:t.text,description:t.description||'',project:p?.name||'',projectGoal:p?.description||''}
+}),tasks,projects,focus:focusSessions,history,activity:scoreEvents,...window.pulseDayExtras()});
 window.pulseProjectData={
  save,detail:openDetail,parent:t=>projects.find(p=>String(p.id)===String(t.projectId)),enabled:p=>projects.includes(p)&&p.aiHelp,
  focus:t=>clockText(focusMs(t)),map:p=>projectTasks(p.id).sort((a,b)=>{
@@ -662,14 +691,20 @@ window.pulseProjectData={
  }),
  context:p=>{const rows=tasks.filter(t=>String(t.projectId)===String(p.id)),ids=new Set(rows.map(t=>String(t.id)));
  return {project:p,tasks:rows,focus:focusSessions.filter(s=>ids.has(String(s.taskId))),history:history.filter(h=>String(h.origin?.projectId)===String(p.id)||ids.has(String(h.origin?.taskId))),timeline:journal.projects[p.id]||[],taskTimeline:Object.fromEntries([...ids].map(id=>[id,(journal.tasks[id]||[]).filter(e=>String(e.state?.projectId)===String(p.id))])),now:iso(),freeSlots:Math.max(0,7-Math.max(p.aiTaskCount||0,rows.filter(t=>t.aiCreated).length))}},
- apply(p,r,items){
- const rows=projectTasks(p.id),titles=new Set(rows.map(t=>t.text.trim().toLowerCase()));let count=Math.max(p.aiTaskCount||0,rows.filter(t=>t.aiCreated).length);
+ prepare(p,r,items,rows=projectTasks(p.id)){
+ const pending=[];
+ const titles=new Set(rows.map(t=>t.text.trim().toLowerCase()));let count=Math.max(p.aiTaskCount||0,rows.filter(t=>t.aiCreated).length);
  const begin=Math.max(Date.now(),Date.parse(p.startAt)),end=Date.parse(p.deadlineAt);
- for(const x of items){if(count>=7||end<begin)break;if(typeof x?.title!=='string'||typeof x.description!=='string'||titles.has(x.title.trim().toLowerCase()))continue;
- const due=Math.min(end,Math.max(begin,Date.parse(x.deadline)||end)),stamp=iso();let id=Date.now();while(tasks.some(t=>t.id===id))id++;
+ for(const x of items){if(count>=7||end<begin)break;if(typeof x?.title!=='string'||typeof x.description!=='string'||!x.title.trim()||!x.description.trim()||titles.has(x.title.trim().toLowerCase()))continue;
+ const due=Math.min(end,Math.max(begin,Date.parse(x.deadline)||end)),stamp=iso();let id=Date.now();while(tasks.some(t=>t.id===id)||pending.some(t=>t.id===id))id++;
  const t={id,aiCreated:true,aiOrder:++count,aiHours:Math.max(0,Number(x.hours)||0),projectId:String(p.id),text:x.title.trim(),description:x.description,startAt:new Date(begin).toISOString(),deadlineAt:new Date(due).toISOString(),createdAt:stamp,updatedAt:stamp,notes:[],materials:[],done:false,checklist:(Array.isArray(x.checklist)?x.checklist:[]).filter(y=>typeof y==='string').slice(0,5).map((text,i)=>({id:i+1,text,done:false})),aiMaterials:(Array.isArray(x.materials)?x.materials:[]).filter(m=>typeof m?.title==='string').map(m=>({...m,url:(r.sources||[]).includes(m.url)||rows.some(t=>(t.materials||[]).some(v=>v.url===m.url))?m.url:''})),aiTips:x.tip?[{date:r.date,text:x.tip}]:[]};
- tasks.push(t);titles.add(t.text.toLowerCase());log('blue','Создана задача ИИ',t.text,t)}
- p.aiTaskCount=count;p.aiReportNumber=(p.aiReportNumber||0)+1;(p.aiReports||=[]).push({number:p.aiReportNumber,date:r.date,model:r.model,text:r.data.report,forecast:r.data.forecast});save();render()}
+ pending.push(t);titles.add(t.text.toLowerCase())}
+ if(!r.data?.report?.trim()||(!rows.length&&!pending.length))throw Error('ИИ не подготовил доклад с задачами. Можно повторить запрос.');
+ return {pending,count,report:{number:(p.aiReportNumber||0)+1,date:r.date,model:r.model,text:r.data.report,forecast:r.data.forecast}}
+ },
+ commit(p,plan){tasks.push(...plan.pending);p.aiTaskCount=plan.count;p.aiReportNumber=plan.report.number;(p.aiReports||=[]).push(plan.report);
+ for(const t of plan.pending)log('blue','Создана задача ИИ',t.text,t);save();render()},
+ apply(p,r,items){this.commit(p,this.prepare(p,r,items))}
 };
 window.pulseScheduleData = {
   candidates: homeTasks,
@@ -933,7 +968,7 @@ function home(){
 
  updateCountdowns();
 }
-const PULSE_PREVIEW_VERSION='ai-projects-preview',PULSE_PREVIEW_BUILT_AT='2026-11-25T14:25:07.649811+00:00';
+const PULSE_PREVIEW_VERSION='ai-projects-preview.2',PULSE_PREVIEW_BUILT_AT='2026-11-25T18:55:07.264589+00:00';
 function loadPulseBuildInfo(){
  const v=$('pulseBuildVersion'),u=$('pulseBuildUpdated');if(!v||!u)return;
  v.textContent='Версия: '+PULSE_PREVIEW_VERSION;

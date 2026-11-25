@@ -121,9 +121,9 @@
           if (!Array.isArray(data.scenes)) throw new Error();
           v.rows=data.scenes;
           if (v.rows.length) await v.load(0,true);
-          else v.fail(v.url?'На устройстве сохранена последняя сцена.':'Нажми «Новый день», чтобы создать первую сцену.');
+          else v.fail(v.url?'На устройстве сохранена последняя сцена.':'Нажми «Обновить», чтобы создать первую сцену.');
         } catch (err) {
-          if (!v.url && (err.status===401 || err.status===403)) v.fail('Нажми «Новый день», чтобы создать первую сцену.');
+          if (!v.url && (err.status===401 || err.status===403)) v.fail('Нажми «Обновить», чтобы создать первую сцену.');
           else v.fail('Архив сейчас недоступен.',v.sync);
         }
       };

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const first = () => localStorage.getItem(firstKey) === 'schedule' ? 3 : 0;
   const schedule = document.createElement('section');
   schedule.className = 'panel';
-  schedule.innerHTML = '<div class="panel-title"><h2>Расписание</h2></div><div class="plan-modes"><button class="secondary">Новый день</button><button class="secondary">Курс валют</button></div><div class="day-content"></div>';
+  schedule.innerHTML = '<div class="panel-title"><h2>Расписание</h2></div><div class="plan-modes"><button class="secondary">Новый день</button><button class="secondary">Курс валют</button></div><div class="day-content"></div><button type="button" class="secondary scene-refresh">Обновить</button>';
   const cards = [byId('taskList').closest('.panel'),byId('activityChart').closest('.panel'),byId('pulseIncome'),schedule];
   const deck = document.createElement('div');
   deck.className = 'pulse-deck';
@@ -54,13 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const [day,rates]=schedule.querySelectorAll('.plan-modes button');
   const content=schedule.querySelector('.day-content');let opened=false,generating=false;
+  const refresh=schedule.querySelector('.scene-refresh');
   async function show(generate){
     if(generating)return;
     opened=true;day.setAttribute('aria-pressed','true');rates.setAttribute('aria-pressed','false');
-    generating=generate;day.disabled=generate;rates.disabled=generate;
-    try{await window.mountPulseScenes(content,generate)}finally{generating=false;day.disabled=false;rates.disabled=false}
+    refresh.hidden=false;refresh.disabled=generate;generating=generate;day.disabled=generate;rates.disabled=generate;
+    try{await window.mountPulseScenes(content,generate)}finally{refresh.disabled=false;generating=false;day.disabled=false;rates.disabled=false}
   }
-  day.onclick=()=>show(true);
-  rates.onclick=()=>{if(rates.getAttribute('aria-pressed')==='true'){show(false);return}opened=true;day.setAttribute('aria-pressed','false');rates.setAttribute('aria-pressed','true');window.mountPulseRates(content)};
+  day.onclick=()=>show(false);refresh.onclick=()=>show(true);
+  rates.onclick=()=>{refresh.hidden=true;opened=true;day.setAttribute('aria-pressed','false');rates.setAttribute('aria-pressed','true');window.mountPulseRates(content)};
   turn(page);
 });

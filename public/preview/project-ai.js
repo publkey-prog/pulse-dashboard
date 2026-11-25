@@ -16,11 +16,11 @@ window.PulseProjects=(()=>{
   function main(){frame('ИИ проекта');const r=reports().at(-1);if(r)article(r);else dialog.append(el('p','Подготовьте первый доклад по проекту.'));
    dialog.append(btn(r?'Обновить доклад':'Создать доклад',generate),btn('Архив',archive));const map=group(dialog,'Карта проекта');
    const rows=api.map(p),progress=el('progress');progress.max=Math.max(1,rows.length);progress.value=rows.filter(t=>t.done).length;map.append(progress,el('small','Выполнено '+progress.value+' из '+rows.length));for(const t of rows){const row=btn((t.done?'✓ ':'○ ')+(t.aiCreated?'ИИ · ':'')+t.text,()=>{dialog.close();api.detail(t.id)});row.classList.add('ai-step');row.append(el('small',date(t.deadlineAt)+' · Фокус '+api.focus(t)+(t.aiHours?' · Прогноз '+t.aiHours+' ч':'')));map.append(row)}map.append(el('b','Дедлайн · '+date(p.deadlineAt)))}
-  async function generate(){if(running.has(p.id))return;running.add(p.id);const status=el('p','Готовим доклад…');dialog.append(status);
+  async function generate(){if(running.has(p.id))return;running.add(p.id);dialog.querySelector('.report-status')?.remove();const status=el('p','Готовим доклад…','report-status');status.setAttribute('role','status');dialog.append(status);
    try{const ctx=api.context(p),r=await request('report',ctx);if(!api.enabled(p))throw Error('Проект изменён. Откройте его снова.');
     const items=Array.isArray(r.data.tasks)?r.data.tasks:[];if(!reports().length&&ctx.freeSlots>0&&!items.some(x=>x?.title&&x.description))throw Error('Не получен план задач. Повторите запрос.');
     api.apply(p,r,items);if(dialog.open)main();
-   }finally{running.delete(p.id);status.remove()}}
+   }catch(e){status.textContent=e.message}finally{running.delete(p.id)}}
   main();if(create)generate().catch(e=>{if(e.message!=='Запрос отменён')alert(e.message)})
  }
  function task(t,host){const api=window.pulseProjectData;const tips=t.aiTips||(t.aiTips=[]);let pos=tips.length-1;
