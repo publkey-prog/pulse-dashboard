@@ -265,9 +265,11 @@ function scene_image_prompt(array $plan, array $sources, array $moment, array $c
         $source = $byId[$episode['source_id']];
         $sourceData = $source['data'];
         $dateCue = $sourceData['deadlineAt'] ?? $sourceData['createdAt'] ?? $sourceData['date'] ?? '';
+        $goalCue = trim((string)($sourceData['projectGoal'] ?? $sourceData['project'] ?? ''));
         $prompt .= "\nОбязательная мини-сцена ".$episode['source_id'].": ".$episode['action']
             ."\nДата/время этого элемента (покажи естественными часами, телефоном или календарём в его сцене): ".(string)$dateCue
             ."\nСценарная визуальная задача: ".$episode['action']
+            ."\nКонтекст цели (только для понимания действия, не изображать текстом): ".$goalCue
             ."\nПокажи это как наблюдаемое действие людей, предметов и результата; не рисуй схему, текст, плакат или инфографику.";
     }
     $prompt .= "\nОбязательная новостная мини-сцена: ".$plan['news_scene'];
