@@ -381,7 +381,8 @@ $allCandidates=scene_news($city,$country,$history);
 $usedNews=[];
 foreach ($history as $old) if (is_array($old['news']??null)) $usedNews[]=$old['news'];
 $candidates=array_values(array_filter($allCandidates, static function(array $item) use ($history): bool { return !scene_news_used($item,$history); }));
-$newsFallback=false; // Do not reuse archived headlines; use a landmark when no fresh event remains.
+$newsFallback=false;
+if (!$candidates) scene_result(503,['error'=>'fresh_news_required','message'=>'Не удалось получить новую подтверждённую местную новость. Генерация изображения не запускалась; предыдущее изображение сохранено.']);
 $news=null;
 $meta=['id'=>gmdate('YmdHis',$now).'-'.bin2hex(random_bytes(8)),'created'=>$local->format('c'),
        'zone'=>$tz->getName(),'city'=>$city,'temperature'=>is_numeric($current['temperature_2m']??null)?(float)$current['temperature_2m']:null,
@@ -402,26 +403,29 @@ $news=$plan['news_index']>=0 ? $candidates[$plan['news_index']] : null;
 if ($news===null && $candidates) { $news=$candidates[0]; }
 if ($news===null) { $newsStatus='landmark_fallback'; }
 $meta['news']=$news;
-$meta['newsStatus']=$news===null ? 'Свежая новость недоступна; использована местная достопримечательность.' : '';
+$meta['newsStatus']='Свежая новость и местная достопримечательность включены в сцену.';
 $meta['newsFallback']=$newsFallback;
 $anchor=scene_anchor($city,$country,$news);
 $meta['sceneAnchor']=$anchor;
 $meta['sourceIds']=array_column($sources,'id');
 $meta['composition']=$composition['id'];
-$meta['sourceCounts']=['tasks'=>count($today),'thoughts'=>0,'notes'=>0];
+$meta['sourceCounts']=['tasks'=>count($today),'projects'=>0,'thoughts'=>0,'notes'=>0];
 foreach ($sources as $source) {
+    if ($source['kind']==='project') $meta['sourceCounts']['projects']++;
     if ($source['kind']==='thought') $meta['sourceCounts']['thoughts']++;
     if ($source['kind']==='note') $meta['sourceCounts']['notes']++;
 }
-$meta['sceneRulesVersion']=6;
+$meta['sceneRulesVersion']=7;
 $prompt=scene_image_prompt($plan,$sources,$meta,$composition,$anchor);
 // Never silently truncate the last tasks/notes or pay for an image with an incomplete brief.
 $promptLength=function_exists('mb_strlen')?mb_strlen($prompt,'UTF-8'):strlen($prompt);
 if ($promptLength>30000) scene_result(422,['error'=>'Материалы дня слишком объёмны для одной сцены. Сократите описания или архивируйте неактуальные заметки. Предыдущее изображение сохранено.']);
-$imageRequest=scene_image_request(['model'=>'gpt-image-1','prompt'=>$prompt,'size'=>'1536x1024','quality'=>'high','n'=>1,'output_format'=>'webp','output_compression'=>80],$key);
+$imageModel='gpt-image-2';
+$imageRequest=scene_image_request(['model'=>$imageModel,'prompt'=>$prompt,'size'=>'1536x1024','quality'=>'high','n'=>1,'output_format'=>'webp','output_compression'=>80],$key);
 if ($imageRequest['status'] < 200 || $imageRequest['status'] >= 300 || !is_array($imageRequest['result'])) {
-    // Account plans that do not expose the full model still get a valid image.
-    $imageRequest=scene_image_request(['model'=>'gpt-image-1-mini','prompt'=>$prompt,'size'=>'1536x1024','quality'=>'medium','n'=>1,'output_format'=>'webp','output_compression'=>80],$key);
+    // One compatibility fallback only; never loop image generation.
+    $imageModel='gpt-image-1';
+    $imageRequest=scene_image_request(['model'=>$imageModel,'prompt'=>$prompt,'size'=>'1536x1024','quality'=>'high','n'=>1,'output_format'=>'webp','output_compression'=>80],$key);
 }
 if ($imageRequest['status'] < 200 || $imageRequest['status'] >= 300) {
     $status=(int)$imageRequest['status'];
@@ -433,6 +437,7 @@ if (!$bytes || substr($bytes,0,4)!=='RIFF' || substr($bytes,8,4)!=='WEBP') scene
 umask(0077);
 $id=$meta['id'];
 $finalImage="$dir/$id.webp"; $temp="$dir/$id.tmp";
+$meta['imageModel']=$imageModel;
 $json=json_encode($meta,JSON_UNESCAPED_UNICODE);
 if (file_put_contents($finalImage,$bytes)!==strlen($bytes) || file_put_contents($temp,$json)!==strlen($json) || !rename($temp,"$dir/$id.json")) {
     @unlink($finalImage); @unlink($temp); scene_result(507,['error'=>'Не удалось сохранить сцену в архив']);
