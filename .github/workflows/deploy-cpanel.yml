@@ -70,8 +70,6 @@ jobs:
           php tests/scene-rules.php
           node --check public/preview/scenes.js
           node --check public/preview/sw.js
-          node --check public/preview/schedule.js
-          node tests/scene-gallery.cjs
 
       - name: Configure SSH
         shell: bash

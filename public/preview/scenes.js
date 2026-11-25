@@ -61,26 +61,23 @@
     if (!idPattern.test(result?.scene?.id || '')) throw new Error('Сервер не вернул сцену');
     return result.scene;
   }
-  window.mountPulseScenes=async function(container,generate=false,refreshButton=null) {
+  window.mountPulseScenes=async function(container,generate=false) {
     let v=viewers.get(container);
     if (!v) {
       const root=element('div'), meta=element('p'), area=element('div'), picture=element('img'), headline=element('a');
       const controls=element('div'), previous=element('button','← Раньше'), next=element('button','Позже →'), status=element('small'), retry=element('button','Повторить');
       picture.alt='Сцена дня'; picture.hidden=true; picture.style.cssText='width:100%;height:auto;border-radius:12px;vertical-align:middle;touch-action:pan-y';
-      controls.className='scene-controls';
-      controls.style.cssText='display:flex;flex-wrap:nowrap;align-items:center;gap:.5rem;margin:.55rem 0';
+      controls.style.cssText='display:flex;gap:.6rem;margin:.55rem 0';
       headline.style.cssText='color:inherit;display:block'; headline.target='_blank'; headline.rel='noopener noreferrer';
       [previous,next,retry].forEach(b=>{b.type='button';b.className='secondary'});
       status.setAttribute('role','status'); retry.hidden=true; headline.hidden=true;
       controls.append(previous,next); area.append(picture); root.append(meta,area,headline,controls,status,retry);
-      v={root,meta,picture,headline,controls,previous,next,status,retry,rows:[],pos:-1,url:'',revision:0,tried:false};
+      v={root,meta,picture,headline,previous,next,status,retry,rows:[],pos:-1,url:'',revision:0,tried:false};
       viewers.set(container,v);
       function updateControls() {
         previous.disabled=v.pos<0 || v.pos>=v.rows.length-1;
         next.disabled=v.pos<=0;
-        previous.hidden=previous.disabled;previous.style.display=previous.disabled?'none':'';
-        next.hidden=next.disabled;next.style.display=next.disabled?'none':'';
-        controls.style.display='flex';
+        controls.style.display=v.rows.length>1?'flex':'none';
       }
       v.draw=(scene,blob)=>{
         const old=v.url;
@@ -143,7 +140,6 @@
       },{passive:true});
       updateControls();
     }
-    if (refreshButton && refreshButton.parentNode!==v.controls) v.controls.append(refreshButton);
     if (v.root.parentNode!==container) container.replaceChildren(v.root);
     if (!v.tried) { v.tried=true;v.initial=v.sync(); }
     await v.initial;
