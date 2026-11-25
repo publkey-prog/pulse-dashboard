@@ -68,9 +68,9 @@
       const controls=element('div'), previous=element('button','← Раньше'), next=element('button','Позже →'), status=element('small'), retry=element('button','Повторить');
       picture.alt='Сцена дня'; picture.hidden=true; picture.style.cssText='width:100%;height:auto;border-radius:12px;vertical-align:middle;touch-action:pan-y';
       controls.className='scene-controls';
-      controls.style.cssText='display:flex;flex-wrap:nowrap;align-items:center;gap:.35rem;margin:.55rem 0;width:100%';
+      controls.style.cssText='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:.35rem;margin:.55rem 0;width:100%;box-sizing:border-box';
       headline.style.cssText='color:inherit;display:block'; headline.target='_blank'; headline.rel='noopener noreferrer';
-      [previous,next,retry].forEach(b=>{b.type='button';b.className='secondary';b.style.cssText='flex:1;min-width:0;padding-left:.35rem;padding-right:.35rem;white-space:nowrap'});
+      [previous,next,retry].forEach(b=>{b.type='button';b.className='secondary';b.style.cssText='width:100%;min-width:0;box-sizing:border-box;padding-left:.25rem;padding-right:.25rem;white-space:nowrap'});
       status.setAttribute('role','status'); retry.hidden=true; headline.hidden=true;
       controls.append(previous,next); area.append(picture); root.append(meta,area,headline,controls,status,retry);
       v={root,meta,picture,headline,controls,previous,next,status,retry,rows:[],pos:-1,url:'',revision:0,tried:false};
@@ -80,7 +80,7 @@
         next.disabled=v.pos<=0;
         previous.hidden=previous.disabled;previous.style.display=previous.disabled?'none':'';
         next.hidden=next.disabled;next.style.display=next.disabled?'none':'';
-        controls.style.display='flex';
+        controls.style.display='grid';
       }
       v.draw=(scene,blob)=>{
         const old=v.url;
@@ -143,7 +143,7 @@
       },{passive:true});
       updateControls();
     }
-    if (refreshButton && refreshButton.parentNode!==v.controls) v.controls.append(refreshButton);
+    if (refreshButton && refreshButton.parentNode!==v.controls) { v.controls.append(refreshButton); refreshButton.className='secondary'; refreshButton.style.cssText='width:100%;min-width:0;box-sizing:border-box;padding-left:.25rem;padding-right:.25rem;white-space:nowrap'; }
     if (v.root.parentNode!==container) container.replaceChildren(v.root);
     if (!v.tried) { v.tried=true;v.initial=v.sync(); }
     await v.initial;
