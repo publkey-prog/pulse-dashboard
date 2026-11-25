@@ -42,9 +42,9 @@ function scene_news(string $city, string $country, array $history = []): array {
     $lang = $country === 'UA' ? 'uk' : 'en';
     // Several local queries prevent one missing/slow RSS result from producing an empty scene.
     $queries = array_values(array_unique([
-        $city.' when:2d',
-        $city.' '.$country.' when:2d',
-        ($country === 'UA' ? 'Київ Україна' : $city).' when:2d'
+        $city.' when:7d',
+        $city.' '.$country.' when:7d',
+        ($country === 'UA' ? 'Київ Україна' : $city).' when:7d'
     ]));
     foreach ($queries as $term) {
         $query = http_build_query(['q'=>$term,'hl'=>$lang,'gl'=>$country,'ceid'=>$country.':'.$lang]);
@@ -53,7 +53,7 @@ function scene_news(string $city, string $country, array $history = []): array {
         foreach ($xml->channel->item as $item) {
             $date = strtotime((string)$item->pubDate);
             $url = (string)$item->link;
-            if (!$date || $date < time()-172800 || $date > time()+600 ||
+            if (!$date || $date < time()-604800 || $date > time()+600 ||
                 parse_url($url, PHP_URL_SCHEME) !== 'https' || parse_url($url, PHP_URL_HOST) !== 'news.google.com') continue;
             $title = trim(strip_tags((string)$item->title));
             if (!$title || strlen($title)>1200) continue;
@@ -210,6 +210,10 @@ function scene_sources(array $context): array {
         if (!is_array($item)) throw new InvalidArgumentException('Неверные данные задач дня');
         $sources[] = ['id'=>'task-'.count($sources), 'kind'=>'task', 'data'=>$item];
     }
+    foreach ($context['projects'] ?? [] as $item) {
+        if (!is_array($item) || !empty($item['archivedAt']) || !empty($item['deletedAt'])) continue;
+        $sources[] = ['id'=>'project-'.count($sources), 'kind'=>'project', 'data'=>$item];
+    }
     foreach (['thoughts'=>'thought', 'notes'=>'note'] as $key=>$kind) {
         foreach ($context[$key] ?? [] as $item) {
             if (!is_array($item)) continue;
@@ -227,6 +231,8 @@ function scene_validate_plan(array $plan, array $sources, array $candidates): bo
         $plan['news_index'] < -1 || $plan['news_index'] >= count($candidates) ||
         !is_string($plan['news_scene'] ?? null)) return false;
     if ($plan['news_index'] >= 0 && trim($plan['news_scene']) === '') return false;
+    if (count($candidates) > 0 && $plan['news_index'] < 0) return false;
+    if (count($candidates) === 0 && $plan['news_index'] !== -1) return false;
     $expected = array_column($sources, 'id');
     $found = [];
     foreach ($plan['episodes'] as $episode) {
@@ -283,10 +289,12 @@ function scene_prepare_plan(array $sources, array $candidates, array $context, a
     // Small, keyed responses make every source mandatory in the API schema.
     // Batches share one art direction and only the first batch selects a news event.
     $groups = array_chunk($sources, 12) ?: [[]];
+    $plannerCalls = 0;
+    $maxPlannerCalls = 4;
     foreach ($groups as $number=>$group) {
         $properties = [];
         foreach ($group as $source) $properties[$source['id']] = ['type'=>'string'];
-        $newsChoices = array_merge([-1], $candidates ? range(0, count($candidates)-1) : []);
+        $newsChoices = $candidates ? range(0, count($candidates)-1) : [-1];
         $schema = ['type'=>'object', 'additionalProperties'=>false,
             'required'=>['art_direction','episodes','news_index','news_scene'],
             'properties'=>[
@@ -298,8 +306,10 @@ function scene_prepare_plan(array $sources, array $candidates, array $context, a
             ]];
         $batch = null; $reason = 'invalid_plan';
         for ($attempt=0; $attempt<2; $attempt++) {
+            if ($plannerCalls >= $maxPlannerCalls) throw new RuntimeException('Лимит подготовки сценария исчерпан. Предыдущее изображение сохранено.');
+            $plannerCalls++;
             $response = $request([
-                'model'=>'gpt-4.1-mini','store'=>false,'max_output_tokens'=>$attempt===0?6000:10000,
+                'model'=>'gpt-4.1','store'=>false,'max_output_tokens'=>$attempt===0?7000:11000,
                 'instructions'=>SCENE_PLANNER_INSTRUCTIONS.' Работай только с sources текущей порции. Ключ каждого эпизода обязателен. action — 1–2 конкретных предложения, без длинных пояснений. Если shared_art_direction задан, все новые персонажи и сценки должны вписаться именно в него. Общие данные dashboard не являются дополнительным списком источников. Не добавляй их идентификаторы в episodes.',
                 'input'=>json_encode(['composition'=>$composition,'moment'=>$moment,'sources'=>$group,
                     'dashboard'=>$context,'news_candidates'=>$candidates,'used_news_events'=>$usedNews,
