@@ -264,9 +264,11 @@ function scene_image_prompt(array $plan, array $sources, array $moment, array $c
     foreach ($plan['episodes'] as $episode) {
         $source = $byId[$episode['source_id']];
         $sourceData = scene_compact_source($source)['data'];
-        $dateCue = scene_clip_string($sourceData['deadlineAt'] ?? $sourceData['createdAt'] ?? $sourceData['date'] ?? '', 48);
-        $goalCue = scene_clip_string($sourceData['projectGoal'] ?? $sourceData['project'] ?? '', 120);
-        $actionCue = scene_clip_string($episode['action'], 240);
+        // Keep every source represented, but cap each visual cue aggressively so
+        // a full day with many tasks cannot trip the economy prompt limit.
+        $dateCue = scene_clip_string($sourceData['deadlineAt'] ?? $sourceData['createdAt'] ?? $sourceData['date'] ?? '', 24);
+        $goalCue = scene_clip_string($sourceData['projectGoal'] ?? $sourceData['project'] ?? '', 60);
+        $actionCue = scene_clip_string($episode['action'], 140);
         $prompt .= "\nОбязательная мини-сцена ".$episode['source_id'].": действие — ".$actionCue
             ."; время — ".$dateCue
             ."; цель — ".$goalCue
