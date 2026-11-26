@@ -43,7 +43,8 @@ for($i=0;$i<50;$i++) {
 }
 check(true,'Last three compositions excluded');
 $prompt=scene_image_prompt($none,$sources,['city'=>'Киев','created'=>'2026-11-25T23:00:00+02:00','news'=>null],scene_composition([]));
-foreach($sources as $source) check(strpos($prompt,'мини-сцена '.$source['id'].':')!==false,'Image brief includes '.$source['id']);
+check(substr_count($prompt,'Отдельная сцена:')===count($sources),'Image brief keeps every visual scene without technical numbering');
+check(strpos($prompt,'task-0')===false && strpos($prompt,'project-')===false && strpos($prompt,'source_id')===false,'Image brief contains no technical scene identifiers');
 check(strpos($prompt,'Продажи')!==false,'Image receives project context');
 check(strpos($prompt,'Не рисуй списки задач')!==false && strpos($prompt,'Никакого средневековья')!==false,'No boards and contemporary setting enforced in image brief');
 check(strpos($prompt,'Не превращай ночь в день')!==false,'Night stays night despite vivid palette');
