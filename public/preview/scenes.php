@@ -267,7 +267,7 @@ function scene_image_prompt(array $plan, array $sources, array $moment, array $c
         $dateCue = scene_clip_string($sourceData['deadlineAt'] ?? $sourceData['createdAt'] ?? $sourceData['date'] ?? '', 48);
         $goalCue = scene_clip_string($sourceData['projectGoal'] ?? $sourceData['project'] ?? '', 120);
         $actionCue = scene_clip_string($episode['action'], 240);
-        $prompt .= "\nМини-сцена ".$episode['source_id'].": действие — ".$actionCue
+        $prompt .= "\nОбязательная мини-сцена ".$episode['source_id'].": действие — ".$actionCue
             ."; время — ".$dateCue
             ."; цель — ".$goalCue
             .". Покажи людей, предмет и видимый результат, без текста, схем и интерфейсов.";
